@@ -7,6 +7,7 @@ from edu_db.models import Project, Quiz, QuizQuestion
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 
+from edu_ai.agents.slo_context import language_name, load_slo
 from edu_ai.agents.topic_graph_agent import TopicGraphAgent
 from edu_ai.agents.utils import generate, get_db_session
 
@@ -23,6 +24,9 @@ class QuizQuestionGenerationResult(BaseModel):
     explanation: str = Field(..., description="Explanation for the correct answer")
     difficulty_level: str = Field(
         ..., description="Difficulty level: easy, medium, or hard"
+    )
+    cognitive_level: str | None = Field(
+        None, description="Cognitive level: K (knowledge), U (understanding) or A (application)"
     )
 
 
@@ -57,6 +61,7 @@ class QuizAgent:
         custom_instructions: str | None = None,
         quiz_id: str | None = None,
         count: int | None = None,
+        slo_code: str | None = None,
         **kwargs: Any,
     ) -> Quiz:
         """Generate quiz questions and save to the database.
@@ -67,6 +72,7 @@ class QuizAgent:
             custom_instructions: Optional custom instructions
             quiz_id: The quiz ID to populate (required)
             count: Optional count of questions to generate
+            slo_code: Optional FBISE SLO the questions must assess
 
         Returns:
             Updated Quiz model
@@ -97,8 +103,21 @@ class QuizAgent:
                 raise NotFoundError(f"Project {project_id} not found")
             language_code = project.language_code
 
-            generation_topic = topic
-            if self.topic_graph_agent:
+            # SLO mode: the SLO text is the topic, so no topic graph is needed
+            slo = load_slo(db, slo_code, project) if slo_code else None
+            prompt_template = self.prompt_template
+            prompt_vars: dict[str, Any] = {}
+            if slo:
+                prompt_template = "quiz_slo_prompt"
+                prompt_vars = {
+                    **slo.prompt_vars(),
+                    "language_name": language_name(language_code),
+                    "difficulty": "mixed",
+                }
+                count = count or 10
+
+            generation_topic = slo.description if slo else topic
+            if self.topic_graph_agent and not slo:
                 topic_graph = await self.topic_graph_agent.generate_topic_graph(
                     project_id=project_id,
                     topic=topic,
@@ -113,7 +132,7 @@ class QuizAgent:
                     generation_topic = ", ".join(topics)
 
             # Generate quiz using AI
-            kwargs = {}
+            kwargs = dict(prompt_vars)
             if count is not None:
                 kwargs["count"] = count
 
@@ -121,7 +140,7 @@ class QuizAgent:
                 llm=self.llm,
                 search_service=self.search_service,
                 output_model=self.output_model,
-                prompt_template=self.prompt_template,
+                prompt_template=prompt_template,
                 project_id=project_id,
                 topic=generation_topic or "",
                 language_code=language_code,
@@ -132,6 +151,8 @@ class QuizAgent:
             # Update quiz with generated name and description
             quiz.name = result.name
             quiz.description = result.description
+            if slo:
+                quiz.slo_code = slo.code
             quiz.updated_at = datetime.now()
             db.flush()
 
@@ -152,6 +173,8 @@ class QuizAgent:
                     correct_option=question_item.correct_option,
                     explanation=question_item.explanation,
                     difficulty_level=question_item.difficulty_level,
+                    slo_code=slo.code if slo else None,
+                    cognitive_level=_cognitive_level(question_item.cognitive_level),
                     position=position,
                     created_at=datetime.now(),
                 )
@@ -159,3 +182,8 @@ class QuizAgent:
 
             db.flush()
             return quiz
+
+
+def _cognitive_level(value: str | None) -> str | None:
+    level = (value or "").strip().upper()[:1]
+    return level if level in ("K", "U", "A") else None

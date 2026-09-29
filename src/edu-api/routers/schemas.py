@@ -18,6 +18,78 @@ class ProjectUpdate(BaseModel):
     language_code: str | None = Field(None, description="Language code for the project")
 
 
+class QuizAnswer(BaseModel):
+    question_id: str = Field(..., description="ID of the quiz question")
+    option: str | None = Field(None, description="Chosen option: a, b, c or d (null if skipped)")
+
+
+class QuizAttemptCreate(BaseModel):
+    answers: list[QuizAnswer] = Field(..., max_length=100, description="One answer per question")
+
+
+class FlashcardRating(BaseModel):
+    flashcard_id: str = Field(..., description="ID of the flashcard")
+    knew: bool = Field(..., description="Whether the student knew it")
+
+
+class FlashcardAttemptCreate(BaseModel):
+    results: list[FlashcardRating] = Field(..., max_length=100, description="One rating per card")
+
+
+class PaperCreate(BaseModel):
+    length: Literal["mini", "standard"] = Field(
+        default="mini", description="mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ"
+    )
+    topic: str | None = Field(
+        None, max_length=200, description="A domain (e.g. Mechanics) or topic; empty for the whole syllabus"
+    )
+
+
+class PaperAnswers(BaseModel):
+    answers: dict[str, str] = Field(
+        default_factory=dict, description="Answers by item ID (MCQ: a-d; written: text)"
+    )
+
+
+class ContentReview(BaseModel):
+    review_status: Literal["draft", "approved", "rejected"] = Field(
+        ..., description="New review status"
+    )
+    review_note: str | None = Field(
+        None, max_length=2000, description="What is wrong or should change"
+    )
+
+
+class SrqCreate(BaseModel):
+    slo_code: str = Field(..., max_length=32, description="FBISE SLO code, e.g. P-11-B-05")
+
+
+class SrqAnswer(BaseModel):
+    answer: str = Field(
+        ..., min_length=1, max_length=5000, description="The student's written answer"
+    )
+
+
+class OnboardingRequest(BaseModel):
+    grade: Literal[11, 12] = Field(..., description="Grade: 11 (HSSC-I) or 12 (HSSC-II)")
+    group_code: Literal["PRE_MED", "PRE_ENG"] = Field(..., description="FSc group")
+    explanation_language: Literal["en", "ur", "ur-Latn"] = Field(
+        default="en", description="Tutor language: English, Urdu or Roman Urdu"
+    )
+    exam_year: int | None = Field(
+        None, ge=2025, le=2035, description="Year of the annual exam"
+    )
+
+
+class ProfileUpdate(BaseModel):
+    explanation_language: Literal["en", "ur", "ur-Latn"] | None = Field(
+        None, description="Tutor language: English, Urdu or Roman Urdu"
+    )
+    exam_year: int | None = Field(
+        None, ge=2025, le=2035, description="Year of the annual exam"
+    )
+
+
 class DocumentCreate(BaseModel):
     file_name: str = Field(..., description="Name of the document file")
     file_type: str = Field(..., description="File extension (pdf, docx, txt, etc.)")
@@ -212,4 +284,8 @@ class GenerateRequest(BaseModel):
     )
     difficulty: str | None = Field(
         None, description="Difficulty level (for flashcards/quizzes)"
+    )
+    slo_code: str | None = Field(
+        None,
+        description="FBISE SLO to target, e.g. P-11-B-05 (for flashcards/quizzes)",
     )

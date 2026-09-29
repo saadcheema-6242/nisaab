@@ -63,6 +63,7 @@ class PracticeService:
                     user_answer=user_answer,
                     correct_answer=correct_answer,
                     was_correct=was_correct,
+                    slo_code=self._item_slo_code(db, item_type, item_id),
                 )
 
                 db.add(practice_record)
@@ -114,6 +115,7 @@ class PracticeService:
                         user_answer=record_data.get("user_answer"),
                         correct_answer=record_data.get("correct_answer"),
                         was_correct=record_data.get("was_correct"),
+                        slo_code=self._item_slo_code(db, item_type, item_id),
                     )
 
                     db.add(practice_record)
@@ -182,6 +184,12 @@ class PracticeService:
         except Exception:
             return False
 
+    def _item_slo_code(self, db, item_type: str, item_id: str) -> str | None:
+        """The FBISE SLO of the practised item, so mastery can be tracked per SLO."""
+        model = Flashcard if item_type == "flashcard" else QuizQuestion
+        row = db.query(model.slo_code).filter(model.id == item_id).first()
+        return row[0] if row else None
+
     def _model_to_dto(self, record: PracticeRecord) -> PracticeRecordDto:
         """Convert PracticeRecord model to PracticeRecordDto."""
         return PracticeRecordDto(
@@ -194,6 +202,7 @@ class PracticeService:
             user_answer=record.user_answer,
             correct_answer=record.correct_answer,
             was_correct=record.was_correct,
+            slo_code=record.slo_code,
             created_at=record.created_at,
         )
 

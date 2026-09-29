@@ -103,6 +103,27 @@ class MindMapService:
             except Exception:
                 raise
 
+    def delete_mind_map(self, mind_map_id: str, project_id: str, user_id: str) -> None:
+        """Delete a mind map.
+
+        Raises:
+            NotFoundError: If mind map not found
+        """
+        with self._get_db_session() as db:
+            mind_map = (
+                db.query(MindMap)
+                .filter(
+                    MindMap.id == mind_map_id,
+                    MindMap.project_id == project_id,
+                    MindMap.user_id == user_id,
+                )
+                .first()
+            )
+            if not mind_map:
+                raise NotFoundError(f"Mind map {mind_map_id} not found")
+            db.delete(mind_map)
+            db.commit()
+
     def list_mind_maps(self, project_id: str, user_id: str) -> list[MindMapDto]:
         """List all mind maps for a project.
 
@@ -204,6 +225,150 @@ class MindMapService:
         self.queue_service.send_message(task_message)
 
         return mind_map
+
+    async def create_practice_mind_map(
+        self,
+        user_id: str,
+        project_id: str,
+        topic: str,
+        search_service=None,
+        slo_codes: list[str] | None = None,
+        detail: str = "standard",
+        include: list[str] | None = None,
+        notes: str | None = None,
+    ) -> MindMapDto:
+        """Make a mind map to show right away (e.g. inside the chat).
+
+        slo_codes (the SLOs the student chose), detail ("quick", "standard" or
+        "detailed") and include (e.g. formulas, derivations, exam tips) shape the
+        AI-written topic maps.
+
+        In a subject workspace the structure comes from the FBISE syllabus: a domain
+        name gives domain → topics → SLOs (instant, no AI); another topic gives one
+        branch per matching SLO with AI-written key points. Other topics fall back
+        to a general AI mind map.
+        """
+        from edu_ai.agents.mind_map_agent import MindMapAgent
+        from edu_ai.agents.slo_mind_map import domain_map, topic_map
+        from edu_ai.llm import GENERATION, create_chat_model
+        from edu_ai.tools.syllabus import resolve_slos, search_slos
+        from edu_db.models import CurriculumDomain, GradeSubject, Project, Slo
+
+        with self._get_db_session() as db:
+            project = db.get(Project, project_id)
+            if project is None:
+                raise NotFoundError(f"Project {project_id} not found")
+            language_code = project.language_code
+            grade_subject = db.get(GradeSubject, project.grade_subject_id) if project.grade_subject_id else None
+            subject = grade_subject.subject.name if grade_subject else ""
+            grade = grade_subject.grade if grade_subject else 0
+            domains = (
+                db.query(CurriculumDomain)
+                .filter(CurriculumDomain.grade_subject_id == grade_subject.id)
+                .order_by(CurriculumDomain.sort_order)
+                .all()
+                if grade_subject
+                else []
+            )
+            wanted = topic.strip().lower()
+            domain = next(
+                (d for d in domains if d.name.lower() in wanted or wanted in d.name.lower()), None
+            )
+            domain_slos = []
+            if domain is not None:
+                domain_slos = [
+                    {
+                        "code": slo.code,
+                        "description": slo.description,
+                        "content_area": slo.content_area,
+                        "assessment_form": slo.assessment_form,
+                    }
+                    for slo in db.query(Slo)
+                    .filter(Slo.domain_id == domain.id)
+                    .order_by(Slo.sort_order)
+                ]
+            domain_info = {"code": domain.code, "name": domain.name} if domain else None
+            all_slos = (
+                [
+                    {
+                        "code": slo.code,
+                        "description": slo.description,
+                        "content_area": slo.content_area,
+                        "assessment_form": slo.assessment_form,
+                    }
+                    for slo in db.query(Slo)
+                    .filter(Slo.grade_subject_id == grade_subject.id)
+                    .order_by(Slo.sort_order)
+                ]
+                if grade_subject and domain is None
+                else []
+            )
+
+        if domain_info and domain_slos and not slo_codes:
+            title, description, map_data = domain_map(subject, grade, domain_info, domain_slos)
+            return self.create_mind_map(
+                user_id=user_id, project_id=project_id, title=title,
+                description=description, map_data=map_data,
+            )
+
+        # The SLOs the student chose, else the best matches for the topic
+        picked = resolve_slos(grade_subject.id, topic, slo_codes) if grade_subject and slo_codes else []
+        matches = search_slos(grade_subject.id, topic, limit=4) if grade_subject and not picked else []
+        if picked:
+            if not all_slos:  # the topic named a domain, so the SLO list was not loaded above
+                with self._get_db_session() as db:
+                    all_slos = [
+                        {
+                            "code": slo.code,
+                            "description": slo.description,
+                            "content_area": slo.content_area,
+                            "assessment_form": slo.assessment_form,
+                        }
+                        for slo in db.query(Slo)
+                        .filter(Slo.grade_subject_id == grade_subject.id)
+                        .order_by(Slo.sort_order)
+                    ]
+            slos = [s for s in all_slos if s["code"] in picked]
+            title, description, map_data = await topic_map(
+                create_chat_model(task=GENERATION, temperature=0.4),
+                topic, subject, grade, slos, language_code,
+                detail=detail, include=include, notes=notes,
+            )
+            return self.create_mind_map(
+                user_id=user_id, project_id=project_id, title=title,
+                description=description, map_data=map_data,
+            )
+        if matches:
+            chosen = [m["code"] for m in matches]
+            # Fill thin maps with the other SLOs of the best match's topic
+            area = matches[0]["content_area"]
+            for slo in all_slos:
+                if len(chosen) >= 4:
+                    break
+                if slo["content_area"] == area and slo["code"] not in chosen:
+                    chosen.append(slo["code"])
+            slos = [s for s in all_slos if s["code"] in chosen]
+            title, description, map_data = await topic_map(
+                create_chat_model(task=GENERATION, temperature=0.4),
+                topic, subject, grade, slos, language_code,
+                detail=detail, include=include, notes=notes,
+            )
+            return self.create_mind_map(
+                user_id=user_id, project_id=project_id, title=title,
+                description=description, map_data=map_data,
+            )
+
+        mind_map = self.create_mind_map(
+            user_id=user_id, project_id=project_id, title=topic[:80], map_data={"nodes": [], "edges": []}
+        )
+        agent = MindMapAgent(
+            search_service=search_service,
+            llm=create_chat_model(task=GENERATION, temperature=0.4),
+        )
+        await agent.generate_and_save(
+            project_id=project_id, topic=topic, mind_map_id=mind_map.id, user_id=user_id
+        )
+        return self.get_mind_map(mind_map_id=mind_map.id, project_id=project_id, user_id=user_id)
 
     @contextmanager
     def _get_db_session(self):

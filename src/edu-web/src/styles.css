@@ -226,3 +226,15 @@ code {
     background: var(--muted-foreground);
   }
 }
+
+/* KaTeX also renders a hidden MathML copy of every formula for screen readers;
+   keep it out of text selection so copied answers contain each formula once */
+.katex .katex-mathml {
+  user-select: none;
+}
+
+/* The hidden MathML copy is absolutely positioned; keep it inside its formula.
+   Otherwise it escapes the chat's scroll area and adds blank, scrollable space. */
+.katex {
+  position: relative;
+}

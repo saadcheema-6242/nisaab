@@ -19,5 +19,6 @@ RUN uv sync --frozen
 
 # 4. Run FastAPI
 # We point directly to the venv created by uv
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1
 CMD ["python", "main.py"]

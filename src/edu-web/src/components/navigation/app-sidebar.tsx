@@ -1,8 +1,11 @@
-import { BookOpen, BrainIcon, Settings2 } from 'lucide-react'
+import { BrainIcon, ClipboardCheckIcon, LayoutDashboardIcon, Settings2 } from 'lucide-react'
+import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
 import { NavUser } from './nav-user'
+import { brand } from '@/lib/brand'
+import { reviewerStateAtom } from '@/data-acess/review'
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +18,10 @@ import {
 } from '@/components/ui/sidebar'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const reviewerResult = useAtomValue(reviewerStateAtom)
+  const isReviewer =
+    Result.isSuccess(reviewerResult) && reviewerResult.value.is_reviewer
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -29,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <BrainIcon className="size-4" />
                 </div>
-                <span className="text-lg font-bold">EduAgent</span>
+                <span className="text-lg font-bold">{brand.name}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -40,10 +47,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain
           items={[
             {
-              title: 'Documentation',
-              url: 'https://github.com/StudentTraineeCenter/edu-agent/tree/master/docs',
-              icon: BookOpen,
+              title: 'My FSc',
+              url: '/dashboard',
+              icon: LayoutDashboardIcon,
             },
+            ...(isReviewer
+              ? [
+                  {
+                    title: 'Review content',
+                    url: '/dashboard/review',
+                    icon: ClipboardCheckIcon,
+                  },
+                ]
+              : []),
             {
               title: 'Settings',
               url: '/dashboard/settings',

@@ -1,15 +1,7 @@
-import { Button } from '@/components/ui/button'
-import { chatsAtom, createChatAtom } from '@/data-acess/chat'
-import { documentsAtom, refreshDocumentsAtom } from '@/data-acess/document'
-import { currentProjectIdAtom } from '@/data-acess/project'
-import { studyResourcesAtom } from '@/data-acess/study-resources'
-import { useUploadDocumentDialog } from '@/features/document/components/upload-document-dialog'
-import { useDocumentPolling } from '@/hooks/use-document-polling'
-import { cn } from '@/lib/utils'
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2Icon, PlusIcon, RotateCw } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ChatListItem } from './components/chat-list-item'
 import { DocumentListItem } from './components/document-list-item'
 import {
@@ -18,6 +10,16 @@ import {
 } from './components/generation-dialog'
 import { ProjectHeader } from './components/project-header'
 import { StudyResourceListItem } from './components/study-resource-list-item'
+import { PracticeHistory } from './components/practice-history'
+import { Button } from '@/components/ui/button'
+import { chatsAtom, createChatAtom } from '@/data-acess/chat'
+import { documentsAtom, refreshDocumentsAtom } from '@/data-acess/document'
+import { currentProjectIdAtom, projectAtom } from '@/data-acess/project'
+import { studyResourcesAtom } from '@/data-acess/study-resources'
+import { useUploadDocumentDialog } from '@/features/document/components/upload-document-dialog'
+import { useDocumentPolling } from '@/hooks/use-document-polling'
+import { cn } from '@/lib/utils'
+import { SyllabusMap } from '@/features/syllabus/syllabus-map'
 
 const ChatsSection = ({ projectId }: { projectId: string }) => {
   const chatsResult = useAtomValue(chatsAtom(projectId))
@@ -247,10 +249,28 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
 
 type ProjectDetailPageProps = {
   projectId: string
+  sloCode?: string
 }
 
-export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
+type Tab = 'syllabus' | 'study' | 'history'
+
+const tabs: Array<{ value: Tab; label: string }> = [
+  { value: 'syllabus', label: 'Syllabus' },
+  { value: 'study', label: 'Study' },
+  { value: 'history', label: 'History' },
+]
+
+export const ProjectDetailPage = ({
+  projectId,
+  sloCode,
+}: ProjectDetailPageProps) => {
   const setCurrentProject = useAtomSet(currentProjectIdAtom)
+  const projectResult = useAtomValue(projectAtom(projectId))
+  const gradeSubjectId = Result.isSuccess(projectResult)
+    ? projectResult.value.grade_subject_id
+    : null
+  const [tab, setTab] = useState<Tab>('syllabus')
+  const activeTab: Tab = gradeSubjectId || tab === 'history' ? tab : 'study'
 
   useEffect(() => {
     setCurrentProject(projectId)
@@ -263,9 +283,43 @@ export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
     <div className="flex h-full flex-col max-h-screen">
       <ProjectHeader projectId={projectId} />
 
-      <div className="flex flex-1 flex-col min-h-0 max-h-[calc(100vh-3.5rem)] w-full">
-        <ProjectContent projectId={projectId} />
-      </div>
+      {gradeSubjectId && (
+        <div className="flex shrink-0 gap-1 border-b px-4">
+          {tabs.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setTab(option.value)}
+              className={cn(
+                '-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+                activeTab === option.value
+                  ? 'border-primary text-foreground'
+                  : 'border-transparent text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'history' ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <PracticeHistory projectId={projectId} />
+        </div>
+      ) : activeTab === 'syllabus' && gradeSubjectId ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SyllabusMap
+            projectId={projectId}
+            gradeSubjectId={gradeSubjectId}
+            initialSloCode={sloCode}
+          />
+        </div>
+      ) : (
+        <div className="flex flex-1 flex-col min-h-0 max-h-[calc(100vh-3.5rem)] w-full">
+          <ProjectContent projectId={projectId} />
+        </div>
+      )}
 
       <GenerationDialog />
     </div>

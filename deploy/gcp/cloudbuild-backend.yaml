@@ -1,0 +1,22 @@
+# Builds and pushes the API and worker images in parallel.
+# Build context: repository root. Used by deploy.sh.
+steps:
+  - id: api
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "-f", "src/edu-api/Dockerfile", "-t", "${_REGISTRY}/edu-api:${_TAG}", "-t", "${_REGISTRY}/edu-api:latest", "."]
+  - id: worker
+    name: gcr.io/cloud-builders/docker
+    waitFor: ["-"]
+    args: ["build", "-f", "src/edu-worker/Dockerfile", "-t", "${_REGISTRY}/edu-worker:${_TAG}", "-t", "${_REGISTRY}/edu-worker:latest", "."]
+
+images:
+  - ${_REGISTRY}/edu-api:${_TAG}
+  - ${_REGISTRY}/edu-api:latest
+  - ${_REGISTRY}/edu-worker:${_TAG}
+  - ${_REGISTRY}/edu-worker:latest
+
+substitutions:
+  _REGISTRY: ""
+  _TAG: latest
+
+timeout: 1800s

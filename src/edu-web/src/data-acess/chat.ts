@@ -1,24 +1,28 @@
+import { Atom, Registry, Result } from '@effect-atom/atom-react'
+import { HttpBody } from '@effect/platform'
+import { BrowserKeyValueStore } from '@effect/platform-browser'
+import { Array as Arr, Data, Effect, Layer, Schema, Stream } from 'effect'
+import { UsageLimitExceededError, usageAtom } from './usage'
+import { flashcardGroupsAtom } from './flashcard'
+import { mindMapsAtom } from './mind-map'
+import { notesAtom } from './note'
+import { quizzesAtom } from './quiz'
 import type {
   ChatCreate,
   ChatDto,
   ChatMessageDto,
   ChatUpdate,
 } from '@/integrations/api/client'
+import { withToast } from '@/lib/with-toast'
+import { NetworkMonitor } from '@/lib/network-monitor'
+import { makeAtomRuntime } from '@/lib/make-atom-runtime'
+import { ApiClientService } from '@/integrations/api/http'
 import {
   FilePartDto,
   SourceDocumentPartDto,
   TextPartDto,
   ToolCallPartDto,
 } from '@/integrations/api/client'
-import { ApiClientService } from '@/integrations/api/http'
-import { makeAtomRuntime } from '@/lib/make-atom-runtime'
-import { NetworkMonitor } from '@/lib/network-monitor'
-import { withToast } from '@/lib/with-toast'
-import { Atom, Registry, Result } from '@effect-atom/atom-react'
-import { HttpBody } from '@effect/platform'
-import { BrowserKeyValueStore } from '@effect/platform-browser'
-import { Array as Arr, Data, Effect, Layer, Schema, Stream } from 'effect'
-import { UsageLimitExceededError, usageAtom } from './usage'
 
 const runtime = makeAtomRuntime(
   Layer.mergeAll(
@@ -75,20 +79,20 @@ export const chatsRemoteAtom = Atom.family((projectId: string) =>
     .pipe(Atom.keepAlive),
 )
 
+// Not kept alive: opening a chat again loads it fresh, with the messages
+// streamed since it was first loaded (the streamed copy lives in chatAtom)
 export const chatRemoteAtom = Atom.family((input: string) =>
-  runtime
-    .atom(
-      Effect.fn(function* () {
-        const [projectId, chatId] = input.split(':')
+  runtime.atom(
+    Effect.fn(function* () {
+      const [projectId, chatId] = input.split(':')
 
-        const { apiClient } = yield* ApiClientService
-        return yield* apiClient.getChatApiV1ProjectsProjectIdChatsChatIdGet(
-          projectId,
-          chatId,
-        )
-      }),
-    )
-    .pipe(Atom.keepAlive),
+      const { apiClient } = yield* ApiClientService
+      return yield* apiClient.getChatApiV1ProjectsProjectIdChatsChatIdGet(
+        projectId,
+        chatId,
+      )
+    }),
+  ),
 )
 
 export const chatsAtom = Atom.family((projectId: string) =>
@@ -295,6 +299,13 @@ const handleStreamPart = (
         if (partId) {
           existingPartIdx = newParts.findIndex((p: any) => p.id === partId)
         }
+        // A tool call is sent again as it progresses; update it, don't add it twice
+        if (existingPartIdx === -1 && part.type === 'tool_call') {
+          existingPartIdx = newParts.findIndex(
+            (p) =>
+              p.type === 'tool_call' && p.tool_call_id === part.tool_call_id,
+          )
+        }
 
         if (existingPartIdx !== -1) {
           newParts[existingPartIdx] = part
@@ -444,6 +455,18 @@ export const streamMessageAtom = runtime
 
       // Refresh usage only
       get.refresh(usageAtom)
+
+      // The tutor may have made a quiz, flashcards, notes or a mind map
+      const chat = registry.get(chatAtom(chatKey))
+      const lastMessage = Result.isSuccess(chat)
+        ? chat.value.messages?.at(-1)
+        : undefined
+      if (lastMessage?.parts?.some((part) => part.type === 'tool_call')) {
+        registry.refresh(quizzesAtom(input.projectId))
+        registry.refresh(flashcardGroupsAtom(input.projectId))
+        registry.refresh(notesAtom(input.projectId))
+        registry.refresh(mindMapsAtom(input.projectId))
+      }
     }),
   )
   .pipe(Atom.keepAlive)

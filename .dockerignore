@@ -23,6 +23,9 @@ __pycache__/
 .ruff_cache/
 .env
 .env.*
+**/.env
+**/.env.*
+**/.venv
 *.log
 
 # Exclude build artifacts within src/ (must come after !src/)
@@ -38,3 +41,7 @@ __pycache__/
 **/.ruff_cache
 **/.ruff_cache/**
 **/*.pyc
+
+# Needed by the API image for the migration and e2e Cloud Run jobs
+!alembic.ini
+!scripts/

@@ -35,7 +35,7 @@ def increment_usage(usage, user_id: str, feature: str) -> None:
 
 @tool(
     "flashcards_create",
-    description="Create flashcards from project documents. Use count 15-30. Provide a short topic plus optional custom instructions (format, difficulty, focus, etc.). Difficulty is easy, medium, hard.",
+    description="Save flashcards built from the student's uploaded documents to their Study tab (ready in about a minute). Only when they ask for flashcards from their documents or notes to keep; to study flashcards now, use practice_flashcards instead. Use count 15-30. Provide a short topic plus optional custom instructions (format, difficulty, focus, etc.). Difficulty is easy, medium, hard.",
 )
 async def create_flashcards(
     count: int,
@@ -69,7 +69,7 @@ async def create_flashcards(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate flashcards has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "group_id": group.id,
         },
         ensure_ascii=False,
@@ -116,7 +116,7 @@ async def create_flashcards_scoped(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate flashcards from specific documents has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "group_id": group.id,
         },
         ensure_ascii=False,

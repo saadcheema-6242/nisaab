@@ -1,0 +1,32 @@
+# Builds and pushes the web image. The VITE_* values are baked into the static
+# build (they are public), so the API URL must be known first. Used by deploy.sh.
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - src/edu-web/Dockerfile
+      - --build-arg
+      - VITE_SERVER_URL=${_VITE_SERVER_URL}
+      - --build-arg
+      - VITE_FIREBASE_API_KEY=${_VITE_FIREBASE_API_KEY}
+      - --build-arg
+      - VITE_FIREBASE_PROJECT_ID=${_VITE_FIREBASE_PROJECT_ID}
+      - -t
+      - ${_REGISTRY}/edu-web:${_TAG}
+      - -t
+      - ${_REGISTRY}/edu-web:latest
+      - src/edu-web
+
+images:
+  - ${_REGISTRY}/edu-web:${_TAG}
+  - ${_REGISTRY}/edu-web:latest
+
+substitutions:
+  _REGISTRY: ""
+  _TAG: latest
+  _VITE_SERVER_URL: ""
+  _VITE_FIREBASE_API_KEY: ""
+  _VITE_FIREBASE_PROJECT_ID: ""
+
+timeout: 1800s

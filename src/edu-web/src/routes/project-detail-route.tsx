@@ -3,5 +3,6 @@ import { ProjectDetailPage } from '@/features/project/project-detail-page'
 
 export const ProjectDetailRoute = () => {
   const params = projectDetailRoute.useParams()
-  return <ProjectDetailPage projectId={params.projectId} />
+  const search = projectDetailRoute.useSearch()
+  return <ProjectDetailPage projectId={params.projectId} sloCode={search?.slo} />
 }

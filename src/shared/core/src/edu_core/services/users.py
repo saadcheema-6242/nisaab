@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 from edu_db.models import User
 from edu_db.session import get_session_factory
+from sqlalchemy.exc import IntegrityError
 
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.users import UserDto
@@ -121,7 +122,15 @@ class UserService:
                         name=name or email.split("@")[0] or f"user_{user_id[:8]}",
                     )
                     db.add(new_user)
-                    db.commit()
+                    try:
+                        db.commit()
+                    except IntegrityError:
+                        # A parallel request for the same new user created it first
+                        db.rollback()
+                        existing = db.query(User).filter(User.id == user_id).first()
+                        if existing is None:
+                            raise
+                        return self._model_to_dto(existing)
                     db.refresh(new_user)
                     return self._model_to_dto(new_user)
             except Exception:

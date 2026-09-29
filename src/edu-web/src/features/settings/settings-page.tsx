@@ -1,3 +1,8 @@
+import { Link } from '@tanstack/react-router'
+import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
+import { Loader2Icon, Trash2Icon } from 'lucide-react'
+import { useState } from 'react'
+import type { ExplanationLanguage } from '@/lib/languages'
 import { useConfirmationDialog } from '@/components/confirmation-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -26,10 +31,58 @@ import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { currentUserAtom } from '@/data-acess/auth'
 import { usageAtom } from '@/data-acess/usage'
+import { profileAtom, updateProfileAtom } from '@/data-acess/profile'
+import { explanationLanguages } from '@/lib/languages'
+import { gradeName, groupName } from '@/lib/subjects'
 import { useTheme } from '@/providers/theme-provider'
-import { Result, useAtomValue } from '@effect-atom/atom-react'
-import { Loader2Icon, Trash2Icon } from 'lucide-react'
-import { useState } from 'react'
+
+const FscProfileSection = () => {
+  const profileResult = useAtomValue(profileAtom)
+  const updateProfile = useAtomSet(updateProfileAtom, { mode: 'promise' })
+
+  if (!Result.isSuccess(profileResult) || !profileResult.value.profile) {
+    return null
+  }
+  const profile = profileResult.value.profile
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>FSc profile</CardTitle>
+        <CardDescription>
+          {gradeName(profile.grade)} · {groupName(profile.group_code)}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="text-sm font-medium">Tutor explanation language</div>
+          <Select
+            value={profile.explanation_language}
+            onValueChange={(value) =>
+              updateProfile({
+                explanation_language: value as ExplanationLanguage,
+              })
+            }
+          >
+            <SelectTrigger className="w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {explanationLanguages.map((language) => (
+                <SelectItem key={language.code} value={language.code}>
+                  {language.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button variant="outline" asChild>
+          <Link to="/onboarding">Change class or group</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
 
 const UserSection = () => {
   const currentUserResult = useAtomValue(currentUserAtom)
@@ -148,6 +201,8 @@ export function SettingsPage() {
       <div className="flex flex-1 flex-col min-h-0 overflow-y-auto">
         <div className="max-w-4xl mx-auto w-full p-4 space-y-6">
           <UserSection />
+
+          <FscProfileSection />
 
           <Card>
             <CardHeader>

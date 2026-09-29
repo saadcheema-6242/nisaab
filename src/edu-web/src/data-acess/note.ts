@@ -1,11 +1,11 @@
-import { GenerateRequest, NoteCreate } from '@/integrations/api/client'
-import { ApiClientService } from '@/integrations/api/http'
-import { makeAtomRuntime } from '@/lib/make-atom-runtime'
-import { withToast } from '@/lib/with-toast'
 import { Atom, Registry } from '@effect-atom/atom-react'
 import { HttpBody } from '@effect/platform'
 import { BrowserKeyValueStore } from '@effect/platform-browser'
 import { Effect, Layer, Schema, Stream } from 'effect'
+import { GenerateRequest, NoteCreate } from '@/integrations/api/client'
+import { ApiClientService } from '@/integrations/api/http'
+import { makeAtomRuntime } from '@/lib/make-atom-runtime'
+import { withToast } from '@/lib/with-toast'
 
 const runtime = makeAtomRuntime(
   Layer.mergeAll(
@@ -62,7 +62,14 @@ export const createNoteStreamAtom = Atom.fn(
     _get,
   ) =>
     Effect.gen(function* () {
-      const { httpClient } = yield* ApiClientService
+      const { httpClient, apiClient } = yield* ApiClientService
+      // Generation fills an existing note; create an empty one if none was given
+      const noteId =
+        input.noteId ||
+        (yield* apiClient.createNoteApiV1ProjectsProjectIdNotesPost(
+          input.projectId,
+          { title: 'New note', content: '' },
+        )).id
       const body = HttpBody.unsafeJson(
         new GenerateRequest({
           custom_instructions: input.customInstructions,
@@ -72,7 +79,7 @@ export const createNoteStreamAtom = Atom.fn(
         }),
       )
       const resp = yield* httpClient.post(
-        `/api/v1/projects/${input.projectId}/notes/${input.noteId}/generate/stream`,
+        `/api/v1/projects/${input.projectId}/notes/${noteId}/generate/stream`,
         { body },
       )
 

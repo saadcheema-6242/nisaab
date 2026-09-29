@@ -3,15 +3,15 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 ARG VITE_SERVER_URL
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_FIREBASE_API_KEY
+ARG VITE_FIREBASE_PROJECT_ID
 
 ENV VITE_SERVER_URL=$VITE_SERVER_URL \
-    VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
-    VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+    VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY \
+    VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID
 
 # Enable pnpm via Corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy manifest files first for better caching
 COPY package.json pnpm-lock.yaml ./

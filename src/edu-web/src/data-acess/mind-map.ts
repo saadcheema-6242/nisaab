@@ -5,6 +5,7 @@ import { BrowserKeyValueStore } from '@effect/platform-browser'
 import { MindMapCreate } from '@/integrations/api/client'
 import { makeAtomRuntime } from '@/lib/make-atom-runtime'
 import { ApiClientService } from '@/integrations/api/http'
+import { withToast } from '@/lib/with-toast'
 
 const runtime = makeAtomRuntime(
   Layer.mergeAll(
@@ -24,6 +25,25 @@ export const mindMapsAtom = Atom.family((projectId: string) =>
       return mindMaps
     }).pipe(Effect.provide(ApiClientService.Default)),
   ).pipe(Atom.keepAlive),
+)
+
+export const deleteMindMapAtom = runtime.fn(
+  Effect.fn(
+    function* (input: { mindMapId: string; projectId: string }) {
+      const registry = yield* Registry.AtomRegistry
+      const { apiClient } = yield* ApiClientService
+      yield* apiClient.deleteMindMapApiV1ProjectsProjectIdMindMapsMindMapIdDelete(
+        input.projectId,
+        input.mindMapId,
+      )
+      registry.refresh(mindMapsAtom(input.projectId))
+    },
+    withToast({
+      onWaiting: () => 'Deleting mind map...',
+      onSuccess: 'Mind map deleted',
+      onFailure: 'Failed to delete mind map',
+    }),
+  ),
 )
 
 export const mindMapAtom = Atom.family((key: string) => {

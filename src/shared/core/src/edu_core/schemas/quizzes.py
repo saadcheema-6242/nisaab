@@ -10,6 +10,7 @@ class QuizDto(BaseModel):
     project_id: str = Field(..., description="ID of the project the quiz belongs to")
     name: str = Field(..., description="Name of the quiz")
     description: str | None = Field(None, description="Description of the quiz")
+    slo_code: str | None = Field(None, description="FBISE SLO code, e.g. P-11-B-05")
     created_at: datetime = Field(..., description="Date and time the quiz was created")
     updated_at: datetime = Field(..., description="Date and time the quiz was updated")
 
@@ -35,6 +36,10 @@ class QuizQuestionDto(BaseModel):
         ..., description="Difficulty level: easy, medium, or hard"
     )
     position: int = Field(..., description="Position for ordering within quiz")
+    slo_code: str | None = Field(None, description="FBISE SLO code, e.g. P-11-B-05")
+    cognitive_level: str | None = Field(
+        None, description="Cognitive level: K, U or A"
+    )
     created_at: datetime = Field(
         ..., description="Date and time the question was created"
     )

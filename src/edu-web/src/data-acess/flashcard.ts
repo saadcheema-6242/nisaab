@@ -78,19 +78,33 @@ export const createFlashcardGroupStreamAtom = runtime
         customInstructions?: string
         length?: string
         difficulty?: string
+        // FBISE SLO the flashcards must cover, e.g. P-11-B-05
+        sloCode?: string
       },
       _get: Atom.FnContext,
     ) {
-      const { httpClient } = yield* ApiClientService
+      const { httpClient, apiClient } = yield* ApiClientService
+      // Generation fills an existing group; create an empty one if none was given
+      const groupId =
+        input.groupId ||
+        (yield* apiClient.createFlashcardGroupApiV1ProjectsProjectIdFlashcardGroupsPost(
+          input.projectId,
+          {
+            name: input.sloCode
+              ? `SLO ${input.sloCode} flashcards`
+              : 'New flashcards',
+          },
+        )).id
       const body = HttpBody.unsafeJson(
         new GenerateRequest({
           count: input.flashcardCount,
           custom_instructions: input.customInstructions,
           difficulty: input.difficulty,
+          slo_code: input.sloCode,
         }),
       )
       const resp = yield* httpClient.post(
-        `/api/v1/projects/${input.projectId}/flashcard-groups/${input.groupId}/generate/stream`,
+        `/api/v1/projects/${input.projectId}/flashcard-groups/${groupId}/generate/stream`,
         { body },
       )
 
@@ -139,6 +153,7 @@ export const createFlashcardGroupStreamAtom = runtime
         registry.refresh(flashcardGroupsAtom(input.projectId))
       }
       registry.set(flashcardProgressAtom, null)
+      return groupId
     }),
   )
   .pipe(Atom.keepAlive)

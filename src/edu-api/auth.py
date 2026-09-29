@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import jwt as pyjwt
 from config import get_settings
 from edu_core.schemas.users import UserDto
@@ -8,11 +10,36 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 security_scheme = HTTPBearer(auto_error=False)
 
 
+# Public keys for Google Identity Platform / Firebase Authentication ID tokens
+FIREBASE_JWKS_URL = (
+    "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+)
+
+
+@lru_cache
+def _jwks_client(jwks_url: str) -> pyjwt.PyJWKClient:
+    """JWKS client for asymmetric JWT signing keys (keys are cached)."""
+    return pyjwt.PyJWKClient(jwks_url, lifespan=3600)
+
+
+def _decode_firebase_token(token: str, project_id: str) -> dict:
+    """Verify an Identity Platform (Firebase Auth) ID token for this project."""
+    signing_key = _jwks_client(FIREBASE_JWKS_URL).get_signing_key_from_jwt(token)
+    return pyjwt.decode(
+        token,
+        signing_key.key,
+        algorithms=["RS256"],
+        audience=project_id,
+        issuer=f"https://securetoken.google.com/{project_id}",
+    )
+
+
 def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
 ) -> UserDto:
     """
-    Get the current authenticated user from Supabase JWT token.
+    Get the current authenticated user from the login token (Google Identity
+    Platform when FIREBASE_PROJECT_ID is set, otherwise Supabase).
 
     Args:
         credentials: HTTP Bearer token credentials
@@ -25,12 +52,6 @@ def get_current_user(
     """
     settings = get_settings()
     supabase_jwt_secret = settings.supabase_jwt_secret
-
-    if not supabase_jwt_secret:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Supabase JWT secret not configured",
-        )
 
     if not credentials:
         raise HTTPException(
@@ -50,9 +71,16 @@ def get_current_user(
             alg = "HS256"
             print("Could not peek at token header")
 
-        # Verify and decode Supabase JWT token
-        if alg.startswith("HS"):
-            # Symmetric verification
+        if settings.firebase_project_id:
+            # Google Identity Platform (production)
+            payload = _decode_firebase_token(token, settings.firebase_project_id)
+        elif alg.startswith("HS"):
+            # Symmetric verification (legacy Supabase JWT secret)
+            if not supabase_jwt_secret:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Supabase JWT secret not configured",
+                )
             payload = pyjwt.decode(
                 token,
                 supabase_jwt_secret,
@@ -68,10 +96,10 @@ def get_current_user(
                     detail="SUPABASE_URL must be configured for asymmetric JWT verification",
                 )
 
-            # Use JWKS to fetch public keys
-            jwks_url = f"{supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
-            jwks_client = pyjwt.PyJWKClient(jwks_url)
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            # Use JWKS to fetch public keys (client caches them between requests)
+            signing_key = _jwks_client(
+                f"{supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
+            ).get_signing_key_from_jwt(token)
 
             payload = pyjwt.decode(
                 token,
@@ -90,12 +118,15 @@ def get_current_user(
 
         # Extract user information from token
         email = payload.get("email")
-        # Supabase tokens include user_metadata and app_metadata
+        # Supabase tokens carry the name in user_metadata; Firebase tokens in "name"
         user_metadata = payload.get("user_metadata", {})
-        payload.get("app_metadata", {})
 
-        # Get name from user_metadata or email
-        name = user_metadata.get("name") or user_metadata.get("full_name")
+        # Get name from the token or fall back to the email
+        name = (
+            payload.get("name")
+            or user_metadata.get("name")
+            or user_metadata.get("full_name")
+        )
         if not name and email:
             # Fallback to email username part
             name = email.split("@")[0]

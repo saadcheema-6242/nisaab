@@ -1,0 +1,895 @@
+{
+  "subject": {
+    "code": "MATH",
+    "name": "Mathematics"
+  },
+  "grade": 11,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/curriculum_model_paper.php",
+  "domains": [
+    {
+      "code": "A",
+      "name": "Numbers and Algebra"
+    },
+    {
+      "code": "B",
+      "name": "Vectors and Trigonometry"
+    },
+    {
+      "code": "C",
+      "name": "Permutation, Combination and Probability"
+    }
+  ],
+  "slos": [
+    {
+      "code": "M-11-A-01",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Recall complex number 𝒛 represented by an expression of the form 𝒛 = 𝒂 + 𝒊𝒃 or of the form (𝒂, 𝒃) where a and b are real numbers and 𝒊 = √−1.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-02",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Recognize 𝒂 as a real part of 𝒛 and 𝒃 as an imaginary part of 𝒛.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-03",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Know the condition for equality of complex numbers.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-04",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Carryout basic operations on complex numbers.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-05",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Define 𝒛 = 𝒂 − 𝒊𝒃 as the complex conjugate of 𝒛 = 𝒂 + 𝒊𝒃.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-06",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Define |𝒛| = √𝒂𝟐 + 𝒃𝟐 as the absolute value or modulus of a complex number 𝒛 = 𝒂 + 𝒊𝒃.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-07",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Solve the simultaneous linear equations with complex coefficients. For example, { 5𝑧 − (3 + 𝑖)𝑤 = 7 − 𝑖, (2 − 𝑖)𝑧 + 2𝑖𝑤 = −1 + 𝑖",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-08",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Write the polynomial (𝑧) as a product of linear factors. For example, 𝒛𝟐 + 𝒂𝟐 = (𝒛 + 𝒊𝒂)(𝒛 − 𝒊𝒂) 𝒛𝟑 − 𝟑𝒛𝟐 + 𝒛 + 𝟓 = (𝒛 + 𝟏)(𝒛 − 𝟐 − 𝒊)(𝒛 − 𝟐 + 𝒊)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-09",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Solve quadratic equation of the form 𝑝𝑧2 + 𝑞𝑧 + 𝑟 = 0 by completing squares, where 𝑝, 𝑞, 𝑟 are real numbers and 𝑧 a complex number. For example, Solve 𝑧2 − 2𝑧 + 5 = 0 (𝑧 − 1 − 2𝑖)(𝑧 − 1 + 2𝑖) = 0 𝑧 = 1 + 2𝑖, 1 − 2𝑖",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-10",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Explain the polar coordinates system.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-11",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Describe the polar representation of a complex number.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-12",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Apply the operations with complex numbers in polar representation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-13",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Demonstrate simple equations and in- equations involving complex numbers in polar form.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-14",
+      "domain": "A",
+      "content_area": "Complex Numbers",
+      "description": "Apply concepts of complex numbers to real world problems (such as cryptography, wave phenomena, calculate voltage, current, circuits, the velocity and pressure of the fluid).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-15",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Apply matrix operations (addition / subtraction and multiplication of matrices) with real and complex entries.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-16",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Evaluate determinant of 3 × 3 matrices by using cofactors and properties of determinants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-17",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Use row operations to find the inverse and the rank of a matrix.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-18",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Explain a consistent and inconsistent system of linear equations and demonstrate through examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-19",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Solve a system of 3 by 3 non homogeneous linear equations by using matrix inversion method and Cramer’s Rule.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-20",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Solve a system of three homogeneous linear equations in three unknowns using the Gaussian elimination method.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-21",
+      "domain": "A",
+      "content_area": "Matrices & Determinants",
+      "description": "Apply the concepts of matrices to real world problems such as (graphic design, data encryption, seismic analysis, cryptography, transformation of geometric shapes, social network analysis).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-22",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Solve problems by analyzing arithmetic sequences and series up to n terms.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-23",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Solve problems by analyzing geometric sequences and series up to n terms.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-24",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Identify a sequence as arithmetic or geometric sequence up to n terms.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-25",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Solve problems by analyzing harmonic sequences and series up to n terms.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-26",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Find the sum of: • first 𝒏 natural numbers (∑𝒏), • squares of first 𝒏 natural numbers (∑ 𝒏𝟐), • cubes of first 𝒏 natural numbers (∑ 𝒏𝟑).",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-27",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Recognize the arithmetic geometric sequence, determine its general term, find sum to 𝑛 terms and sum to infinite number of terms, using sigma notation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-28",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Identify leasing of motor vehicles, down payment, motor vehicle insurance, processing charges, repayment in monthly instalments.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-29",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Solve problems related to leasing of motor vehicle under different conditions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-30",
+      "domain": "A",
+      "content_area": "Sequences and Series",
+      "description": "Apply concepts from sequence and series to real world problems (such as simple interest on loan, investment, depreciation, Investment planning on compound interest, projectile motion, gaming strategy, health care management, web page design, traffic modelling).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-31",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Describe a mathematical argument, identify the base case, induction of hypothesis and a precise conclusion.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-32",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Apply the principle of Mathematical Induction to prove statements, identities, divisibility of numbers and summation formulae.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-33",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Evaluate and justify conclusions, communicating a position clearly in an appropriate mathematical form in daily life.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-34",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "State and apply the Binomial Theorem to expand expressions of the form (𝑎 + 𝑏) where 𝑛 is a positive integer.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-35",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Describe Binomial Theorem as expansion of binomial powers restricted to the set of natural numbers.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-36",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Calculate binomial coefficients using Pascal’s triangle.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-37",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Expand using the Binomial Theorem, and use appropriate techniques to simplify the expression.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-38",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Find an approximate value using the Binomial Theorem.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-39",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Use Binomial Theorem to find the remainder when a number to some large exponent is divided by a number.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-40",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Use Binomial Theorem to find the last digit of a number, test the divisibility by a number and compare two large numbers.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-41",
+      "domain": "A",
+      "content_area": "Mathematical Induction and Binomial Theorem",
+      "description": "Apply concepts of Mathematical Induction and Binomial Theorem to real world problems such as (Puzzles, Domino Effects, Pascal's Triangle, Economic Forecasting, Rankings, Variable Subletting).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-42",
+      "domain": "A",
+      "content_area": "Division of polynomial",
+      "description": "Divide a polynomial of degree up to 4 by a linear and quadratic polynomial to identify quotient and remainder.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-43",
+      "domain": "A",
+      "content_area": "Division of polynomial",
+      "description": "Demonstrate and apply Remainder Theorem.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-44",
+      "domain": "A",
+      "content_area": "Division of polynomial",
+      "description": "Analyze and apply Factor Theorem to factorize a cubic polynomial.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-A-45",
+      "domain": "A",
+      "content_area": "Division of polynomial",
+      "description": "Apply concepts of Remainder and Factor Theorems to real world problems (such as polynomial regression, signal processing, and coding theory).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-01",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Recognize rectangular coordinate system in space.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-02",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Define unit vectors 𝒊 , 𝖩 and 𝒌 and Recognize components of a vector.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-03",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Find the magnitude of a vector.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-04",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Repeat all fundamental mathematical operations for vectors in space which, in the plane, have already been discussed.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-05",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Demonstrate and prove properties of Vector Addition • The Commutative Law, • The Associative Law, • Null vector 𝑶 ` as an identity vector, • − 𝒂` as additive inverse vector of 𝒂` .",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-06",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Explain Dot or Scalar Product of two vectors and give its geometrical interpretation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-07",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Express dot product in terms of components.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-08",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Find the condition for orthogonality of two vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-09",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Use dot product to find the angle between two vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-10",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Find the projection of a vector along another vector.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-11",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Find the work done by a constant force in moving an object along a given vector.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-12",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Solve daily life problems based on vectors. Cross or Vector Product.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-13",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Explain the cross or vector product of two vectors and give its geometrical interpretation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-14",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Apply a cross product to find the angle between two vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-15",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Solve situations in daily life based on Cross or dot Vector Product.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-16",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Describe scalar triple product of vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-17",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Express Scalar Triple Product of vectors in terms of components (determinant form).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-18",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Prove that  𝑖 . 𝑗 × 𝑘 = 𝑗 . 𝑘 × 𝑖 = 𝑘 . 𝑖 × 𝑗 = 1  𝒋 . 𝒊 × 𝒌 = 𝒌 . 𝒋 × 𝒊 = 𝒊 . 𝒌 × 𝒋 = −𝟏. Prove that dot and cross are inter-changeable in scalar triple product.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-19",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Find the volume of a • parallelepiped, • tetrahedron, determined by three given vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-20",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Define coplanar vectors and find the condition for planarity of three vectors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-21",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Apply concepts of vectors in space to real world problems such as (design and execute optimal navigation paths in transportation and logistics, graphing complex 3D motion, vector operations in engineering and computer graphics, practical proficiency for work, flux, and circulation).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-22",
+      "domain": "B",
+      "content_area": "Fundamental Law of Trigonometry",
+      "description": "Establish fundamental law of trigonometry.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-23",
+      "domain": "B",
+      "content_area": "Fundamental Law of Trigonometry",
+      "description": "Apply fundamental law and its deductions to derive: Trigonometric ratios of allied angles, double angle, half angle and triple angle identities.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-24",
+      "domain": "B",
+      "content_area": "Fundamental Law of Trigonometry",
+      "description": "Express the product (of sines and cosines) as sums or differences (of sines and cosines).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-25",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Find the domain and range of the trigonometric functions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-26",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Discuss even, odd functions and the periodicity of trigonometric functions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-27",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Find the maximum and minimum value of a given function of the type:  𝑎 + 𝑏𝑠𝑖𝑛𝜃, • 𝑎 + 𝑏 𝑐𝑜𝑠𝜃 • 𝑎 + 𝑏𝑠𝑖𝑛(𝑐𝜃 + 𝑑 ), • 𝑎 + 𝑏 𝑐𝑜𝑠 𝑐𝑜𝑠 (𝑐𝜃 + 𝑑) • the reciprocals of above, where 𝑎, 𝑏, 𝑐 and 𝑑 are real numbers.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-28",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Graph and analyze the trigonometric functions sine, cosine, and tangent to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-29",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Explain the properties of graphs of 𝑠𝑖𝑛𝜃, 𝑐𝑜𝑠𝜃 and 𝑡𝑎𝑛𝜃.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-B-30",
+      "domain": "B",
+      "content_area": "Trigonometric Functions",
+      "description": "Apply the concepts of trigonometric functions, identities, graphs, periodicity, even & odd functions and extreme values to real world problems such as distance, elevation, and direction of tall structures, navigation and mapping, lengths of irregular shapes, graphs to visualize and predict patterns in data, frequency and periodic length of Ferris wheel, forces on a see-saw or lever, the ideal angle for solar panel placement.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-C-01",
+      "domain": "C",
+      "content_area": "Permutation, Combination and Probability",
+      "description": "Explain and solve problems that involve the fundamental counting principle.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-C-02",
+      "domain": "C",
+      "content_area": "Permutation, Combination and Probability",
+      "description": "Explain and Solve problems that involve permutations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-C-03",
+      "domain": "C",
+      "content_area": "Permutation, Combination and Probability",
+      "description": "Explain and Solve problems that involve combinations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "M-11-C-04",
+      "domain": "C",
+      "content_area": "Permutation, Combination and Probability",
+      "description": "Apply the concepts of permutation and combination to real world problems such as cryptography, estimating the odds of winning a lottery, calculating the number of possible DNA sequences or protein structures, choosing different sets of songs for certain occasions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    }
+  ]
+}

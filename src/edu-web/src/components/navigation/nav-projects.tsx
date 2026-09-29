@@ -1,3 +1,8 @@
+import { Result, useAtomValue } from '@effect-atom/atom-react'
+import { Link } from '@tanstack/react-router'
+import { Cause } from 'effect'
+import { ChevronRightIcon, FolderIcon, PlusIcon } from 'lucide-react'
+import type { ChatDto } from '@/integrations/api/client'
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,11 +21,6 @@ import {
 import { chatsAtom } from '@/data-acess/chat'
 import { currentProjectIdAtom, projectsAtom } from '@/data-acess/project'
 import { useCreateProjectDialog } from '@/features/project/components/upsert-project-dialog'
-import type { ChatDto } from '@/integrations/api/client'
-import { Result, useAtomValue } from '@effect-atom/atom-react'
-import { Link } from '@tanstack/react-router'
-import { Cause } from 'effect'
-import { ChevronRightIcon, FolderIcon, PlusIcon } from 'lucide-react'
 
 const ChatItem = ({ chat }: { chat: ChatDto }) => {
   return (
@@ -149,6 +149,15 @@ export function NavProjects() {
                 }
               })}
             </>
+          ))
+          .onFailure(() => (
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <span className="text-sm text-muted-foreground">
+                  Could not load projects
+                </span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ))
           .render()}
       </SidebarMenu>

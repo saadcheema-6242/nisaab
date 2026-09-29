@@ -11,15 +11,17 @@ export type ConversationProps = ComponentProps<typeof StickToBottom>
 
 export const Conversation = ({ className, ...props }: ConversationProps) => (
   <StickToBottom
+    // Only the inner element (use-stick-to-bottom's scroller) scrolls; this one
+    // never does, so there is one scrollbar and no blank space below the messages
     className={cn(
-      'relative flex-1 overflow-y-auto',
-      '[&::-webkit-scrollbar]:w-2',
-      '[&::-webkit-scrollbar-track]:bg-transparent',
-      '[&::-webkit-scrollbar-thumb]:bg-muted-foreground/20',
-      '[&::-webkit-scrollbar-thumb]:rounded-full',
-      '[&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/30',
-      'dark:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30',
-      'dark:[&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/40',
+      'relative flex-1 overflow-hidden [&>div]:relative',
+      '[&>div::-webkit-scrollbar]:w-2',
+      '[&>div::-webkit-scrollbar-track]:bg-transparent',
+      '[&>div::-webkit-scrollbar-thumb]:bg-muted-foreground/20',
+      '[&>div::-webkit-scrollbar-thumb]:rounded-full',
+      '[&>div::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/30',
+      'dark:[&>div::-webkit-scrollbar-thumb]:bg-muted-foreground/30',
+      'dark:[&>div::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/40',
       className,
     )}
     initial="smooth"

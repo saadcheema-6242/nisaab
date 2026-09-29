@@ -1,22 +1,31 @@
 """FastAPI dependencies for service construction."""
 
-from azure.storage.blob import BlobServiceClient
+from functools import lru_cache
+
 from config import Settings, get_settings
 from edu_core.services import (
+    AttemptService,
     ChatService,
+    ContentService,
+    CurriculumService,
     DocumentService,
     DocumentUploadService,
     FlashcardGroupService,
     MindMapService,
     NoteService,
+    PaperService,
     PracticeService,
+    ProfileService,
+    ProgressService,
     ProjectService,
     QuizService,
     SearchService,
+    SrqService,
     StudyPlanService,
     UsageService,
     UserService,
 )
+from edu_core.storage import GCSStorageService, StorageService, create_storage
 from edu_queue.service import QueueService
 from fastapi import Depends
 
@@ -26,29 +35,27 @@ def get_settings_dep() -> Settings:
     return get_settings()
 
 
-def get_blob_service_client(
-    settings: Settings = Depends(get_settings_dep),
-) -> BlobServiceClient:
-    """Get BlobServiceClient instance."""
-    return BlobServiceClient.from_connection_string(
-        settings.azure_storage_connection_string
+@lru_cache
+def get_storage() -> StorageService | GCSStorageService:
+    """Get the shared storage client."""
+    settings = get_settings()
+    return create_storage(
+        backend=settings.storage_backend,
+        bucket=settings.storage_bucket,
+        supabase_url=settings.supabase_url,
+        supabase_service_role_key=settings.supabase_service_role_key,
     )
 
 
-def get_queue_service(
-    settings: Settings = Depends(get_settings_dep),
-) -> QueueService:
-    """Get QueueService instance with configuration from settings."""
-    return QueueService(
-        connection_string=settings.azure_storage_connection_string,
-        queue_name=settings.azure_storage_queue_name,
-    )
+def get_queue_service() -> QueueService:
+    """Get QueueService instance (jobs are stored in the database)."""
+    return QueueService()
 
 
-def get_search_service(
-    settings: Settings = Depends(get_settings_dep),
-) -> SearchService:
-    """Get SearchService instance with configuration from settings."""
+@lru_cache
+def get_search_service() -> SearchService:
+    """Get the shared SearchService (one vector-store connection pool per process)."""
+    settings = get_settings()
     return SearchService(
         database_url=settings.database_url,
         azure_openai_embedding_deployment=settings.azure_openai_embedding_deployment,
@@ -74,6 +81,41 @@ def get_project_service() -> ProjectService:
     return ProjectService()
 
 
+def get_attempt_service() -> AttemptService:
+    """Get AttemptService instance."""
+    return AttemptService()
+
+
+def get_content_service() -> ContentService:
+    """Get ContentService instance."""
+    return ContentService()
+
+
+def get_curriculum_service() -> CurriculumService:
+    """Get CurriculumService instance."""
+    return CurriculumService()
+
+
+def get_progress_service() -> ProgressService:
+    """Get ProgressService instance."""
+    return ProgressService()
+
+
+def get_paper_service() -> PaperService:
+    """Get PaperService instance."""
+    return PaperService()
+
+
+def get_srq_service() -> SrqService:
+    """Get SrqService instance."""
+    return SrqService()
+
+
+def get_profile_service() -> ProfileService:
+    """Get ProfileService instance."""
+    return ProfileService()
+
+
 def get_document_service() -> DocumentService:
     """Get DocumentService instance."""
     return DocumentService()
@@ -91,7 +133,6 @@ def get_chat_service(
         azure_openai_chat_deployment=settings.azure_openai_chat_deployment,
         azure_openai_endpoint=settings.azure_openai_endpoint,
         azure_openai_api_version=settings.azure_openai_api_version,
-        azure_storage_connection_string=settings.azure_storage_connection_string,
         usage_service=usage_service,
         queue_service=queue_service,
     )
@@ -149,7 +190,6 @@ def get_chat_service_with_streaming(
         azure_openai_chat_deployment=settings.azure_openai_chat_deployment,
         azure_openai_endpoint=settings.azure_openai_endpoint,
         azure_openai_api_version=settings.azure_openai_api_version,
-        azure_storage_connection_string=settings.azure_storage_connection_string,
         usage_service=usage_service,
         queue_service=queue_service,
     )
@@ -161,8 +201,7 @@ def get_document_upload_service(
     """Get DocumentUploadService instance with configuration from settings."""
     return DocumentUploadService(
         database_url=settings.database_url,
-        azure_storage_connection_string=settings.azure_storage_connection_string,
-        azure_storage_input_container_name=settings.azure_storage_input_container_name,
+        storage=get_storage(),
     )
 
 

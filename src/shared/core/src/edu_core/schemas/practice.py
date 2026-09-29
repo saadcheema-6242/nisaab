@@ -21,6 +21,9 @@ class PracticeRecordDto(BaseModel):
     )
     correct_answer: str = Field(..., description="The correct answer")
     was_correct: bool = Field(..., description="Whether the user got it right")
+    slo_code: str | None = Field(
+        None, description="FBISE SLO of the practised item, e.g. P-11-B-05"
+    )
     created_at: datetime = Field(
         ..., description="Date and time the practice record was created"
     )

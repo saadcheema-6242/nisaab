@@ -1,7 +1,7 @@
 """LLM helper utilities for worker processes."""
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from langchain_openai import AzureChatOpenAI
+from edu_ai.llm import create_chat_model
+from langchain_core.language_models.chat_models import BaseChatModel
 
 
 def create_llm(
@@ -10,8 +10,8 @@ def create_llm(
     azure_openai_api_version: str,
     streaming: bool = True,
     temperature: float = 0.25,
-) -> AzureChatOpenAI:
-    """Create an AzureChatOpenAI instance for worker processes.
+) -> BaseChatModel:
+    """Create a chat model for worker processes.
 
     Args:
         azure_openai_chat_deployment: Azure OpenAI chat deployment name
@@ -21,25 +21,15 @@ def create_llm(
         temperature: Temperature for the LLM
 
     Returns:
-        Configured AzureChatOpenAI instance
+        Chat model for the configured provider (see ``edu_ai.llm``)
     """
-    credential = DefaultAzureCredential()
-    token_provider = get_bearer_token_provider(
-        credential, "https://cognitiveservices.azure.com/.default"
+    return create_chat_model(
+        streaming=streaming,
+        temperature=temperature,
+        azure_deployment=azure_openai_chat_deployment,
+        azure_endpoint=azure_openai_endpoint,
+        azure_api_version=azure_openai_api_version,
     )
-
-    llm_kwargs = {
-        "azure_deployment": azure_openai_chat_deployment,
-        "azure_endpoint": azure_openai_endpoint,
-        "azure_ad_token_provider": token_provider,
-        "temperature": temperature,
-        "streaming": streaming,
-    }
-
-    if azure_openai_api_version:
-        llm_kwargs["api_version"] = azure_openai_api_version
-
-    return AzureChatOpenAI(**llm_kwargs)
 
 
 def create_llm_non_streaming(
@@ -47,8 +37,8 @@ def create_llm_non_streaming(
     azure_openai_endpoint: str,
     azure_openai_api_version: str,
     temperature: float = 0.25,
-) -> AzureChatOpenAI:
-    """Create a non-streaming AzureChatOpenAI instance for worker processes.
+) -> BaseChatModel:
+    """Create a non-streaming chat model for worker processes.
 
     Args:
         azure_openai_chat_deployment: Azure OpenAI chat deployment name
@@ -57,7 +47,7 @@ def create_llm_non_streaming(
         temperature: Temperature for the LLM
 
     Returns:
-        Configured non-streaming AzureChatOpenAI instance
+        Non-streaming chat model for the configured provider
     """
     return create_llm(
         azure_openai_chat_deployment,

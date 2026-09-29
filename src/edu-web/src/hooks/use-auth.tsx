@@ -1,89 +1,42 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from '@effect-atom/atom-react'
-import { supabase } from '@/lib/supabase'
 import { authAtom } from '@/data-acess/auth'
+import {
+  sendPasswordReset,
+  signIn,
+  signOut,
+  signUp,
+} from '@/lib/auth-client'
 
 export const useAuth = () => {
   const { session, user } = useAtomValue(authAtom)
   const queryClient = useQueryClient()
 
   const loginMutation = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string
-      password?: string
-    }) => {
-      if (password) {
-        // Email/password login
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (error) throw error
-        return data
-      } else {
-        // Magic link login
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            emailRedirectTo: window.location.origin,
-          },
-        })
-        if (error) throw error
-        return data
-      }
-    },
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      signIn(email, password),
     onError: (error) => {
       console.error('Login failed:', error)
     },
   })
 
-  const magicLinkMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      })
-      if (error) throw error
-      return data
-    },
+  const passwordResetMutation = useMutation({
+    mutationFn: (email: string) => sendPasswordReset(email),
     onError: (error) => {
-      console.error('Magic link failed:', error)
+      console.error('Password reset failed:', error)
     },
   })
 
   const signUpMutation = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string
-      password: string
-    }) => {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      })
-      if (error) throw error
-      return data
-    },
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      signUp(email, password),
     onError: (error) => {
       console.error('Sign up failed:', error)
     },
   })
 
   const logoutMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-    },
+    mutationFn: () => signOut(),
     onSuccess: () => {
       queryClient.clear()
     },
@@ -93,8 +46,8 @@ export const useAuth = () => {
   })
 
   const getAccessToken = async () => {
-    if (!session) return null
-    return session.access_token
+    if (!user) return null
+    return user.getIdToken()
   }
 
   return {
@@ -103,17 +56,18 @@ export const useAuth = () => {
     user,
     login: loginMutation.mutate,
     signUp: signUpMutation.mutate,
-    sendMagicLink: magicLinkMutation.mutate,
+    sendPasswordReset: passwordResetMutation.mutate,
     logout: logoutMutation.mutate,
     getAccessToken,
     isLoading:
       loginMutation.isPending ||
       logoutMutation.isPending ||
       signUpMutation.isPending ||
-      magicLinkMutation.isPending,
+      passwordResetMutation.isPending,
     loginError: loginMutation.error,
     logoutError: logoutMutation.error,
     signUpError: signUpMutation.error,
-    magicLinkError: magicLinkMutation.error,
+    passwordResetError: passwordResetMutation.error,
+    passwordResetSent: passwordResetMutation.isSuccess,
   }
 }

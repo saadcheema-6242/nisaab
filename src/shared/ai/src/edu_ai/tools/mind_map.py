@@ -35,7 +35,7 @@ def increment_usage(usage, user_id: str, feature: str) -> None:
 
 @tool(
     "mindmap_create",
-    description="Create a mind map (visual diagram) from project documents. Provide a short topic plus optional custom instructions (structure, depth, focus, etc.).",
+    description="Save a mind map built from the student's uploaded documents to their Study tab (ready in about a minute). Only when they ask for a mind map of their documents or notes; otherwise use practice_mind_map, which shows it in the chat. Provide a short topic plus optional custom instructions (structure, depth, focus, etc.).",
 )
 async def create_mind_map(
     topic: str,
@@ -67,7 +67,8 @@ async def create_mind_map(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a mind map has been queued.",
+            "mind_map_id": mind_map.id,
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
         },
         ensure_ascii=False,
     )
@@ -111,7 +112,8 @@ async def create_mind_map_scoped(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a mind map from specific documents has been queued.",
+            "mind_map_id": mind_map.id,
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
         },
         ensure_ascii=False,
     )

@@ -1,63 +1,58 @@
 from functools import lru_cache
+from pathlib import Path
 
-from edu_core.keyvault import KeyVaultSettingsSource
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Shared settings live in the repository root .env; a .env next to the
+# service (the working directory) can override them.
+ROOT_ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 
 
 class Settings(BaseSettings):
-    """Application settings loaded from Key Vault or environment variables."""
+    """API settings loaded from environment variables and .env files."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(ROOT_ENV_FILE, ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
-    # Azure Storage
-    azure_storage_connection_string: str = ""
-    azure_storage_queue_name: str = "ai-generation-tasks"
-    azure_storage_input_container_name: str = "input"
-    azure_storage_output_container_name: str = "output"
-    azure_storage_chat_files_container_name: str = "chat-files"
+    # Server port (Cloud Run sets PORT)
+    port: int = 8000
 
-    # Database
+    # Database (Supabase Postgres)
     database_url: str = ""
 
-    # Supabase Auth
+    # Login tokens: Google Identity Platform (Firebase Auth) when set, else Supabase
+    firebase_project_id: str = ""
+
+    # Supabase Auth + Storage (local development)
     supabase_url: str = ""
     supabase_jwt_secret: str = ""
+    supabase_service_role_key: str = ""
 
-    # Azure OpenAI
+    # File storage: "gcs" (Google Cloud Storage) or "supabase"
+    storage_backend: str = "supabase"
+    storage_bucket: str = "documents"
+
+    # Azure OpenAI (only used when LLM_PROVIDER=azure, see edu_ai.llm)
     azure_openai_chat_deployment: str = ""
     azure_openai_endpoint: str = ""
     azure_openai_api_version: str = ""
     azure_openai_embedding_deployment: str = ""
 
-    # Usage Limits (per day per user)
-    max_chat_messages_per_day: int = 50
-    max_flashcard_generations_per_day: int = 10
-    max_quiz_generations_per_day: int = 10
-    max_document_uploads_per_day: int = 5
+    # Usage Limits (per day per user); quiz generations also count SRQs
+    max_chat_messages_per_day: int = 100
+    max_flashcard_generations_per_day: int = 20
+    max_quiz_generations_per_day: int = 30
+    max_document_uploads_per_day: int = 10
 
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls,
-        init_settings,
-        env_settings,
-        dotenv_settings,
-        file_secret_settings,
-    ):
-        """Customize settings sources to include Key Vault (highest priority)."""
-        return (
-            KeyVaultSettingsSource(
-                settings_cls, "https://kv-eduagent-dev-swc-yq6q.vault.azure.net/"
-            ),  # Key Vault first (highest priority)
-            init_settings,
-            env_settings,
-            dotenv_settings,
-            file_secret_settings,
-        )
+    # Comma-separated emails of subject teachers who review the shared content
+    reviewer_emails: str = ""
+
+    @property
+    def reviewers(self) -> set[str]:
+        return {e.strip().lower() for e in self.reviewer_emails.split(",") if e.strip()}
 
 
 @lru_cache

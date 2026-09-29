@@ -1,8 +1,8 @@
 """Processor for flashcard generation tasks."""
 
-from azure.storage.blob import BlobServiceClient
 from edu_ai.agents.flashcard_agent import FlashcardAgent
 from edu_ai.agents.topic_graph_agent import TopicGraphAgent
+from edu_core.storage import StorageService
 from edu_queue.schemas import FlashcardGenerationData
 from rich.console import Console
 
@@ -21,8 +21,7 @@ class FlashcardProcessor(BaseProcessor[FlashcardGenerationData]):
         azure_openai_chat_deployment: str,
         azure_openai_endpoint: str,
         azure_openai_api_version: str,
-        azure_storage_connection_string: str,
-        azure_storage_output_container_name: str,
+        storage: StorageService,
     ):
         """Initialize the processor.
 
@@ -31,15 +30,13 @@ class FlashcardProcessor(BaseProcessor[FlashcardGenerationData]):
             azure_openai_chat_deployment: Azure OpenAI chat deployment name
             azure_openai_endpoint: Azure OpenAI endpoint URL
             azure_openai_api_version: Azure OpenAI API version
-            azure_storage_connection_string: Azure Storage connection string
-            azure_storage_output_container_name: Output container name
+            storage: Storage client for extracted document text
         """
         self.search_service = search_service
         self.azure_openai_chat_deployment = azure_openai_chat_deployment
         self.azure_openai_endpoint = azure_openai_endpoint
         self.azure_openai_api_version = azure_openai_api_version
-        self.azure_storage_connection_string = azure_storage_connection_string
-        self.azure_storage_output_container_name = azure_storage_output_container_name
+        self.storage = storage
 
     async def process(self, payload: FlashcardGenerationData) -> None:
         """Generate flashcards using AI and populate the flashcard group.
@@ -57,15 +54,10 @@ class FlashcardProcessor(BaseProcessor[FlashcardGenerationData]):
             self.azure_openai_api_version,
         )
 
-        blob_service_client = BlobServiceClient.from_connection_string(
-            self.azure_storage_connection_string
-        )
-
         topic_graph_agent = TopicGraphAgent(
             search_service=self.search_service,
             llm=llm,
-            blob_service_client=blob_service_client,
-            output_container=self.azure_storage_output_container_name,
+            storage=self.storage,
         )
 
         flashcard_agent = FlashcardAgent(
@@ -81,6 +73,7 @@ class FlashcardProcessor(BaseProcessor[FlashcardGenerationData]):
             group_id=payload["group_id"],
             count=payload.get("count"),
             difficulty=payload.get("difficulty"),
+            slo_code=payload.get("slo_code"),
         )
 
         console.log(f"Populated flashcard group {payload['group_id']}")

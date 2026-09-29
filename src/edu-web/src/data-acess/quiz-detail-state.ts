@@ -1,10 +1,11 @@
-import type { PracticeRecordCreate } from '@/integrations/api'
-import { makeAtomRuntime } from '@/lib/make-atom-runtime'
 import { Atom, Registry, Result } from '@effect-atom/atom-react'
 import { BrowserKeyValueStore } from '@effect/platform-browser'
 import { Data, Effect, Option } from 'effect'
 import { submitPracticeRecordsBatchAtom } from './practice'
 import { quizQuestionsAtom } from './quiz'
+import { submitQuizAttemptAtom } from './quiz-attempt'
+import type { PracticeRecordCreate } from '@/integrations/api'
+import { makeAtomRuntime } from '@/lib/make-atom-runtime'
 
 const runtime = makeAtomRuntime(BrowserKeyValueStore.layerLocalStorage)
 
@@ -224,10 +225,6 @@ export const clearPracticeRecordsAtom = runtime.fn(
   }),
 )
 
-const extractTopic = (text: string, maxLength = 100): string => {
-  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
-}
-
 export const submitQuizAtom = runtime.fn(
   Effect.fn(function* (input: { projectId: string; quizId: string }) {
     const registry = yield* Registry.AtomRegistry
@@ -235,45 +232,17 @@ export const submitQuizAtom = runtime.fn(
     const currentStateResult = registry.get(quizDetailStateAtom(input.quizId))
     if (Option.isNone(currentStateResult)) return
 
-    const currentState = currentStateResult.value
-    const { selectedByQuestionId } = currentState
-
-    const questionsResult = registry.get(
-      quizQuestionsAtom(`${input.projectId}:${input.quizId}`),
-    )
-    if (!Result.isSuccess(questionsResult)) return
-
-    const quizQuestions = questionsResult.value
-
-    // Track ALL practice records (both correct and incorrect) for adaptive learning
-    const practiceRecords: Record<string, PracticeRecordCreate> = {}
-
-    for (const q of quizQuestions) {
-      const userAnswer = selectedByQuestionId[q.id]
-      const correctOption = q.correct_option
-
-      // Track all practice records, not just mistakes
-      if (userAnswer) {
-        const wasCorrect = userAnswer === correctOption
-        practiceRecords[q.id] = {
-          item_type: 'quiz',
-          item_id: q.id,
-          topic: extractTopic(q.question_text),
-          user_answer: userAnswer,
-          correct_answer: correctOption,
-          was_correct: wasCorrect,
-        }
-      }
-    }
-
     registry.set(
       quizDetailStateAtom(input.quizId),
       QuizDetailAction.SetShowResults({ show: true }),
     )
-    registry.set(
-      quizDetailStateAtom(input.quizId),
-      QuizDetailAction.SetPendingPracticeRecords({ practiceRecords }),
-    )
+    // Scored and saved on the server as a new attempt (Attempt 1, 2, ...); this
+    // also records each answer for SLO mastery, like a quiz answered in the chat
+    registry.set(submitQuizAttemptAtom, {
+      projectId: input.projectId,
+      quizId: input.quizId,
+      answers: currentStateResult.value.selectedByQuestionId,
+    })
   }),
 )
 

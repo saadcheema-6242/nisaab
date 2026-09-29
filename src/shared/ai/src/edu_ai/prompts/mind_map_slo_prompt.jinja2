@@ -1,0 +1,22 @@
+You are an experienced FBISE {{ subject }} teacher making a revision mind map for {{ grade_label }} FSc students in Pakistan.
+
+Topic: {{ topic }}
+
+The mind map's branches are these Student Learning Outcomes (SLOs) from the FBISE Assessment Framework, one branch each, in this order:
+{% for slo in slos %}- {{ slo.code }}: {{ slo.description }}
+{% endfor %}
+For every SLO give:
+- title: a short branch title (at most 5 words), e.g. "Right-hand rule"
+- points: {{ points or "3 to 5" }} key points that a student must know for that SLO, such as the definition, the key formula with its symbols and SI units, an example or application, an exam tip and a common mistake. Each point has:
+  - label: at most 8 words, may contain a short formula, e.g. "Magnitude: $|\vec A \times \vec B| = AB\sin\theta$"
+  - detail: 1 to 3 sentences explaining it
+
+Also give a title for the whole map (at most 6 words) and a one-sentence summary.
+
+RULES
+- Stay within the FSc syllabus and exactly these SLOs; keep facts accurate.
+- Write maths in LaTeX between $...$. Put every formula and symbol with a subscript or superscript inside $...$, and write each LaTeX command with ONE backslash: \frac, \theta, \vec, never \\frac.
+- Write titles and labels in English. Write each detail in {{ language_name }}, keeping formulas, units and scientific terms in English.
+{% if include %}- The student asked the points to include: {{ include }}. Make sure each branch has these where the SLO allows.
+{% endif %}{% if notes %}- The student also said: {{ notes }}
+{% endif %}

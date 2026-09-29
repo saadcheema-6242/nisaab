@@ -14,6 +14,7 @@ import { flashcardGroupAtom } from '@/data-acess/flashcard'
 import { initializeQueueAtom } from '@/features/flashcard/state/flashcard-detail-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
+import { FlashcardsDownload } from '@/components/downloads'
 
 type FlashcardHeaderContentProps = {
   flashcardGroupId: string
@@ -107,6 +108,7 @@ export const FlashcardHeader = ({
         />
       </div>
       <div className="flex items-center gap-2 px-3">
+        <FlashcardsDownload projectId={projectId} groupId={flashcardGroupId} />
         <Button
           variant="ghost"
           size="sm"

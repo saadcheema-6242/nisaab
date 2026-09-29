@@ -7,11 +7,14 @@ import { routeTree } from './routes/_config.tsx'
 
 import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
 
+import { Toaster } from './components/ui/sonner.tsx'
+import reportWebVitals from './reportWebVitals.ts'
 import { TooltipProvider } from '@/components/ui/tooltip.tsx'
 import { ModalProvider } from '@/providers/modal-provider.tsx'
 import { ThemeProvider } from '@/providers/theme-provider.tsx'
-import { Toaster } from './components/ui/sonner.tsx'
-import reportWebVitals from './reportWebVitals.ts'
+import 'katex/dist/katex.min.css'
+// Registers \ce{} for chemical formulas in KaTeX
+import 'katex/contrib/mhchem'
 import './styles.css'
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext()

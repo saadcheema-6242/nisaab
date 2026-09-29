@@ -1,40 +1,43 @@
-"""Service for uploading documents to blob storage."""
+"""Service for uploading documents to storage."""
 
 from contextlib import contextmanager
 from datetime import datetime
 from uuid import uuid4
 
-from datetime import datetime, timedelta
-from uuid import uuid4
-
-from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
 from edu_db.models import Document
 from edu_db.session import get_session_factory
 
 from edu_core.schemas.documents import DocumentStatus
+from edu_core.storage import StorageService, document_path
+
+CONTENT_TYPES = {
+    "pdf": "application/pdf",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "txt": "text/plain",
+    "md": "text/markdown",
+    "html": "text/html",
+    "png": "image/png",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "jpe": "image/jpeg",
+    "webp": "image/webp",
+    "heic": "image/heic",
+    "heif": "image/heif",
+}
 
 
 class DocumentUploadService:
-    """Service for uploading documents to blob storage."""
+    """Service for uploading documents to storage."""
 
-    def __init__(
-        self,
-        database_url: str,
-        azure_storage_connection_string: str,
-        azure_storage_input_container_name: str,
-    ) -> None:
+    def __init__(self, database_url: str, storage: StorageService) -> None:
         """Initialize the document upload service.
 
         Args:
             database_url: Database connection URL
-            azure_storage_connection_string: Azure Storage connection string
-            azure_storage_input_container_name: Input container name
+            storage: Storage client for document files
         """
         self.database_url = database_url
-        self.blob_service_client = BlobServiceClient.from_connection_string(
-            azure_storage_connection_string
-        )
-        self.input_container = azure_storage_input_container_name
+        self.storage = storage
 
     def get_supported_types(self) -> list[str]:
         """Get list of supported document types.
@@ -42,32 +45,12 @@ class DocumentUploadService:
         Returns:
             List of supported file extensions
         """
-        return [
-            "pdf",
-            "tiff",
-            "jpg",
-            "jpeg",
-            "jpe",
-            "png",
-            "bmp",
-            "heif",
-            "heic",
-            "docx",
-            "xlsx",
-            "pptx",
-            "txt",
-            "html",
-            "md",
-            "rtf",
-            "eml",
-            "msg",
-            "xml",
-        ]
+        return list(CONTENT_TYPES)
 
     def upload_document(
         self, file_content: bytes, filename: str, project_id: str, owner_id: str
     ) -> str:
-        """Upload document to blob storage and create database record.
+        """Upload document to storage and create database record.
 
         Args:
             file_content: The file content as bytes
@@ -82,32 +65,43 @@ class DocumentUploadService:
             Exception: If upload fails
         """
         with self._get_db_session() as db:
-            try:
-                # Step 1: Create document record
-                document_id = self._create_document_record(
-                    db=db,
-                    file_content=file_content,
-                    filename=filename,
-                    project_id=project_id,
-                    owner_id=owner_id,
-                )
+            document_id = self._create_document_record(
+                db=db,
+                file_content=file_content,
+                filename=filename,
+                project_id=project_id,
+                owner_id=owner_id,
+            )
 
-                # Step 2: Upload to blob storage
-                raw_blob_name = self._upload_to_blob_storage(
-                    file_content=file_content,
-                    filename=filename,
-                    project_id=project_id,
-                    document_id=document_id,
-                )
+            file_type = self._get_file_type(filename)
+            path = document_path(project_id, document_id, file_type)
+            self.storage.upload(
+                path,
+                file_content,
+                content_type=CONTENT_TYPES.get(file_type, "application/octet-stream"),
+            )
 
-                # Step 3: Update document with blob reference
-                self._update_document_blob_reference(
-                    db=db, document_id=document_id, raw_blob_name=raw_blob_name
-                )
+            self._update_document_storage_reference(
+                db=db, document_id=document_id, path=path
+            )
+            return document_id
 
-                return document_id
-            except Exception:
-                raise
+    def get_preview_url(
+        self, project_id: str, document_id: str, filename: str, expires_in: int = 3600
+    ) -> str:
+        """Get a temporary URL for viewing a document in the browser.
+
+        Args:
+            project_id: The project ID
+            document_id: The document ID
+            filename: The original filename
+            expires_in: URL validity in seconds
+
+        Returns:
+            Signed URL
+        """
+        path = document_path(project_id, document_id, self._get_file_type(filename))
+        return self.storage.signed_url(path, expires_in=expires_in)
 
     def _create_document_record(
         self,
@@ -144,32 +138,6 @@ class DocumentUploadService:
         db.refresh(document)
         return document.id
 
-    def _upload_to_blob_storage(
-        self, file_content: bytes, filename: str, project_id: str, document_id: str
-    ) -> str:
-        """Upload document to blob storage.
-
-        Args:
-            file_content: The file content as bytes
-            filename: Name of the file
-            project_id: The project ID
-            document_id: The document ID
-
-        Returns:
-            Blob name where the document was uploaded
-        """
-        file_extension = self._get_file_type(filename)
-        if file_extension != "unknown":
-            blob_name = f"{project_id}/{document_id}.{file_extension}"
-        else:
-            blob_name = f"{project_id}/{document_id}"
-
-        blob_client = self.blob_service_client.get_blob_client(
-            container=self.input_container, blob=blob_name
-        )
-        blob_client.upload_blob(data=file_content, overwrite=True)
-        return blob_name
-
     @staticmethod
     def _get_file_type(filename: str) -> str:
         """Extract file type from filename.
@@ -183,19 +151,17 @@ class DocumentUploadService:
         return filename.split(".")[-1].lower() if "." in filename else "unknown"
 
     @staticmethod
-    def _update_document_blob_reference(
-        db, document_id: str, raw_blob_name: str
-    ) -> None:
-        """Update document with blob reference and set status to processing.
+    def _update_document_storage_reference(db, document_id: str, path: str) -> None:
+        """Save the storage path and set status to processing.
 
         Args:
             db: Database session
             document_id: The document ID
-            raw_blob_name: The blob name in storage
+            path: The object path in storage
         """
         document = db.query(Document).filter(Document.id == document_id).first()
         if document:
-            document.original_blob_name = raw_blob_name
+            document.original_blob_name = path
             document.status = DocumentStatus.PROCESSING.value
             db.commit()
 
@@ -211,52 +177,3 @@ class DocumentUploadService:
             raise
         finally:
             db.close()
-
-    def generate_sas_token(
-        self,
-        container: str,
-        blob_name: str,
-        duration_minutes: int = 60,
-        content_disposition: str | None = None,
-        content_type: str | None = None,
-    ) -> str:
-        """Generate a SAS token for a blob.
-
-        Args:
-            container: Name of the container
-            blob_name: Name of the blob
-            duration_minutes: Validity duration in minutes
-            content_disposition: Content-Disposition header
-            content_type: Content-Type header
-
-        Returns:
-            Full URL with SAS token
-        """
-        sas_token = generate_blob_sas(
-            account_name=self.blob_service_client.account_name,
-            container_name=container,
-            blob_name=blob_name,
-            account_key=self.blob_service_client.credential.account_key,
-            permission=BlobSasPermissions(read=True),
-            expiry=datetime.now() + timedelta(minutes=duration_minutes),
-            content_disposition=content_disposition,
-            content_type=content_type,
-        )
-
-        return f"https://{self.blob_service_client.account_name}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
-
-    def get_blob_name(self, project_id: str, document_id: str, filename: str) -> str:
-        """Get blob name for a document.
-
-        Args:
-            project_id: The project ID
-            document_id: The document ID
-            filename: The filename
-
-        Returns:
-            The blob name
-        """
-        file_extension = self._get_file_type(filename)
-        if file_extension != "unknown":
-            return f"{project_id}/{document_id}.{file_extension}"
-        return f"{project_id}/{document_id}"

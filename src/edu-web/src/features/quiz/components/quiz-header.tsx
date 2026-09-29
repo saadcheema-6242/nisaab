@@ -1,3 +1,6 @@
+import { Result, useAtomValue } from '@effect-atom/atom-react'
+import { Link } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { quizAtom } from '@/data-acess/quiz'
-import { Result, useAtomValue } from '@effect-atom/atom-react'
-import { Link } from '@tanstack/react-router'
-import { ArrowLeft } from 'lucide-react'
+import { QuizDownload } from '@/components/downloads'
 
 const QuizHeaderContent = ({
   quizId,
@@ -76,6 +77,9 @@ export const QuizHeader = ({ quizId, projectId }: QuizHeaderProps) => {
           className="mr-2 data-[orientation=vertical]:h-4"
         />
         <QuizHeaderContent quizId={quizId} projectId={projectId} />
+      </div>
+      <div className="flex items-center gap-2 px-3">
+        <QuizDownload projectId={projectId} quizId={quizId} />
       </div>
     </header>
   )

@@ -64,6 +64,24 @@ async def get_mind_map(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.delete("/{mind_map_id}", status_code=204)
+async def delete_mind_map(
+    project_id: str,
+    mind_map_id: str,
+    current_user: UserDto = Depends(get_current_user),
+    service: MindMapService = Depends(get_mind_map_service),
+):
+    """Delete a mind map."""
+    try:
+        service.delete_mind_map(
+            mind_map_id=mind_map_id,
+            project_id=project_id,
+            user_id=current_user.id,
+        )
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @router.post("", response_model=MindMapDto, status_code=201)
 async def create_mind_map(
     project_id: str,

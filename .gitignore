@@ -14,3 +14,6 @@ wheels/
 .idea
 
 .DS_Store
+
+# Google Cloud deploy settings (contains secrets)
+deploy/gcp/deploy.env

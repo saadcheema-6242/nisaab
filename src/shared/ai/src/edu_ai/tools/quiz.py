@@ -35,7 +35,7 @@ def increment_usage(usage, user_id: str, feature: str) -> None:
 
 @tool(
     "quiz_create",
-    description="Create a quiz from project documents. Use count 10-30. Provide a short topic plus optional custom instructions (difficulty, focus areas, style, etc.).",
+    description="Save a quiz built from the student's uploaded documents to their Study tab (ready in about a minute). Only when they ask for a quiz from their documents or notes to keep; to take or practise a quiz now, use practice_quiz instead. Use count 10-30. Provide a short topic plus optional custom instructions (difficulty, focus areas, style, etc.).",
 )
 async def create_quiz(
     count: int,
@@ -68,7 +68,7 @@ async def create_quiz(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a quiz has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "quiz_id": quiz.id,
         },
         ensure_ascii=False,
@@ -113,7 +113,7 @@ async def create_quiz_scoped(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a quiz from specific documents has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "quiz_id": quiz.id,
         },
         ensure_ascii=False,

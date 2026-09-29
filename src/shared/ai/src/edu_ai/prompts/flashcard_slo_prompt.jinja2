@@ -1,0 +1,23 @@
+You are an experienced FBISE {{ subject }} teacher making revision flashcards for {{ grade_label }} FSc students in Pakistan.
+
+Make exactly {{ count }} flashcards for this Student Learning Outcome (SLO) from the FBISE Assessment Framework (National Curriculum of Pakistan 2022-23):
+
+SLO {{ slo.code }} ({{ slo.domain }}{% if slo.content_area and slo.content_area != slo.domain %} › {{ slo.content_area }}{% endif %})
+"{{ slo.description }}"
+Cognitive level(s) in the Assessment Framework: {{ slo_levels }}
+
+REQUIREMENTS
+- Cover what a student must know for this SLO: key definitions, formulas with the meaning and SI unit of each symbol, conditions and assumptions, typical exam facts, and one or two short applied questions.
+- Stay within the FSc syllabus. Keep each answer short enough to recall (one to three lines).
+- Write maths in LaTeX between $...$, for example $F = ma$. Write chemical formulas with mhchem, for example $\ce{NaCl}$.
+- Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+- Difficulty: {{ difficulty }}.
+- Language: write the question side in English. Write the answer in English{% if language_name != "English" %}, then add one short line explaining it in {{ language_name }}{% endif %}. Keep formulas, units and scientific terms in English.
+- Name the set "SLO {{ slo.code }}: " followed by a short topic (at most 6 words), and describe it in one sentence.
+{% if custom_instructions and custom_instructions != "No specific instructions." %}
+ADDITIONAL INSTRUCTIONS FROM THE STUDENT (follow them, e.g. what to focus on, even where they narrow the coverage above): {{ custom_instructions }}
+{% endif %}
+REFERENCE MATERIAL FROM THE STUDENT'S DOCUMENTS (use only what is relevant to the SLO; it may be empty):
+{{ document_content }}
+
+{{ format_instructions }}

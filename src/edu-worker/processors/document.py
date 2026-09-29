@@ -1,17 +1,16 @@
 """Processor for document processing tasks."""
 
 import asyncio
-from contextlib import suppress
 from datetime import datetime
 from uuid import uuid4
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from azure.storage.blob import BlobServiceClient
 from content_understanding import AzureContentUnderstandingClient
+from edu_ai.llm import create_chat_model, create_embeddings, is_llm_configured
 from edu_core.schemas.documents import DocumentStatus
+from edu_core.storage import StorageService, document_contents_path, document_path
 from edu_db.models import Document, DocumentSegment
 from edu_queue.schemas import DocumentProcessingData
-from langchain_openai import AzureOpenAIEmbeddings
+from local_extraction import extract_document
 from langchain_text_splitters import (
     MarkdownHeaderTextSplitter,
     RecursiveCharacterTextSplitter,
@@ -24,13 +23,11 @@ console = Console(force_terminal=True)
 
 
 class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
-    """Processor for processing documents with Azure Content Understanding."""
+    """Processor that extracts, splits and embeds uploaded documents."""
 
     def __init__(
         self,
-        azure_storage_connection_string: str,
-        azure_storage_input_container_name: str,
-        azure_storage_output_container_name: str,
+        storage: StorageService,
         azure_cu_endpoint: str,
         azure_cu_key: str,
         azure_cu_analyzer_id: str,
@@ -41,40 +38,43 @@ class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
         """Initialize the processor.
 
         Args:
-            azure_storage_connection_string: Azure Storage connection string
-            azure_storage_input_container_name: Input container name
-            azure_storage_output_container_name: Output container name
-            azure_cu_endpoint: Azure Content Understanding endpoint
-            azure_cu_key: Azure Content Understanding subscription key
+            storage: Storage client for document files
+            azure_cu_endpoint: Azure Content Understanding endpoint (optional)
+            azure_cu_key: Azure Content Understanding subscription key (optional)
             azure_cu_analyzer_id: Azure Content Understanding analyzer ID
             azure_openai_embedding_deployment: Azure OpenAI embedding deployment
             azure_openai_endpoint: Azure OpenAI endpoint
             azure_openai_api_version: Azure OpenAI API version
         """
-        self.blob_service_client = BlobServiceClient.from_connection_string(
-            azure_storage_connection_string
-        )
-        self.input_container = azure_storage_input_container_name
-        self.output_container = azure_storage_output_container_name
+        self.storage = storage
 
-        self.cu_client = AzureContentUnderstandingClient(
-            endpoint=azure_cu_endpoint,
-            subscription_key=azure_cu_key,
-        )
+        # Without Content Understanding, documents are extracted locally
+        self.cu_client = None
+        if azure_cu_endpoint and azure_cu_key:
+            self.cu_client = AzureContentUnderstandingClient(
+                endpoint=azure_cu_endpoint,
+                subscription_key=azure_cu_key,
+            )
 
-        token_provider = get_bearer_token_provider(
-            DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-        )
-        self.embeddings = AzureOpenAIEmbeddings(
+        self.embeddings = create_embeddings(
             azure_deployment=azure_openai_embedding_deployment,
             azure_endpoint=azure_openai_endpoint,
-            api_version=azure_openai_api_version,
-            azure_ad_token_provider=token_provider,
+            azure_api_version=azure_openai_api_version,
+        )
+        self.summary_llm = (
+            create_chat_model(
+                azure_endpoint=azure_openai_endpoint,
+                azure_api_version=azure_openai_api_version,
+            )
+            if is_llm_configured(azure_endpoint=azure_openai_endpoint)
+            else None
         )
         self.analyzer_id = azure_cu_analyzer_id
 
     async def process(self, payload: DocumentProcessingData) -> None:
         """Process document asynchronously: analyze, index, and create embeddings.
+
+        Safe to retry: segments from an earlier failed attempt are replaced.
 
         Args:
             payload: Document processing data
@@ -87,40 +87,34 @@ class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
 
         with self._get_db_session() as db:
             try:
-                # Get document to find blob name
                 document = db.query(Document).filter(Document.id == document_id).first()
                 if not document:
                     raise ValueError(f"Document {document_id} not found")
 
-                # Get blob from input container
-                file_extension = (
-                    document.file_type if document.file_type != "unknown" else ""
+                path = document.original_blob_name or document_path(
+                    project_id, document_id, document.file_type
                 )
-                if file_extension:
-                    blob_name = f"{project_id}/{document_id}.{file_extension}"
-                else:
-                    blob_name = f"{project_id}/{document_id}"
+                file_content = await asyncio.to_thread(self.storage.download, path)
 
-                blob_client = self.blob_service_client.get_blob_client(
-                    container=self.input_container, blob=blob_name
-                )
-                file_content = blob_client.download_blob().readall()
-
-                # Step 1: Extract text using Content Understanding
+                # Step 1: Extract text (Content Understanding or locally)
                 analyzed_result = await asyncio.to_thread(
-                    self._analyze_document, file_content=file_content
+                    self._analyze_document,
+                    file_content=file_content,
+                    file_type=document.file_type,
                 )
                 analyzed_content = analyzed_result["content"]
                 analyzed_summary = analyzed_result["summary"]
 
-                # Step 2: Move blob from input to output and create contents.txt
+                # Step 2: Save the extracted text next to the original
+                contents_path = document_contents_path(project_id, document_id)
                 await asyncio.to_thread(
-                    self._move_blob_to_output,
-                    content=analyzed_content,
-                    project_id=project_id,
-                    document_id=document_id,
-                    db=db,
+                    self.storage.upload,
+                    contents_path,
+                    analyzed_content.encode("utf-8"),
+                    "text/plain; charset=utf-8",
                 )
+                document.processed_text_blob_name = contents_path
+                db.commit()
 
                 # Step 3: Update document status to processed
                 self._update_document_processed_status(
@@ -129,7 +123,11 @@ class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
                     summary=analyzed_summary,
                 )
 
-                # Step 4: Create segments and embeddings
+                # Step 4: Create segments and embeddings (replacing any from a failed attempt)
+                db.query(DocumentSegment).filter(
+                    DocumentSegment.document_id == document_id
+                ).delete()
+                db.commit()
                 await self._create_segments_and_embeddings(
                     db=db, document_id=document_id, content=analyzed_content
                 )
@@ -142,15 +140,19 @@ class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
                 self._mark_document_failed(db=db, document_id=document_id)
                 raise
 
-    def _analyze_document(self, file_content: bytes) -> dict:
-        """Analyze document using Azure Content Understanding.
+    def _analyze_document(self, file_content: bytes, file_type: str) -> dict:
+        """Analyze document using Azure Content Understanding, or locally if not configured.
 
         Args:
             file_content: The file content as bytes
+            file_type: The file extension
 
         Returns:
             Dictionary containing content and summary
         """
+        if self.cu_client is None:
+            return extract_document(file_content, file_type, self.summary_llm)
+
         response = self.cu_client.begin_analyze_data(
             analyzer_id=self.analyzer_id, data=file_content
         )
@@ -165,55 +167,6 @@ class DocumentProcessor(BaseProcessor[DocumentProcessingData]):
             "content": content,
             "summary": summary,
         }
-
-    def _move_blob_to_output(
-        self, content: str, project_id: str, document_id: str, db
-    ) -> None:
-        """Move original blob from input to output and create processed contents file.
-
-        Args:
-            content: The processed content
-            project_id: The project ID
-            document_id: The document ID
-            db: Database session
-        """
-        document = db.query(Document).filter(Document.id == document_id).first()
-        if not document:
-            raise ValueError(f"Document {document_id} not found")
-
-        file_extension = document.file_type if document.file_type != "unknown" else ""
-        if file_extension:
-            original_blob_name = f"{project_id}/{document_id}.{file_extension}"
-        else:
-            original_blob_name = f"{project_id}/{document_id}"
-
-        contents_blob_name = f"{project_id}/{document_id}.contents.txt"
-
-        # Copy original blob from input to output container
-        input_blob_client = self.blob_service_client.get_blob_client(
-            container=self.input_container,
-            blob=original_blob_name,
-        )
-        output_blob_client = self.blob_service_client.get_blob_client(
-            container=self.output_container,
-            blob=original_blob_name,
-        )
-
-        blob_data = input_blob_client.download_blob().readall()
-        output_blob_client.upload_blob(blob_data, overwrite=True)
-
-        # Create contents.txt file with processed content
-        contents_blob_client = self.blob_service_client.get_blob_client(
-            container=self.output_container,
-            blob=contents_blob_name,
-        )
-        contents_blob_client.upload_blob(content.encode("utf-8"), overwrite=True)
-
-        # Delete the original blob from input container
-        with suppress(Exception):
-            input_blob_client.delete_blob()
-
-        db.commit()
 
     async def _create_segments_and_embeddings(
         self, db, document_id: str, content: str

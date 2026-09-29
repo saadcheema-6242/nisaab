@@ -2,12 +2,11 @@ from datetime import datetime
 from uuid import uuid4
 from contextlib import contextmanager
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from edu_ai.llm import create_chat_model, is_llm_configured
 from edu_db.models import Flashcard, PracticeRecord, Project, Quiz, StudyPlan
 from edu_db.session import get_session_factory
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import AzureChatOpenAI
 
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.study_plans import StudyPlanDto
@@ -36,26 +35,13 @@ class StudyPlanService:
             azure_ad_token_provider: Token provider for Azure AD auth
         """
         self.llm = None
-        if azure_openai_chat_deployment and azure_openai_endpoint:
-            # Initialize token provider if not passed
-            token_provider = azure_ad_token_provider
-            if not token_provider:
-                credential = DefaultAzureCredential()
-                token_provider = get_bearer_token_provider(
-                    credential, "https://cognitiveservices.azure.com/.default"
-                )
-
-            # Build LLM kwargs
-            llm_kwargs = {
-                "azure_deployment": azure_openai_chat_deployment,
-                "azure_endpoint": azure_openai_endpoint,
-                "temperature": 0.7,
-                "azure_ad_token_provider": token_provider,
-            }
-            if azure_openai_api_version:
-                llm_kwargs["api_version"] = azure_openai_api_version
-
-            self.llm = AzureChatOpenAI(**llm_kwargs)
+        if is_llm_configured(azure_endpoint=azure_openai_endpoint):
+            self.llm = create_chat_model(
+                temperature=0.7,
+                azure_deployment=azure_openai_chat_deployment,
+                azure_endpoint=azure_openai_endpoint,
+                azure_api_version=azure_openai_api_version,
+            )
 
     def get_latest_study_plan(self, user_id: str, project_id: str) -> StudyPlanDto | None:
         """Get the latest study plan for a user in a project.

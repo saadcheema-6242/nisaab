@@ -4,18 +4,21 @@ from collections.abc import AsyncGenerator
 
 from auth import get_current_user
 from dependencies import (
+    get_attempt_service,
     get_flashcard_group_service,
     get_usage_service,
 )
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.flashcards import FlashcardDto, FlashcardGroupDto
+from edu_core.schemas.attempts import FlashcardAttemptDto, FlashcardAttemptStateDto
 from edu_core.schemas.users import UserDto
-from edu_core.services import FlashcardGroupService, UsageService
+from edu_core.services import AttemptService, FlashcardGroupService, UsageService
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from routers.schemas import (
+    FlashcardAttemptCreate,
     FlashcardCreate,
     FlashcardGroupCreate,
     FlashcardGroupUpdate,
@@ -142,7 +145,10 @@ async def generate_flashcards(
             project_id=project_id,
             topic=request.topic,
             custom_instructions=request.custom_instructions,
+            count=request.count,
+            difficulty=request.difficulty,
             user_id=current_user.id,
+            slo_code=request.slo_code,
         )
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -177,7 +183,10 @@ async def generate_flashcards_stream(
                 project_id=project_id,
                 topic=request.topic,
                 custom_instructions=request.custom_instructions,
+                count=request.count,
+                difficulty=request.difficulty,
                 user_id=current_user.id,
+                slo_code=request.slo_code,
             )
 
             # Done (queued)
@@ -319,3 +328,35 @@ async def delete_flashcard(
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{group_id}/attempts", response_model=FlashcardAttemptDto, status_code=201)
+async def submit_flashcard_attempt(
+    project_id: str,
+    group_id: str,
+    attempt: FlashcardAttemptCreate,
+    current_user: UserDto = Depends(get_current_user),
+    service: AttemptService = Depends(get_attempt_service),
+):
+    """Record which cards the student knew, for SLO mastery."""
+    return service.submit_flashcards(
+        user_id=current_user.id,
+        project_id=project_id,
+        group_id=group_id,
+        knew={r.flashcard_id: r.knew for r in attempt.results},
+    )
+
+
+@router.get("/{group_id}/attempts/latest", response_model=FlashcardAttemptStateDto)
+async def get_latest_flashcard_attempt(
+    project_id: str,
+    group_id: str,
+    current_user: UserDto = Depends(get_current_user),
+    service: AttemptService = Depends(get_attempt_service),
+):
+    """The student's most recent run through this flashcard set, if any."""
+    return FlashcardAttemptStateDto(
+        attempt=service.latest_flashcards_attempt(
+            user_id=current_user.id, project_id=project_id, group_id=group_id
+        )
+    )

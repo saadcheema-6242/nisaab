@@ -1,13 +1,15 @@
 """CRUD service for managing flashcard groups."""
 
+import asyncio
 from contextlib import contextmanager
 from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from edu_db.models import Flashcard, FlashcardGroup
+from edu_db.models import Flashcard, FlashcardGroup, Project
 from edu_db.session import get_session_factory
 
+from edu_core import practice_options as options
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.flashcards import FlashcardDto, FlashcardGroupDto
 
@@ -203,6 +205,7 @@ class FlashcardGroupService:
             project_id=flashcard_group.project_id,
             name=flashcard_group.name,
             description=flashcard_group.description,
+            slo_code=flashcard_group.slo_code,
             created_at=flashcard_group.created_at,
             updated_at=flashcard_group.updated_at,
         )
@@ -446,6 +449,7 @@ class FlashcardGroupService:
             answer=flashcard.answer,
             difficulty_level=flashcard.difficulty_level,
             position=flashcard.position,
+            slo_code=flashcard.slo_code,
             created_at=flashcard.created_at,
         )
 
@@ -458,6 +462,7 @@ class FlashcardGroupService:
         count: int | None = None,
         difficulty: str | None = None,
         user_id: str | None = None,
+        slo_code: str | None = None,
     ) -> FlashcardGroupDto:
         """Queue a flashcard generation request to be processed by a worker.
 
@@ -501,6 +506,9 @@ class FlashcardGroupService:
             task_data["count"] = count
         if difficulty:
             task_data["difficulty"] = difficulty
+        if slo_code:
+            task_data["slo_code"] = slo_code
+            group = self._set_slo_code(group_id, slo_code)
 
         # Send message to queue
         task_message: QueueTaskMessage = {
@@ -510,6 +518,118 @@ class FlashcardGroupService:
         self.queue_service.send_message(task_message)
 
         return group
+
+    async def create_practice_flashcards(
+        self,
+        project_id: str,
+        topic: str,
+        count: int = 8,
+        slo_code: str | None = None,
+        search_service=None,
+        slo_codes: list[str] | None = None,
+        focus: str | None = None,
+        level: str = "board",
+        notes: str | None = None,
+    ) -> tuple[FlashcardGroupDto, int]:
+        """Make a flashcard set to study right away (e.g. inside the chat).
+
+        Uses the SLOs the student chose (or the best match for the topic), spreading
+        the cards over them, and what they want to focus on (e.g. formulas and units).
+        The cards are written now, one AI call per SLO in parallel.
+        Returns (group, number of cards).
+        """
+        from edu_ai.agents.flashcard_agent import FlashcardAgent, generate_slo_flashcards
+        from edu_ai.agents.slo_context import load_slo
+        from edu_ai.llm import GENERATION, create_chat_model
+        from edu_ai.tools.syllabus import resolve_slos
+
+        count = max(3, min(count, 20))
+        extra = options.card_instructions(focus, notes)
+        with self._get_db_session() as db:
+            project = db.get(Project, project_id)
+            if project is None:
+                raise NotFoundError(f"Project {project_id} not found")
+            grade_subject_id = project.grade_subject_id
+            language_code = project.language_code
+        wanted = [*(slo_codes or []), *([slo_code] if slo_code else [])]
+        codes = resolve_slos(grade_subject_id, topic, wanted) if grade_subject_id else []
+        llm = create_chat_model(task=GENERATION, temperature=0.5)
+
+        if not codes:
+            # Not a syllabus topic: a general AI set on the topic
+            group = self.create_flashcard_group(project_id=project_id, name=f"{topic[:60]} flashcards")
+            await FlashcardAgent(search_service=search_service, llm=llm).generate_and_save(
+                project_id=project_id, topic=topic, group_id=group.id, count=count,
+                custom_instructions=extra or None,
+            )
+            with self._get_db_session() as db:
+                total = db.query(Flashcard).filter(Flashcard.group_id == group.id).count()
+            return self.get_flashcard_group(group_id=group.id, project_id=project_id), total
+
+        with self._get_db_session() as db:
+            plan = [
+                (code, share, load_slo(db, code, grade_subject_id=grade_subject_id))
+                for code, share in zip(codes, options.split(count, len(codes)))
+                if share > 0
+            ]
+        generated = await asyncio.gather(
+            *(
+                generate_slo_flashcards(
+                    llm, slo, share,
+                    difficulty=options.difficulty(level),
+                    language_code=language_code,
+                    instructions=extra,
+                )
+                for _, share, slo in plan
+                if slo is not None
+            ),
+            return_exceptions=True,
+        )
+        cards = [
+            (code, card)
+            for (code, _, _), result in zip([p for p in plan if p[2] is not None], generated)
+            if isinstance(result, list)
+            for card in result
+        ]
+        if not cards:
+            failure = next((g for g in generated if isinstance(g, Exception)), None)
+            raise ValueError(f"No flashcards could be made for {topic}") from failure
+
+        name = (
+            f"SLO {codes[0]}: flashcards"
+            if len(codes) == 1
+            else f"{topic[:1].upper()}{topic[1:50]}: flashcards"
+        )
+        group = self.create_flashcard_group(project_id=project_id, name=name)
+        with self._get_db_session() as db:
+            row = db.query(FlashcardGroup).filter(FlashcardGroup.id == group.id).one()
+            row.slo_code = codes[0]
+            row.description = f"Flashcards for SLO {', '.join(codes)}"
+            for position, (code, card) in enumerate(cards):
+                db.add(
+                    Flashcard(
+                        id=str(uuid4()),
+                        group_id=group.id,
+                        project_id=project_id,
+                        question=card["question"],
+                        answer=card["answer"],
+                        difficulty_level=card.get("difficulty_level") or "medium",
+                        slo_code=code,
+                        position=position,
+                        created_at=datetime.now(),
+                    )
+                )
+            db.commit()
+        return self.get_flashcard_group(group_id=group.id, project_id=project_id), len(cards)
+
+    def _set_slo_code(self, group_id: str, slo_code: str) -> FlashcardGroupDto:
+        """Tag the flashcard group with its SLO as soon as generation is queued."""
+        with self._get_db_session() as db:
+            group = db.query(FlashcardGroup).filter(FlashcardGroup.id == group_id).one()
+            group.slo_code = slo_code
+            db.commit()
+            db.refresh(group)
+            return self._model_to_dto(group)
 
     @contextmanager
     def _get_db_session(self):

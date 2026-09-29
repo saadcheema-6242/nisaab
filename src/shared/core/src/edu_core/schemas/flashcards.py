@@ -14,6 +14,7 @@ class FlashcardGroupDto(BaseModel):
     description: str | None = Field(
         None, description="Description of the flashcard group"
     )
+    slo_code: str | None = Field(None, description="FBISE SLO code, e.g. P-11-B-05")
     created_at: datetime = Field(
         ..., description="Date and time the flashcard group was created"
     )
@@ -34,6 +35,7 @@ class FlashcardDto(BaseModel):
     answer: str = Field(..., description="Answer of the flashcard")
     difficulty_level: str = Field(..., description="Difficulty level of the flashcard")
     position: int = Field(..., description="Position of the flashcard within the group")
+    slo_code: str | None = Field(None, description="FBISE SLO code, e.g. P-11-B-05")
     created_at: datetime = Field(
         ..., description="Date and time the flashcard was created"
     )

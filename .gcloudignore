@@ -1,0 +1,19 @@
+# Files not uploaded to Cloud Build (gcloud builds submit)
+.git
+.gitignore
+.gcloudignore
+.venv/
+**/.venv/
+**/node_modules/
+**/dist/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+.env
+.env.*
+**/.env
+**/.env.*
+deploy/gcp/deploy.env
+deploy/azure/
+docs/
+src/eduagent-vibecode/

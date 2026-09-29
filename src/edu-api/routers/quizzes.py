@@ -4,19 +4,22 @@ from collections.abc import AsyncGenerator
 
 from auth import get_current_user
 from dependencies import (
+    get_attempt_service,
     get_quiz_service,
     get_usage_service,
 )
+from edu_core.schemas.attempts import QuizAttemptDto, QuizAttemptStateDto
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.quizzes import QuizDto, QuizQuestionDto
 from edu_core.schemas.users import UserDto
-from edu_core.services import QuizService, UsageService
+from edu_core.services import AttemptService, QuizService, UsageService
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from routers.schemas import (
     GenerateRequest,
+    QuizAttemptCreate,
     QuizCreate,
     QuizQuestionCreate,
     QuizQuestionReorder,
@@ -139,7 +142,9 @@ async def generate_quiz(
             project_id=project_id,
             topic=request.topic,
             custom_instructions=request.custom_instructions,
+            count=request.count,
             user_id=current_user.id,
+            slo_code=request.slo_code,
         )
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -174,7 +179,9 @@ async def generate_quiz_stream(
                 project_id=project_id,
                 topic=request.topic,
                 custom_instructions=request.custom_instructions,
+                count=request.count,
                 user_id=current_user.id,
+                slo_code=request.slo_code,
             )
 
             # Done (queued)
@@ -344,3 +351,34 @@ async def reorder_quiz_questions(
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{quiz_id}/attempts", response_model=QuizAttemptDto, status_code=201)
+async def submit_quiz_attempt(
+    project_id: str,
+    quiz_id: str,
+    attempt: QuizAttemptCreate,
+    current_user: UserDto = Depends(get_current_user),
+    service: AttemptService = Depends(get_attempt_service),
+):
+    """Score a finished quiz on the server and record the answers for SLO mastery."""
+    return service.submit_quiz(
+        user_id=current_user.id,
+        project_id=project_id,
+        quiz_id=quiz_id,
+        answers={a.question_id: a.option for a in attempt.answers},
+    )
+
+
+@router.get("/{quiz_id}/attempts/latest", response_model=QuizAttemptStateDto)
+async def get_latest_quiz_attempt(
+    project_id: str,
+    quiz_id: str,
+    current_user: UserDto = Depends(get_current_user),
+    service: AttemptService = Depends(get_attempt_service),
+):
+    """The student's most recent attempt at this quiz (if any) and all their attempts."""
+    attempt, history = service.latest_quiz_attempt(
+        user_id=current_user.id, project_id=project_id, quiz_id=quiz_id
+    )
+    return QuizAttemptStateDto(attempt=attempt, history=history)

@@ -8,11 +8,9 @@ from dependencies import (
     get_document_upload_service,
     get_queue_service,
     get_usage_service,
-    get_settings_dep,
 )
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.documents import DocumentDto, DocumentStatus
-import mimetypes
 from edu_core.schemas.users import UserDto
 from edu_core.services import (
     DocumentService,
@@ -161,29 +159,14 @@ async def get_document_preview(
     current_user: UserDto = Depends(get_current_user),
     service: DocumentService = Depends(get_document_service),
     upload_service: DocumentUploadService = Depends(get_document_upload_service),
-    settings = Depends(get_settings_dep)
 ):
     """Get a preview URL for a document."""
     try:
         document = service.get_document(document_id=document_id, owner_id=current_user.id)
-        
-        blob_name = upload_service.get_blob_name(
+        url = upload_service.get_preview_url(
             project_id=project_id,
             document_id=document_id,
             filename=document.file_name,
-        )
-        
-        
-        content_type, _ = mimetypes.guess_type(document.file_name)
-        if not content_type:
-             content_type = "application/octet-stream"
-
-        # Use the input container where the document was originally uploaded
-        url = upload_service.generate_sas_token(
-            container=settings.azure_storage_output_container_name,
-            blob_name=blob_name,
-            content_disposition="inline",
-            content_type=content_type
         )
         return DocumentPreviewDto(url=url)
     except NotFoundError as e:

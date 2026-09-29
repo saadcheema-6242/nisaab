@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { MindMapDownload } from '@/components/downloads'
 
 const MindMapHeaderContent = ({
   mindMapId,
@@ -126,6 +127,7 @@ export const MindMapHeader = ({ projectId, mindMapId }: MindMapHeaderProps) => {
         <MindMapHeaderContent mindMapId={mindMapId} projectId={projectId} />
       </div>
       <div className="flex items-center gap-2 px-3">
+        <MindMapDownload projectId={projectId} mindMapId={mindMapId} />
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="default" size="sm">

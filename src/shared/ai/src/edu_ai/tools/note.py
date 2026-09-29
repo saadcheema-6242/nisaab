@@ -67,7 +67,7 @@ async def create_note(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a note has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "note_id": note.id,
         },
         ensure_ascii=False,
@@ -111,7 +111,7 @@ async def create_note_scoped(
     return json.dumps(
         {
             "status": "queued",
-            "message": "Your request to generate a note from specific documents has been queued.",
+            "message": "Queued. The student sees it in this chat as a card with an Open button (and in the Study tab) within about a minute. Reply with one short sentence only: do not write out its questions, cards or content, and never mention any ID.",
             "note_id": note.id,
         },
         ensure_ascii=False,

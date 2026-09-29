@@ -1,14 +1,17 @@
 """CRUD service for managing quizzes."""
 
+import asyncio
 from contextlib import contextmanager
 from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from edu_db.models import Quiz, QuizQuestion
+from edu_db.models import Project, Quiz, QuizQuestion
 from edu_db.session import get_session_factory
 
+from edu_core import practice_options as options
 from edu_core.exceptions import NotFoundError
+from edu_core.services.content import usable_items
 from edu_core.schemas.quizzes import QuizDto, QuizQuestionDto
 
 if TYPE_CHECKING:
@@ -193,6 +196,7 @@ class QuizService:
             project_id=quiz.project_id,
             name=quiz.name,
             description=quiz.description,
+            slo_code=quiz.slo_code,
             created_at=quiz.created_at,
             updated_at=quiz.updated_at,
         )
@@ -528,6 +532,8 @@ class QuizService:
             explanation=question.explanation,
             difficulty_level=question.difficulty_level,
             position=question.position,
+            slo_code=question.slo_code,
+            cognitive_level=question.cognitive_level,
             created_at=question.created_at,
         )
 
@@ -539,6 +545,7 @@ class QuizService:
         custom_instructions: str | None = None,
         count: int | None = None,
         user_id: str | None = None,
+        slo_code: str | None = None,
     ) -> QuizDto:
         """Queue a quiz generation request to be processed by a worker.
 
@@ -550,6 +557,7 @@ class QuizService:
             custom_instructions: Optional custom instructions
             count: Optional count of questions to generate
             user_id: Optional user ID for queue message
+            slo_code: Optional FBISE SLO the questions must assess
 
         Returns:
             Existing QuizDto (generation will happen asynchronously)
@@ -575,6 +583,12 @@ class QuizService:
             task_data["user_id"] = user_id
         if count is not None:
             task_data["count"] = count
+        if slo_code:
+            task_data["slo_code"] = slo_code
+            quiz = self._set_slo_code(quiz_id, slo_code)
+            # Reviewed questions from the shared bank are ready instantly
+            if self._fill_from_bank(quiz_id, project_id, slo_code, count or 10):
+                return self.get_quiz(quiz_id=quiz_id, project_id=project_id)
 
         # Send message to queue
         task_message: QueueTaskMessage = {
@@ -584,6 +598,204 @@ class QuizService:
         self.queue_service.send_message(task_message)
 
         return quiz
+
+    def _fill_from_bank(
+        self, quiz_id: str, project_id: str, slo_code: str, count: int, minimum: int = 3
+    ) -> bool:
+        """Fill the quiz with bank MCQs for the SLO; False if the bank has fewer than minimum."""
+        with self._get_db_session() as db:
+            project = db.get(Project, project_id)
+            if project is None or not project.grade_subject_id:
+                return False
+            items = usable_items(db, project.grade_subject_id, slo_code, "mcq")[:count]
+            if len(items) < minimum:
+                return False
+            quiz = db.query(Quiz).filter(Quiz.id == quiz_id).one()
+            reviewed = all(item.review_status == "approved" for item in items)
+            quiz.name = f"SLO {slo_code}: practice"
+            quiz.description = (
+                "Questions checked by a subject teacher"
+                if reviewed
+                else "Practice questions for this SLO"
+            )
+            db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).delete()
+            fields = (
+                "question_text", "option_a", "option_b", "option_c", "option_d",
+                "correct_option", "explanation",
+            )
+            for position, item in enumerate(items):
+                db.add(
+                    QuizQuestion(
+                        id=str(uuid4()),
+                        quiz_id=quiz_id,
+                        project_id=project_id,
+                        **{field: item.payload.get(field) for field in fields},
+                        difficulty_level=item.payload.get("difficulty_level") or "medium",
+                        cognitive_level=item.payload.get("cognitive_level"),
+                        slo_code=slo_code,
+                        position=position,
+                        created_at=datetime.now(),
+                    )
+                )
+            db.commit()
+            return True
+
+    async def create_practice_quiz(
+        self,
+        project_id: str,
+        topic: str,
+        count: int = 5,
+        slo_code: str | None = None,
+        search_service=None,
+        slo_codes: list[str] | None = None,
+        style: str = "mixed",
+        level: str = "board",
+        notes: str | None = None,
+    ) -> tuple[QuizDto, int, str]:
+        """Make a quiz to attempt right away (e.g. inside the chat).
+
+        Uses the SLOs the student chose (or the best match for the topic), spreading
+        the questions over them. Teacher-bank questions that suit the chosen question
+        type (theory, numerical, derivation, mixed) and level (easy, board,
+        challenging) come first; the AI writes the rest now, in parallel.
+        Returns (quiz, number of questions, "bank", "ai" or "mixed").
+        """
+        from edu_ai.agents.bank_agent import generate_mcqs
+        from edu_ai.agents.quiz_agent import QuizAgent
+        from edu_ai.agents.slo_context import load_slo
+        from edu_ai.llm import GENERATION, create_chat_model
+        from edu_ai.tools.syllabus import resolve_slos
+
+        count = max(3, min(count, 20))
+        style, level = options.normalize_style(style), options.normalize_level(level)
+        extra = options.instructions(style, notes)
+        with self._get_db_session() as db:
+            project = db.get(Project, project_id)
+            if project is None:
+                raise NotFoundError(f"Project {project_id} not found")
+            grade_subject_id = project.grade_subject_id
+            language_code = project.language_code
+        wanted = [*(slo_codes or []), *([slo_code] if slo_code else [])]
+        codes = resolve_slos(grade_subject_id, topic, wanted) if grade_subject_id else []
+
+        if not codes:
+            # Not a syllabus topic: a general AI quiz on the topic
+            quiz = self.create_quiz(project_id=project_id, name=f"{topic[:60]} practice")
+            agent = QuizAgent(
+                search_service=search_service,
+                llm=create_chat_model(task=GENERATION, temperature=0.5),
+            )
+            await agent.generate_and_save(
+                project_id=project_id, topic=topic, quiz_id=quiz.id, count=count,
+                custom_instructions=extra,
+            )
+            with self._get_db_session() as db:
+                total = db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz.id).count()
+            return self.get_quiz(quiz_id=quiz.id, project_id=project_id), total, "ai"
+
+        # Per SLO: suitable bank questions first, then how many the AI must write
+        plan = []
+        with self._get_db_session() as db:
+            for code, share in zip(codes, options.split(count, len(codes))):
+                if share == 0:
+                    continue
+                bank = [
+                    item
+                    for item in usable_items(db, grade_subject_id, code, "mcq")
+                    if options.bank_fits(item.payload, style, level)
+                ][:share]
+                plan.append(
+                    (
+                        code,
+                        [dict(item.payload) for item in bank],
+                        all(item.review_status == "approved" for item in bank),
+                        share - len(bank),
+                        load_slo(db, code, grade_subject_id=grade_subject_id),
+                    )
+                )
+
+        llm = create_chat_model(task=GENERATION, temperature=0.5)
+
+        async def written(slo, missing: int) -> list[dict]:
+            # Small batches in parallel: one call for many worked numericals is slow
+            if missing <= 0 or slo is None:
+                return []
+            batches = options.split(missing, -(-missing // options.BATCH))
+            results = await asyncio.gather(
+                *(
+                    generate_mcqs(
+                        llm, slo, size,
+                        difficulty=options.difficulty(level),
+                        language_code=language_code,
+                        instructions=extra + options.batch_note(number, len(batches)),
+                    )
+                    for number, size in enumerate(batches, start=1)
+                ),
+                return_exceptions=True,
+            )
+            questions = [q for batch in results if isinstance(batch, list) for q in batch]
+            if not questions and results and isinstance(results[0], Exception):
+                raise results[0]
+            return questions
+
+        generated = await asyncio.gather(
+            *(written(slo, missing) for _, _, _, missing, slo in plan), return_exceptions=True
+        )
+        questions: list[tuple[str, dict]] = []
+        for (code, bank, _, _, _), ai in zip(plan, generated):
+            questions += [(code, q) for q in bank]
+            questions += [(code, q) for q in ai] if isinstance(ai, list) else []
+        if not questions:
+            failure = next((g for g in generated if isinstance(g, Exception)), None)
+            raise ValueError(f"No questions could be made for {topic}") from failure
+
+        from_bank = sum(len(bank) for _, bank, _, _, _ in plan)
+        source = "bank" if from_bank == len(questions) else "ai" if from_bank == 0 else "mixed"
+        label = options.STYLE_NAMES[style]
+        name = (
+            f"SLO {codes[0]}: {label}"
+            if len(codes) == 1
+            else f"{topic[:1].upper()}{topic[1:50]}: {label}"
+        )
+        reviewed = source == "bank" and all(ok for _, _, ok, _, _ in plan)
+        quiz = self.create_quiz(project_id=project_id, name=name)
+        fields = (
+            "question_text", "option_a", "option_b", "option_c", "option_d",
+            "correct_option", "explanation",
+        )
+        with self._get_db_session() as db:
+            row = db.query(Quiz).filter(Quiz.id == quiz.id).one()
+            row.slo_code = codes[0]
+            row.description = (
+                "Questions checked by a subject teacher"
+                if reviewed
+                else f"Practice for SLO {', '.join(codes)}"
+            )
+            for position, (code, question) in enumerate(questions):
+                db.add(
+                    QuizQuestion(
+                        id=str(uuid4()),
+                        quiz_id=quiz.id,
+                        project_id=project_id,
+                        **{field: question.get(field) for field in fields},
+                        difficulty_level=question.get("difficulty_level") or "medium",
+                        cognitive_level=question.get("cognitive_level"),
+                        slo_code=code,
+                        position=position,
+                        created_at=datetime.now(),
+                    )
+                )
+            db.commit()
+        return self.get_quiz(quiz_id=quiz.id, project_id=project_id), len(questions), source
+
+    def _set_slo_code(self, quiz_id: str, slo_code: str) -> QuizDto:
+        """Tag the quiz with its SLO as soon as generation is queued."""
+        with self._get_db_session() as db:
+            quiz = db.query(Quiz).filter(Quiz.id == quiz_id).one()
+            quiz.slo_code = slo_code
+            db.commit()
+            db.refresh(quiz)
+            return self._model_to_dto(quiz)
 
     @contextmanager
     def _get_db_session(self):

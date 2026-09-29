@@ -7,8 +7,11 @@ from edu_db.models import Flashcard, FlashcardGroup, Project
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
 
+from edu_ai.agents.slo_context import SloContext, language_name, load_slo
 from edu_ai.agents.topic_graph_agent import TopicGraphAgent
 from edu_ai.agents.utils import generate, get_db_session
+from edu_ai.latex import clean_latex_deep
+from edu_ai.prompts.prompts_utils import render_prompt
 
 
 class FlashcardGenerationResult(BaseModel):
@@ -53,6 +56,7 @@ class FlashcardAgent:
         group_id: str | None = None,
         count: int | None = None,
         difficulty: str | None = None,
+        slo_code: str | None = None,
         **kwargs: Any,
     ) -> FlashcardGroup:
         """Generate flashcards and save to the database.
@@ -94,8 +98,21 @@ class FlashcardAgent:
             if not group:
                 raise NotFoundError(f"Flashcard group {group_id} not found")
 
-            generation_topic = topic
-            if self.topic_graph_agent:
+            # SLO mode: the SLO text is the topic, so no topic graph is needed
+            slo = load_slo(db, slo_code, project) if slo_code else None
+            prompt_template = self.prompt_template
+            prompt_vars: dict[str, Any] = {}
+            if slo:
+                prompt_template = "flashcard_slo_prompt"
+                prompt_vars = {
+                    **slo.prompt_vars(),
+                    "language_name": language_name(language_code),
+                    "difficulty": "mixed",
+                }
+                count = count or 12
+
+            generation_topic = slo.description if slo else topic
+            if self.topic_graph_agent and not slo:
                 topic_graph = await self.topic_graph_agent.generate_topic_graph(
                     project_id=project_id,
                     topic=topic,
@@ -110,7 +127,7 @@ class FlashcardAgent:
                     generation_topic = ", ".join(topics)
 
             # Generate flashcards using AI
-            kwargs = {}
+            kwargs = dict(prompt_vars)
             if count is not None:
                 kwargs["count"] = count
             if difficulty is not None:
@@ -120,7 +137,7 @@ class FlashcardAgent:
                 llm=self.llm,
                 search_service=self.search_service,
                 output_model=self.output_model,
-                prompt_template=self.prompt_template,
+                prompt_template=prompt_template,
                 project_id=project_id,
                 topic=generation_topic or "",
                 language_code=language_code,
@@ -131,6 +148,8 @@ class FlashcardAgent:
             # Update group with generated name and description
             group.name = result.name
             group.description = result.description
+            if slo:
+                group.slo_code = slo.code
             group.updated_at = datetime.now()
             db.flush()
 
@@ -146,6 +165,7 @@ class FlashcardAgent:
                     question=flashcard_item.question,
                     answer=flashcard_item.answer,
                     difficulty_level=flashcard_item.difficulty_level,
+                    slo_code=slo.code if slo else None,
                     position=position,
                     created_at=datetime.now(),
                 )
@@ -153,3 +173,30 @@ class FlashcardAgent:
 
             db.flush()
             return group
+
+
+async def generate_slo_flashcards(
+    llm,
+    slo: SloContext,
+    count: int,
+    difficulty: str = "mixed",
+    language_code: str = "en",
+    instructions: str = "",
+) -> list[dict]:
+    """Flashcards for one SLO (not saved), shaped by what the student chose."""
+    prompt = render_prompt(
+        "flashcard_slo_prompt",
+        **slo.prompt_vars(),
+        count=count,
+        difficulty=difficulty,
+        language_name=language_name(language_code),
+        custom_instructions=instructions,
+        document_content="(none)",
+        format_instructions="",
+    )
+    result = await llm.with_structured_output(
+        FlashcardGroupGenerationResult, method="function_calling"
+    ).ainvoke(prompt)
+    if result is None or not result.flashcards:
+        raise ValueError(f"No flashcards returned for {slo.code}")
+    return clean_latex_deep([card.model_dump() for card in result.flashcards])

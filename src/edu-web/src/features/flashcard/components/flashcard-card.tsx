@@ -2,6 +2,7 @@ import { useAtomValue } from '@effect-atom/atom-react'
 import { Option } from 'effect'
 import { Card } from '@/components/ui/card'
 import { flashcardDetailStateAtom } from '@/features/flashcard/state/flashcard-detail-state'
+import { MathText } from '@/components/math-text'
 
 type FlashcardCardProps = {
   flashcardGroupId: string
@@ -26,7 +27,7 @@ export const FlashcardCard = ({
             <h3 className="text-sm font-medium text-muted-foreground mb-2">
               Question
             </h3>
-            <p className="text-lg leading-relaxed">{question}</p>
+            <MathText className="text-lg leading-relaxed">{question}</MathText>
           </div>
 
           {showAnswer && (
@@ -34,7 +35,9 @@ export const FlashcardCard = ({
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
                 Answer
               </h3>
-              <p className="text-lg leading-relaxed text-primary">{answer}</p>
+              <MathText className="text-lg leading-relaxed text-primary">
+                {answer}
+              </MathText>
             </div>
           )}
         </div>

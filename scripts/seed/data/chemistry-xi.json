@@ -1,0 +1,3650 @@
+{
+  "subject": {
+    "code": "CHEM",
+    "name": "Chemistry"
+  },
+  "grade": 11,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/curriculum_model_paper.php",
+  "domains": [
+    {
+      "code": "A",
+      "name": "Nature of Science in Chemistry"
+    },
+    {
+      "code": "B",
+      "name": "Physical Chemistry"
+    },
+    {
+      "code": "C",
+      "name": "Inorganic Chemistry"
+    },
+    {
+      "code": "D",
+      "name": "Environmental Chemistry"
+    },
+    {
+      "code": "E",
+      "name": "Organic Chemistry"
+    },
+    {
+      "code": "F",
+      "name": "Energy"
+    },
+    {
+      "code": "G",
+      "name": "Practical Skills"
+    }
+  ],
+  "slos": [
+    {
+      "code": "C-11-A-01",
+      "domain": "A",
+      "content_area": "Nature of Science in Chemistry",
+      "description": "Describe how Al Ghazali’s burning cotton thought experiment highlight the challenges of inductive reasoning examples of deductive reasoning with respect to chemistry.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-01",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe that, each atomic shell and subshell are further divided into degenerate orbitals having the same energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-02",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe protons, neutrons and electrons in terms of their relative charges and relative masses.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-03",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Recognize that the terms atomic and proton number represent the same concept.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-04",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Recognize the terms mass and nucleon number represent the same concept.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-05",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe the behavior of beams of protons, neutrons and electrons moving at the same velocity in an electric field.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-06",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Determine the numbers of protons, neutrons and electrons present in both atoms and ions given atomic or proton number, mass/or nucleon number and charge.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-07",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain the change in atomic and ionic radius across a period and down a group.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-08",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Determine the electronic configuration of elements and their ions with proton numbers. (Some examples include: a). simple configuration e.g. 2,8, b). Subshells e.g. 1s2, 2s2, 2p6, 3s1 c). Students should be able to determine both of these from the periodic table and are not required to memorize these. d) Students should understand that chemical properties of an atom are governed by valence electrons).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-09",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Define terms related to electronic configuration (Some examples include shells, subshells, orbitals, principal quantum number (n), ground state).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-10",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Relate Quantum Numbers to Electronic distribution of elements.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-11",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe the number of orbitals making up s, p d and f subshells, and the number of electrons that can fill s, p d and f subshells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-12",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Apply aufbau principle, pauli exclusion principle and hunds rule to write the electronic configuration of elements",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-13",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe the order of increasing energy of the subshells (s,p,d and f).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-14",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe the electronic configurations to include the number of electrons in each shell, subshell and orbital.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-15",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain the electronic configurations in terms of energy of the electrons and inter-electron repulsion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-16",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Determine the electronic configuration of atoms and ions given the proton or electron number and charge,",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-17",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Illustrate the importance of electronic configurations in the development of new materials for electronic devices. (For example, semiconductors such as silicon have a specific electronic configuration that makes them ideal for use in electronic devices.)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-18",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe the shapes of s, p and d orbitals.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-19",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Describe a free radical as a species with one or more unpaired electrons.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-20",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain that ionization energies are due to the attraction between the nucleus and the outer electron.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-21",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain how ionization energy helps account for the trends across a period and down a group of the Periodic Table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-22",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Account for the variation in successive ionization energies of an element.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-23",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain the factors influencing the ionization energies of elements in terms of nuclear charge, atomic/ionic radius, shielding by inner shells and subshells and spin-pair repulsion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-24",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Deduce the electronic configurations of elements using successive ionization energy data.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-25",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Deduce the position of an element in the Periodic Table using successive ionization energy data.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-26",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Explain how a mass spectrometer can be used to determine the relative atomic mass of an element from its isotopic composition.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-27",
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "description": "Perform calculations involving non -integer relative atomic masses and abundance of isotopes from given data, including mass spectra.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-29",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Define electronegativity as the power of an atom to attract electrons to itself.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-30",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain the factors influencing the electronegativities of elements in terms of nuclear charge, atomic radius, shielding by inner shells and subshells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-31",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain the trends in electronegativity across a period and down a group of the Periodic Table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-32",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Use the differences in Pauling electronegativity values to predict the formation of ionic and covalent bonds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-33",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Describe covalent bonding in molecules using the concept of hybridization to describe sp, sp2 and sp3 orbitals.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-34",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Use bond energy values and the concept of bond length to compare the reactivity of covalent molecules",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-35",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Describe the shapes and bond angles in molecules using VSEPR theory (including describing by sketching)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-36",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Predict the shapes, and bond angles in molecules and ions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-37",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain hybridization and types of hybridization.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-38",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain valence bond theory.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-39",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain the importance of VSEPR theory in the field of drug design by discussing how the shape and bond angles of the molecules helps chemists predict their interactions in the body.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-40",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain the salient features of molecular orbital theory.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-41",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Explain the paramagnetic nature of Oxygen molecule in the light of MOT.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-42",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Calculate Bond order of N2, O2, F2& He",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-43",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Describe the types of Van der Waals’ force including a. instantaneous dipole – induced dipole (id -id) force, also called London dispersion forces b. permanent dipole – permanent dipole (pd-pd) force, including hydrogen bonding c. Hydrogen bonding as a spec ial case of permanent dipole – permanent dipole force between molecules where hydrogen is bonded to a highly electronegative atom).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-44",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Describe hydrogen bonding, limited to molecules containing N–H, O–H and H –F groups, (including ammonia, water and H –F as si mple examples).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-45",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Use the concept of hydrogen bonding to explain the anomalous properties of H2O (ice and water).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-46",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Use the concept of electronegativity to explain bond polarity and dipole moments of molecules",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-47",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "State that, in general, ionic, covalent and metallic bonding are stronger than intermolecular forces",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-48",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Recognize that molecular ions/polyatomic ions can have expanded octets e.g. sulfate and nitrate",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-49",
+      "domain": "B",
+      "content_area": "Chemical Bonding",
+      "description": "Analyze the formation of dative bond in CO, ozone and H3O+ ion (resonance structure not required)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-50",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Express balanced chemical equations in terms of moles, representative particles, masses, and volumes of gases (at STP).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-51",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Explain the concept of limiting reagents.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-52",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Calculate the maximum amount of product and amount of any unreacted excess reagent.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-53",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Calculate theoretical yield, actual yield, and percentage yield when given appropriate information.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-54",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "State the volume of one mole of a gas at STP.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-55",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Use the volume of one mole of gas at STP to solve mole volume problem.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-56",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Calculate the gram molecular mass of a gas from density measurements at STP.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-57",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Derive measurements of mass, volume, and number of particles using moles.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-58",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Calculate the quantities of reactants and products involved in a chemical reaction using stoichiometric principles (Some examples include calculations involving reacting masses, volumes of gasses, volumes, and concentrations of solutions, limiting reagent and excess reagent, percentage yield calculations).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-59",
+      "domain": "B",
+      "content_area": "Stoichiometry",
+      "description": "Explain, with examples, the importance of stoichiometry in the production and dosage of medicine.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-60",
+      "domain": "B",
+      "content_area": "Electrochemistry",
+      "description": "Explain the merits of photovoltaic cells as sustainable ways of meeting energy demands by making reference to the photovoltaic principle.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-61",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe simple properties of liquids e.g., diffusion, compression, expansion, motion of molecules, spaces between them, intermolecular forces and kinetic energy based on kinetic molecular theory.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-62",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe types of intermolecular forces.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-63",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Explain the strength and applications of dipole-dipole forces, hydrogen bonding and London forces.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-64",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe physical properties of liquids such as evaporation, vapor pressure, boiling point, viscosity and surface tension.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-65",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Apply the concept of hydrogen bonding to explain the properties of water (specifically high surface tension, high specific heat, low vapor pressure, high heat of vaporization, and high boiling point).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-66",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Define molar heat of fusion and molar heat of vaporization.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-67",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe how heat of fusion and heat of vaporization affect the particles that make up matter.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-68",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Outline the importance of heat of fusion in the study of glaciers and ice sheets (particularly while studying polar ice caps).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-69",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe the physical properties of gases (including compressibility, expandability and pressure exerted by gases)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-70",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe liquid crystals and give their uses in daily life.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-71",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Differentiate liquid crystals from pure liquids and crystalline solids.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-72",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe simple properties of solids e.g. compression, expansion, motion of molecules, interparticle space, intermolecular forces and kinetic energy based on kinetic molecular theory.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-73",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Differentiate between amorphous and crystalline solids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-74",
+      "domain": "B",
+      "content_area": "States and phases of matter",
+      "description": "Describe properties of crystalline solids like geometrical shape, melting point, cleavage planes, habit of a crystal, crystal growth.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-75",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Describe that chemical reactions are accompanied by enthalpy changes and these changes can be exothermic (ΔH is negative) or endothermic (ΔH is positive).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-76",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Interpret a reaction pathway diagram, in terms of the enthalpy change of the reaction and of the activation energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-77",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Define terms such as standard conditions, enthalpy change, reaction, formation, combustion, neutralization.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-78",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain that energy transfer occurs during chemical reactions because of the breaking and making of bonds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-79",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Calculate the bond energies for the enthalpy change of reaction,∆𝐻.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-80",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Describe that some bond energies are exact, and some bond energies are approximate.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-81",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Calculate enthalpy changes from appropriate experimental results, including the use of the relationships q = mcΔT and ΔH = –mcΔT/n",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-82",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Define terms such as enthalpy change of atomization, ΔHatm, lattice energy, ΔHLattice, first electron affinity, EA",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-83",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Use terms such as enthalpy change of atomization, ΔH, lattice energy, ΔH, first electron affinity, EA.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-84",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the factors affecting the electron affinities of elements.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-85",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Construct Born–Haber cycles for ionic solids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-86",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Perform calculations involving Born–Haber cycles.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-87",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the effect of ionic charge and ionic radius on the numerical magnitude of lattice energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-88",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Apply enthalpy change with reference to hydration, and solution.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-89",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Construct an energy cycle involving enthalpy change of solution, lattice energy and enthalpy change of hydration.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-90",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Perform calculations involving the energy cycles.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-91",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the effect of ionic charge and ionic radius on the numerical magnitude of an enthalpy change of hydration.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-92",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Define the term entropy, S, as the number of possible arrangements of the particles and their energy in a given system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-93",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the sign of the entropy changes that occur during a change in state, temperature change and a reaction in which there is a change in the number of gaseous molecules.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-94",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Calculate the entropy change for a reaction, ΔS, gi ven the standard entropies, S, of the reactants and products.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-95",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the concept of heat as a form of energy.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-96",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the relationship between temperature and kinetic energy of particles.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-97",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "State that total energy is conserved in chemical reaction.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-98",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the concept of standard conditions and standard states in measuring energy changes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-99",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain Hess's Law.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-100",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Apply Hess’s Law to calculate enthalpy changes in a reaction carried out in multiple steps.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-101",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain the relationship between bond formation energy, and bond breaking energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-102",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Explain Gibbs free energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-103",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Apply the concept of Gibbs free energy to solve problems.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-104",
+      "domain": "B",
+      "content_area": "Energetics",
+      "description": "Outline how enthalpy change relates to the calorie content of the food we eat.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-105",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Explain the rate of reaction and rate constant.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-106",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Use experimental data to calculate the rate of a reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-107",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Explain the concept of activation energy and its role in chemical reactions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-108",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Use the Boltzmann distribution curve to explain the effect of temperature on the rate of a reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-109",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Explain the concept of catalyst and how they increase the rate of a reaction by lowering the activation energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-110",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Interpret reaction pathway diagrams, including in the presence and absence of catalysts.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-111",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Explain the relationship between Gibbs free energy change, ΔG, and the feasibility of a reaction.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-112",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Use rate equations, including orders of reaction and rate constants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-113",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Calculate the numerical value of a rate constant using the initial rates and half-life method.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-114",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Suggest a reaction mechanism that is consistent with a given rate equation and rate-determining step.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-115",
+      "domain": "B",
+      "content_area": "Chemical Kinetics",
+      "description": "Describe the effect of temperature change on the rate constant and rate of a reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-116",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Describe what is meant by a reversible reaction and dynamic equilibrium in terms of the rate of forward and reverse reactions being equal and the concentration of reactants and products remaining constant.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-117",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Define dynamic equilibrium between two physical states.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-118",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "State the necessary conditions for equilibrium and the ways that equilibrium can be recognized.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-119",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Describe the microscopic events that occur when a chemical system is in equilibrium Define with examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-120",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Deduce the equilibrium constant expression Kc from an equation for homogeneous reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-121",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Determine the relationship between different equilibrium constants (Kc) for the same reaction at the same temperature.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-122",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Write the equilibrium expression for a given chemical reaction in terms of concentration, Kc, partial pressure, number of moles and mole fraction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-123",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Differentiate between Microscopic and Macroscopic events in a chemical reaction.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-124",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Propose microscopic events that account for observed macroscopic changes that take place during a shift in equilibrium.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-125",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Determine if the equilibrium constant will increase or decrease when temperature is changed, given the equation for the reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-126",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "State Le Chatelier's Principle and be able to apply it to systems in equilibrium with changes in concentration, pressure, temperature, or the addition of catalyst.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-127",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Explain industrial applications of Le Chatelier's Principle using Haber's process and the Contact Process as an example.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-128",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Discuss the industrial applications of chemical equilibria and how it can be used to optimize chemical reactions to maximize yields and minimize waste products.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-129",
+      "domain": "B",
+      "content_area": "Chemical Equilibrium",
+      "description": "Use the concept of hydrolysis to explain why aqueous solutions of some salts are acidic or basic.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-130",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Define conjugate acid-base pair.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-131",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Identify conjugate acid-base pairs in reactions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-132",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Apply the concept of conjugate acid and conjugate base on salt hydrolysis.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-133",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Define mathematically the terms pH, Ka , pKa and Kw and use them in calculations (Kb and the equation Kw = Ka x Kb will not be tested).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-134",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Calculate [H+ ] and pH values for (a) strong acids (b) strong alkalis (c) (aq) weak acids (d) weak alkalis.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-135",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Distinguish that Lewis acids accept lone pair, and Lewis bases donate lone pair to make a coordinate covalent bond.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-136",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Calculate the pH of buffer solutions in given appropriate data.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-137",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Demonstrate the ability to comprehend and effectively apply the concept of solubility product. (Ksp)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-138",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Construct an expression for Ksp.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-139",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Calculate Ksp from concentrations and vice versa.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-140",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Apply the concept of the common ion effect to describe why the solubility of a substance changes when it is dissolved in a solution containing a common ion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-141",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Perform calculations using Ksp values and concentration of a common ion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-142",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Calculate concentrations of ions of slightly soluble salts.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-143",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Use the concept of hydrolysis to explain why aqueous solutions of some salts are acidic or basic.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-144",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Calculate the [H3O+] given the Ka and molar concentration of weak acid.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-145",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Perform acid-base titrations to calculate molarity and strength of given sample solutions.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-B-146",
+      "domain": "B",
+      "content_area": "Acids, Bases and Salts",
+      "description": "Select suitable indicators for acid-alkali titrations, given appropriate data (pKa values will not be used).",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-01",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain the arrangement of elements in the periodic table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-02",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain that the periodic table is arranged into four blocks associated with the four sublevels—s, p, d, and f.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-03",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Recognize that the period number (n) is the outer energy level that is occupied by electrons.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-04",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "State that the number of the principal energy level and the number of the valence electrons in an atom can be deduced from its position on the periodic table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-05",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Identify the positions of metals, nonmetals and metalloids in the periodic table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-06",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain that vertical and horizontal trends in the periodic table exist for atomic radius, ionic radius, ionization energy, electron affinity and electronegativity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-07",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Recognize that trends in metallic and non-metallic behavior are due to the trends in valence electrons.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-08",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Deduce the electron configuration of an atom from the element’s position on the periodic table, and vice versa (based on s,p,d and f subshells).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-09",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Write equations for, the reactions of Na and Mg with oxygen, chlorine and water.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-10",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain the variation in the oxidation number of the oxides and chlorides (NaCl, MgCl2 in terms of their outer shell (valence shell) electrons.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-11",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Describe (including writing equations for ) the reactions, if any, of the oxides (acidic and basic ) with water (including the likely pHs of the solutions obtained).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-12",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain with the help of equations for, the acid / base behavior of the oxides and the hydroxides NaOH, Mg(OH) 2 including, where relevant, amphoteric behavior in reactions with acids and bases (sodium hydroxide only).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-13",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain with equations for, the react ions of the chlorides with water including the likely pHs of the solutions obtained.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-14",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain the variations and trends in terms of bonding and electronegativity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-15",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Suggest the types of chemical bonding present in the chlorides and oxides from observations of their chemical and physical properties.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-16",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "predict the characteristic properties of an element in a given group by using knowledge of chemical periodicity",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-17",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Deduce the nature, possible position in the Periodic Table and identity of unknown elements from given information about physical and chemical properties.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-18",
+      "domain": "C",
+      "content_area": "Periodic Table",
+      "description": "Explain the trends in the ionization energies and electron affinities of the Group 1 and Group 17 elements.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-19",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the colors and trend in volatility of chlorine, bromine and iodine.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-20",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the trend in bond strength of halogen molecules.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-21",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Interpret the volatility of the elements in terms of instantaneous dipole- induced dipole forces.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-22",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the relative reactivity of the halogen elements as oxidizing agents.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-23",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the reactions of the elements with hydrogen and explain their relative reactivity in these reactions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-24",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the relative thermal stabilities of the hydrogen halides and explain these in terms of bond strengths.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-25",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the relative reactivity of halide ions as reducing agents.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-26",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Explain the reactions of halide ions with aqueous silver ions and concentrated sulfuric acid.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-27",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Describe the reaction of halides with aqueous silver ions followed by aqueous ammonia.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-28",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Interpret the reaction of chlorine with cold and hot aqueous sodium hydroxide as disproportionation reactions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-29",
+      "domain": "C",
+      "content_area": "Group 17",
+      "description": "Explain the use of chlorine in water purification, including the production of the active species HOCl and ClO- which kill bacteria.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-30",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Explain the lack of reactivity of nitrogen due to its triple bond strength and lack of polarity.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-31",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe the basicity of ammonia using the Brønsted–Lowry theory.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-32",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Identify the structure of the ammonium ion and explain how it is formed by an acid-base reaction.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-33",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe how ammonia can be displaced from ammonium salts through acid-base reactions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-34",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe the natural and man-made occurrences of oxides of nitrogen and their catalytic removal from exhaust gases of internal combustion engines.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-35",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Explain the role of NO and NO2 in the formation of photochemical smog, specifically in the reaction with unburned hydrocarbons to form Peroxyacetyl nitrate (PAN).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-36",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Differentiate between nitrification and denitrification.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-37",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Explain the lack of reactivity of sulfur, with reference to its bonding and stability of its compounds.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-38",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe the different oxidation states of sulfur and their relative stability.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-39",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe the properties and uses of sulfuric acid, including its production and industrial applications.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-40",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Describe the chemical reactions and processes involving sulfur, such as combustion and oxidation.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-C-41",
+      "domain": "C",
+      "content_area": "Nitrogen and Sulphur",
+      "description": "Explain the uses of sulfur compounds in industry and everyday life, such as in fertilizers, gunpowder and rubber, and in the Synthetic organic chemistry, including the synthesis of dyes, drugs and fragrances.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-01",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Identify the properties and composition of the atmosphere. (Include the concepts of 4 layers of atmosphere and their composition).",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-02",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Describe the factors that affect air quality.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-03",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Describe the sources and understand the effects of air pollution, (This can include both natural and human -caused pollutants including O 3, Pb, Hg, Polycyclic aromatic hydrocarbons, Persistent organic pollutants, Greenhouse gases (such as CO 2, CH4 and N2O), CFCs and other ozone - depleting substances, Volatile organic compounds, Heavy metals (such as Pb, Hg, and Cd).",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-04",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Familiarize with use of the methods and techniques to measure and monitor air quality.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-05",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Describe the impact of human activities on the atmosphere, including the effects of burning fossil fuels and deforestation.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-06",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Identify the chemical reactions and processes that occur in the atmosphere (some examples include the formation of smog and acid rain).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-07",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Identify laws and regulations related to air quality and the measures used to control air pollution.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-08",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Analyze data and interpret air quality measurements and trends.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-09",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Explain the link between air quality and human health.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-10",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Evaluate the potential health risks associated with air pollution.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-11",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Explain the technologies and strategies used to reduce air pollution and improve air quality, such as emissions control and renewable energy sources.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-12",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Design experiments and collect data to test hypotheses about air quality",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-13",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Identify the global scale problems of air pollution, such as global warming and the greenhouse effect.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-14",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Air",
+      "description": "Analyze the economic, social and political issues related to air pollution and air quality management and demonstrate through answers.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-15",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Identify different types of water pollution, (some examples include point source and nonpoint source pollution",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-16",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Identify common water pollutants (Some examples include oil, pesticides, and heavy metals",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-17",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Identify and explain the sources and effects of water pollution on human health and the environment.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-18",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Identify and explain water treatment methods and technologies, such as filtration and purification.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-19",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Explain the laws and regulations related to water pollution and conservation.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-20",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Evaluate the impact of human activities on water resources, such as agriculture and industrial processes.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-21",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Explain conservation and management strategies for protecting and preserving water resources.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-D-22",
+      "domain": "D",
+      "content_area": "Environmental Chemistry- Water",
+      "description": "Explain the chemical properties of water and how they relate to water quality and pollution.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-01",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Recognize that hydrocarbons are compounds made up of C and H atoms only.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-02",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Recognize that alkanes are simple hydrocarbons with no functional group.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-03",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Recognize that compounds contain a functional group which dictates their physical and chemical properties.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-04",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Interpret the general, structural, displayed, and skeletal formulae of the classes of compounds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-05",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Describe the use of systematic nomenclature of simple aliphatic organic molecules with functional groups.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-06",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Deduce the molecular and/or empirical formula of a compound, given its structural, displayed, or skeletal formula.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-07",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Describe terminology associated with the types of organic compounds and reactions (Some examples include: homologous series, saturated and unsaturated, homolytic and heterolytic fission, free radical, initiation, propagation, termination, nucleophile, electrophile, nucleophilic, electrophilic, addition, substitution, elimination, hydrolysis, condensation, oxidation and reduction)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-08",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Define catenation and explain its importance in organic chemistry.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-09",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Describe terminology associated with types of organic mechanisms (Some examples include: free -radical substitution, electrophilic addition, nucleophilic substitution, nucleophilic addition)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-10",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Draw the mechanism of a chemical reaction using curly arrows to represent the movement of a pair of electrons in at least three different types of reactions, including nucleophilic substitution, electrophilic addition, and elimination reactions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-11",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Apply the term ‘planar’ when describing the arrangement of atoms in organic molecules.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-12",
+      "domain": "E",
+      "content_area": "Introduction to Organic Chemistry",
+      "description": "Describe structural isomerism (in the context of organic molecules) and its division into chain, positional, functional group isomerism metamerism and tautomerism.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-13",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Classify hydrocarbons as aliphatic and aromatic.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-14",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Describe nomenclature of alkanes and cycloalkanes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-15",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain the shapes of alkanes and cycloalkanes exemplified by ethane and cyclopropane.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-16",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain unreactive nature of alkanes towards polar reagents.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-17",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Define homolytic and heterolytic fission, free radical initiation, propagation, and termination.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-18",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Describe the mechanism of free radical substitution in alkanes exemplified by methane and ethane.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-19",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Identify organic redox reactions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-20",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain the nomenclature of alkenes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-21",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain shape of ethene molecule in terms of structure and bonding..",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-22",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Describe the structure and reactivity of alkenes as exemplified by ethene.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-23",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain with suitable examples the terms isomerism, stereoisomerism and structural isomerism.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-24",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain dehydration of alcohols and dehydrohalogenation of RX for the preparation of ethene.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-25",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Describe the chemistry of alkenes by the following reactions of ethene: hydrogenation, hydrohalogenation, hydration, halogenation, halohydration, epoxidation, ozonolysis, polymerization.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-26",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain the concept of conjugation in alkenes having alternate double bonds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-27",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Use the IUPAC naming system for alkenes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-28",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Describe the mechanism of electrophilic addition in alkenes, using bromine / ethene and hydrogen bromide /propene as examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-29",
+      "domain": "E",
+      "content_area": "Hydrocarbons",
+      "description": "Explain the inductive effects of alkyl groups on the stability of primary, secondary and tertiary cations formed during electrophilic addition (this should be used to explain Markovnikov addition).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-30",
+      "domain": "E",
+      "content_area": "Halogenoalkanes",
+      "description": "Classify halogenoalkanes based on the type of halogen atom and its position in the carbon chain, and explain how the molecular structure affects their reactivity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-31",
+      "domain": "E",
+      "content_area": "Halogenoalkanes",
+      "description": "Explain the organic functional groups involved in a simple halogenoalkane synthesis, and predict the major product(s) based on the reaction conditions. (this includes: a) the free-radical substitution of alkanes by Cl or Br in the presence of ultraviolet light, as exemplified by the reactions of ethane. b) Electrophilic addition of an alkene with a halogen, X2, or hydrogen halide, HX(g), at room temperature. c) substitution of an alcohol, e.g. by reaction with HX or KBr with H 2SO4 or H 3PO4; or with PCl 3 and heat; or with PCl 5; or with SOCl2).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-32",
+      "domain": "E",
+      "content_area": "Halogenoalkanes",
+      "description": "Describe nucleophilic substitution reactions (specifically: a. the reaction with NaOH(aq) and heat to produce an alcohol b. the reaction with KCN in ethanol and heat to produce a nitrile. c. the reaction with NH3 in ethanol heated under pressure to produce an amine. d. the reaction with aqueous silver nitrate in ethanol as a method of identifying the halogen present as exemplified by bromoethane).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-33",
+      "domain": "E",
+      "content_area": "Halogenoalkanes",
+      "description": "Describe the elimination reaction with NaOH in ethanol and heat to produce an alkene as exemplified by bromoethane.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-34",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "State the reactions (reagents and conditions) by which alcohols can be produced: (a) electrophilic addition of steam to an alkene, H 2O(g) and H3PO4 catalyst (b) reaction of alkenes with cold dilute acidified potassium manganate(VII) to form a diol (c) substitution of a halogenoalkane using NaOH (aq) and heat (d) reduction of an aldehyde or ketone using NaBH4 or LiAlH4 (e) reduction of a carboxylic acid using LiAlH4 (f) hydrolysis of an ester using dilute acid or dilute alkali and heat describe the reaction with oxygen (combustion) of organic hydroxy compounds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-35",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Describe substitution to halogenoalkanes, e.g. by reaction with HX or KBr with H2SO4 or H3PO4 ; or with PCl3 and heat; or with PCl5 ; or with SOCl2.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-36",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Describe the reaction of hydroxy organic compounds with Na(s).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-37",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Describe the oxidation with acidified K 2Cr2O7 or acidified KMnO 4 to: carbonyl compounds by distillation, carboxylic acids by refluxing (primary alcohols give aldehydes which can be further oxidized to carboxylic acids, secondary alcohols give ketones, tertiary alcohols cannot be oxidized).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-38",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Describe the dehydration of alcohols to alkenes by using a heated catalyst, e.g. Al2O3 or a concentrated acid.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-39",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Describe the formation of esters by reaction with carboxylic acids and concentrated H2SO4 or H3PO4 as catalyst as exemplified by ethanol.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-40",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Classify alcohols as primary, secondary and tertiary alcohols, to include examples with more than one alcohol group.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-41",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "State characteristic distinguishing reactions, e.g. mild oxidation with acidified K2Cr2O7 , colour change from orange to green",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-42",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Deduce the presence of a CH 3CH(OH)– group in an alcohol, CH3CH(OH)–R, from its reaction with alkaline I 2 (aq) to form a yellow precipitate of tri-iodomethane and an ion, RCO2 –",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-43",
+      "domain": "E",
+      "content_area": "Hydroxy Compounds",
+      "description": "Explain the acidity of alcohols compared with water",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-44",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "State the reactions (reagents and conditions) by which aldehydes and ketones can be produced: a. the oxidation of primary alcohols using acidified K2Cr2O7 or acidified KMnO4 and distillation to produce aldehydes b. the oxidation of secondary alcohols using acidified K2Cr2O7 or acidified KMnO4 and distillation to produce ketones",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-45",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Describe: a. the reduction of aldehydes and ketones, using NaBH 4 or LiAlH4 to produce alcohols b. the reaction of aldehydes and ketones with HCN, KCN as catalyst, and heat to produce hydroxynitriles exemplified by ethanal and propanone",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-46",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Describe the mechanism of the nucleophilic addition reactions of hydrogen cyanide with aldehydes and ketones.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-47",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Describe the use of 2,4 -dinitrophenylhydrazine (2,4 -DNPH reagent) to detect the presence of carbonyl compounds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-48",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Deduce the nature (aldehyde or keton e) of an unknown carbonyl compound from the results of simple tests (Fehling’s and Tollens’ reagents; ease of oxidation)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-49",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Deduce the presence of a CH 3CO – group in an aldehyde or ketone, CH3COR, from its reaction with alkaline I 2(aq) to form a yellow precipitate of tri-iodomethane and an ion, RCO -. 2",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-50",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Recall the reactions by which carboxylic acids can be produced: a) oxidation of primary alcohols and aldehydes with acidified K 2Cr2O7 or acidified KMnO4 and refluxing b) hydrolysis of nitriles with dilute acid or dilute alkali followed by acidification c) hydrolysis of esters with dilute acid or dilute alkali and heat followed by acidification",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-51",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Describe a. the redox reaction with reactive metals to produce a salt and H2(g) b. the neutralization reaction with alkalis to produce a salt and H2O c. the acid–base reaction with carbonates to produce a salt and H2O(l) and CO2(g) d. esterification with alcohols with concentrated H2SO4 as catalyst e. reduction by LiAlH4 to form a primary alcohol.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-52",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Recall the reaction (reagents and conditions) by which esters can be produced: the condensation reaction between an alcohol and a carboxylic acid with concentrated H2SO4 as catalyst.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-53",
+      "domain": "E",
+      "content_area": "Carbonyl Compounds",
+      "description": "Describe the hydrolysis of esters by dilute acid and by dilute alkali and heat",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-54",
+      "domain": "E",
+      "content_area": "Nitrogen Compounds- Amines",
+      "description": "Define primary and secondary amines, and explain their basic properties and reactivity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-55",
+      "domain": "E",
+      "content_area": "Nitrogen Compounds- Amines",
+      "description": "Identify the differences between primary and secondary amines in terms of their structure and chemical properties.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-56",
+      "domain": "E",
+      "content_area": "Nitrogen Compounds- Amines",
+      "description": "Describe the preparation methods of primary and secondary amines, including nucleophilic substitution reactions and reduction of nitro compounds.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-57",
+      "domain": "E",
+      "content_area": "Nitrogen Compounds- Amines",
+      "description": "Explain the properties and reactivity of phenylamine and azo compounds, including their use as dyes and pigments.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-58",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Explain the concept of organic synthesis and functional group interconversions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-59",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Identify organic functional groups using the reactions in this progression grid.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-60",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Predict properties and reactions of organic molecules based on functional group presence.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-61",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Devise multi-step synthetic routes for preparing organic molecules.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-62",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Analyze a given synthetic route in terms of type of reaction and reagents used for each step of it, and possible by products.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-E-63",
+      "domain": "E",
+      "content_area": "Organic Synthesis",
+      "description": "Explain the concept of retrosynthesis and its application in organic synthesis.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-01",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Differentiate between the difference between petrochemical and chemicals derived from them,",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-02",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Identify the various raw materials for the petrochemical industry.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-03",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Explain the process of fractional distillation and refining of petroleum and identify the important fractions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-04",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Describe the basic building block processes in petrochemical technology and explain the petrochemical process technology.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-05",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "List some major petrochemicals and understand the importance of petrochemicals in the modern world.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-06",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Distinguish between energy density and specific energy of different energy sources, and explain the efficiency of energy transfer",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-07",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Explain the formation, properties, and uses of fossil fuels, and the importance of fossil fuels in the modern world.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-08",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Explain the mechanism and importance of nuclear fusion and fission and explain the importance of nuclear energy in the modern world.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-09",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Explain the importance and mechanism of solar energy and its importance as a source of renewable energy in the modern world.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-10",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Explain the environmental impact of energy consumption, particularly in relation to global warming and its relation to the importance of reducing carbon footprint and moving towards sustainable energy sources.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-F-11",
+      "domain": "F",
+      "content_area": "Energy",
+      "description": "Apply knowledge of energy sources and their properties to critically evaluate the advantages and disadvantages of different energy sources and make informed decisions about energy consumption.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-01",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Identify the chemical hazards in the lab in context of the experiment being conducted.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-02",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Test that the equipment is working properly without any potential risk of injury before conducting an experiment.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-03",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Ensure that workspace for conducting the experiment is not crowded with apparatus as to be hazardous.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-04",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Ensure that safe distance is kept at all times from otherinvestigators who may be handling lab apparatus.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-05",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Identify what potential bodily harm could occur from physical, chemical, biological and safety hazards in the context of the experiment being conducted.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-06",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Recognise that it is always better to ask for help from the lab instructor when unsure of how to use new apparatus.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-07",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Identify the proper waste disposal system for chemicals being used.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-08",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Set up apparatus following instructions given in written ordiagrammatic form.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-09",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Use apparatus to collect an appropriate quantity of data",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-10",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Make observations, including subtle differences in colour, solubility or quantity of materials",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-11",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Make measurements using pipettes, burettes, measuring cylinders, thermometers and other common laboratory apparatus.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-12",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Decide how many tests or observations to perform",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-13",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Identify where repeated readings or observations are appropriate",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-14",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Replicate readings or observations as necessary, including where an anomaly is suspected",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-15",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Identify where confirmatory tests are appropriate and the nature of such tests",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-16",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Select reagents to distinguish between given ions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-17",
+      "domain": "G",
+      "content_area": "Practically perform chemical experiments",
+      "description": "Carry out procedures using simple apparatus, in situations where the method may not be familiar to the candidate",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-18",
+      "domain": "G",
+      "content_area": "Acid Base Titration",
+      "description": "Describe an acid–base titration to include the use of a: a. burette b. volumetric pipette c. suitable indicator",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-19",
+      "domain": "G",
+      "content_area": "Acid Base Titration",
+      "description": "Describe how to identify the endpoint of a titration using an indicator",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-20",
+      "domain": "G",
+      "content_area": "Acid Base Titration",
+      "description": "Describe tests to identify the anions: a. CO 2- : By reaction with dilute acid and then testing for 3 carbon dioxide gas. b. Cl1- / Br1-/ I1- : By acidifying with dilute nitric acid then adding aqueous silver nitrate. 1- c. NO3 : By reduction with aluminum foil and aqueous sodium hydroxide and then testing for ammonia gas. 2- d. SO4 : By acidifying with dilute nitric acid then adding aqueous barium nitrate. 2- e. SO3 : By reaction with acidified aqueous potassium manganate(VII).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-21",
+      "domain": "G",
+      "content_area": "Acid Base Titration",
+      "description": "Describe tests using aqueous sodium hydroxide and aqueous ammonia to identify the aqueous cations: a) aluminum, Al3+ 1+ b) ammonium, NH4 c) calcium, Ca2+ d) chromium(III), Cr3+ e) copper(II), Cu2+ f) iron(II), Fe2+ g) iron(III), Fe3+ h) zinc, Zn2+",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-22",
+      "domain": "G",
+      "content_area": "Acid Base Titration",
+      "description": "Present numerical data, values or observations in a singletable of results with headings and units that conform to accepted scientific conventions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-23",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Record raw readings of a quantity to the same degree of precision and observations to the same level of detail.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-24",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Show working in calculations and key steps in reasoning.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-25",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Use the correct number of significant figures for calculated quantities.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-26",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Draw an appropriate table in advance of taking readings or making observations and record all data in the table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-27",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Use the appropriate presentation method to produce a clear presentation of the data.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-28",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Plot appropriate variables on appropriate, clearly labelled x - and y-axes with carefully chosen scales.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-29",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Draw straight lines or smooth curves of best fit to show the trend of a graph.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-30",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Describe the patterns and trends shown by data in tables and graphs.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-31",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Describe and summarize the key points of a set of observations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-32",
+      "domain": "G",
+      "content_area": "Data representation and analysis",
+      "description": "Determine the gradient of a straight-line graph and extrapolate the line of a graph.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-33",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Draw conclusions from an experiment, giving an outline description of the main features of the data, considering whether experimental data support a given hypothesis, and making further predictions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-34",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Draw conclusions from interpretations of observations, data and calculated values.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-35",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Make scientific explanations of data, observations and conclusions that they have described.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-36",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Analyse intrinsic errors in measuring device.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-37",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Describe systematic errors.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-38",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Identify the most significant sources of error in an experiment",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-39",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "State the uncertainty in a quantitative measurement and express such uncertainty in a measurement as an actual or percentage error",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-40",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Analyse the limitations of the experimental design and propose appropriate modifications that will improve the accuracy of the experiment.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-41",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Evaluate the validity of the methods used",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-42",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Explain improvements or extensions to the methods used.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-43",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Apply scientific language effectively.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-44",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Document the work of others and sources of information used",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "C-11-G-45",
+      "domain": "G",
+      "content_area": "Suggest improvements based on validity, reliability and safety.",
+      "description": "Suggest ways in which to extend the investigation to answer a new question.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    }
+  ]
+}

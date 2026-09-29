@@ -1,0 +1,1784 @@
+{
+  "subject": {
+    "code": "PHY",
+    "name": "Physics"
+  },
+  "grade": 12,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/curriculum_model_paper.php",
+  "domains": [
+    {
+      "code": "B",
+      "name": "Mechanics"
+    },
+    {
+      "code": "C",
+      "name": "Heat and Thermodynamics"
+    },
+    {
+      "code": "D",
+      "name": "Waves"
+    },
+    {
+      "code": "E",
+      "name": "Electricity and Magnetism"
+    },
+    {
+      "code": "F",
+      "name": "Modern Physics"
+    },
+    {
+      "code": "G",
+      "name": "Nature of Sciences"
+    },
+    {
+      "code": "N",
+      "name": "Experimentation Skills"
+    }
+  ],
+  "slos": [
+    {
+      "code": "P-12-B-01",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Define and calculate gravitational field strength [This will include more challenging problems than in Grade 9. It will involve use of g = GM/r2 ].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-02",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Analyze gravitational fields by means of field lines. [This includes knowing that for a point outside a uniform sphere, the mass of the sphere may be considered to be a point mass at its center].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-03",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Apply Newton’s law of gravitation to solve problems [F=Gm1m2 /r2 for the force between two-point masses to solve problems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-04",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Analyze circular orbits in gravitational fields [By relating the gravitational force to the centripetal acceleration, it causes].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-05",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Analyze the motion of geostationary satellites [This includes knowing that geostationary orbit remains at the same point above the Earth‘s surface, with an orbital period of 24 hours, orbiting from west to east, directly above the Equator].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-06",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Derive the equation for gravitational field strength [From Newton’s law of gravitation and the definition of gravitational field, the equation g = GM/r2 for the gravitational field strength due to a point mass].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-07",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Analyze why g is approximately constant for small changes in height near the Earth’s surface.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-08",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Define and calculate gravitational potential [Use 𝜑 = − 𝐺𝑀 𝑟 for the gravitational potential in the field due to a point mass]. [At a point as the work done per unit mass in bringing a small test mass from infinity to the point].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-B-09",
+      "domain": "B",
+      "content_area": "Mechanics",
+      "description": "Justify how the concept of gravitational potential leads to the gravitational potential energy of two-point masses [Use of Ep =-G Mm/r in problems is expected].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-01",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "Explain how molecular movement causes the pressure exerted by gas.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-02",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "Derive and use the relationship pV =Nm/3 <c 2> [where <c2> is the mean-square speed (a simple model considering one-dimensional collisions and then extending to three dimensions. Using 1/3<c2 >=<cx2 > is sufficient)].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-03",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "Calculate the root-mean-square speed of an ideal gas.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-04",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "Derive and use the formula for the average translational kinetic energy of a gas.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-05",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "Illustrate that the model of ideal gasses is used a base from which the field of statistical mechanics emerged [and has helped explain the behavior of 'non-ideal' gasses through modifications to the model e.g. the behavior of stars].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-C-06",
+      "domain": "C",
+      "content_area": "Kinetic Theory of Gases",
+      "description": "State that under extreme physical conditions, atoms can break down into sub -atomic particle that can form unusual states of matter [Such as degenerate matter. Usually made of any one kind of subatomic particle such as neutron degenerate matter in neutron stars under strong gravity and heat) and Bose-Einstein condensates (Created when certain materials are taken to very low temperatures an d then exhibit remarkable properties like superconductivity and super fluidity)].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-01",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Describe simple examples of free oscillations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-02",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Use the terms displacement, amplitude, period, frequency, angular frequency and phase difference in the context of oscillations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-03",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Express the period of simple harmonic motion in terms of both frequency and angular frequency.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-04",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Explain that simple harmonic motion occurs when acceleration is proportional to displacement from fixed point and in the opposite direction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-05",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Use a = - ω2x to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-06",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Use the equations cos( )ov v t  and 22 ov x x  to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-07",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Analyze graphical representations of the variations of displacement, velocity and acceleration for simple harmonic motion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-08",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Analyze the interchange between kinetic and potential energy during simple harmonic motion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-09",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Apply ½mω2x02 for the total energy of system undergoing simple harmonic motion.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-10",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Describe that a resistive force acting on an oscillating system causes damping.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-11",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Use the terms light, critical and heavy damping.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-12",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Sketch displacement-time graphs: to illustrate light, critical and heavy damping.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-13",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "State that resonance involves a maximum amplitude of oscillations and that this occurs when an oscillating system is forced to oscillate at its natural frequency.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-14",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Describe practical examples of free and forced oscillations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-15",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Describe practical examples of damped oscillations [with particular reference to the efforts of the degree of damping and the importance of critical damping in cases such as a car suspension system].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-16",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Justify qualitatively the factors which determine the frequency response and sharpness of the resonance.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-17",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Identify the use of standing waves and resonance in applications [such as Rubens tubes, Chladni plates and acoustic levitation (knowledge of wave harmonic modes is not required)].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-18",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Justify the importance of critical damping in a car suspension system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-19",
+      "domain": "D",
+      "content_area": "Oscillations",
+      "description": "Justify that there are some circumstances in which resonance is useful [such as tuning a radio, microwave oven and other circumstances in which resonance should be avoided such as airplane’s wing or a suspension bridge].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-20",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "Explain experiments that demonstrate two -source interference using water waves in a ripple tank, sound, light and microwaves.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-21",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "Describe the conditions required if two-source interference fringes are to be observed.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-22",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "Use Ly d  for double -slit interference using light to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-23",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "Use d sin (θ) = n λ to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-24",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "Describe the use of a diffraction grating to determine the wavelength of light [the structure and use of the spectrometer are not included].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-D-25",
+      "domain": "D",
+      "content_area": "Diffraction and Interference",
+      "description": "With the context of the electron diffraction double slit experiment, explain the below two of the many interpretations of quantum mechanics: (i) Copenhagen interpretation (ii) Many worlds interpretation.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-01",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Define and calculate electric potential [At a point as the work done per unit positive charge in bringing small test charge from infinity to point. Use 4 o qV r  for the electric potential in the field due to a point charge].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-02",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Use the fact that the electric field at a point is equal to the negative of potential gradient at that point.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-03",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "State how the concept of electric potential leads to the electric potential energy of two-point charges and use 4 p o QqE r  .",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-04",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Define and calculate capacitance [as applied to both isolated spherical conductors and to parallel plate capacitors].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-05",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Derive and apply formulae for the combined capacitance of capacitors in series and in parallel.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-06",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Use the capacitance formula for capacitors in series and in parallel.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-07",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Determine the electric potential energy stored in a capacitor from the area under the potential — charge graph [Use 211( ) ( )22QV CV to solve physics related problems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-08",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Analyze graphs of the variation with time of potential difference, charge and current for a capacitor discharging through a resistor [use τ = RC for the time constant for a capacitor discharging through a resistor].",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-09",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Use equations of the form x = xo (exp( −𝑡 𝑅𝐶) ) [ where x could represent current, charge or potential difference for a capacitor discharge through a resistor].",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-10",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "list the use of capacitors in various household appliances [such as in flash guns, refrigerators, electric fans, rectification circuits, etc.].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-11",
+      "domain": "E",
+      "content_area": "Bioelectricity",
+      "description": "Illustrate how bioelectricity is generated in animals [- cells control the flow of specific charged elements across the membrane with proteins that sit on the cell surface and create an opening for certain ions to pass through. These proteins are called ion channels. - When a cell is stimulated, it allows positive charges to enter the cell through open ion channels. The inside of the cell then becomes more positively charged, which triggers further electrical currents that can turn into electrical pulses, called action potentials. - The bodies of many organisms use certain patterns of action potentials to initiate the correct movements, thoughts and behaviors].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-12",
+      "domain": "E",
+      "content_area": "Bioelectricity",
+      "description": "State that there are several species of aquatic life, such as Electrophorus Electricus, that can naturally generate external electric shocks through internal biological mechanisms that act as batteries.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-13",
+      "domain": "E",
+      "content_area": "Bioelectricity",
+      "description": "Explain, with examples of animal with this ability, that electroreception is the ability to detect weak naturally occurring electrostatic fields in the environment.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-14",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Use the terms period, frequency and peak value as applied to an alternating current or voltage.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-15",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Use equations of the form x = x o sin (ωt) representing a sinusoidally alternating current or voltage.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-16",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Use the fact that the mean power in a resistive load is half the maximum power for a sinusoidal alternating current.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-17",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Distinguish between root -mean-square (r.m.s.) and peak values [including stating and using 𝐼 = 𝐼𝑜 √2 and 𝑉 = 𝑉𝑜 √2 for a sinusoidal alternating current].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-10-E-18",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Distinguish graphically between half -wave and full-wave rectification.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-19",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Explain the use of a single diode for the half -wave rectification of an alternating current.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-20",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Explain the use of four diodes (bridge rectifier) for the full-wave rectification of an alternating current.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-21",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Analyze the effect of a single capacitor in smoothing current flow [including the effect of the values of capacitance and the load resistance].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-22",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Define mutual inductance (M) and self-inductance (L), and their unit henry.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-23",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Describe the phase of A.C and how phase lags and leads in A.C Circuits.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-24",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Identify inductors as important components of A.C circuits termed as chokes [devices which present a high resistance to alternating current].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-25",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Calculate the reactance of capacitors and inductors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-E-26",
+      "domain": "E",
+      "content_area": "AC circuits",
+      "description": "Describe impedance as vector summation of resistances and reactances.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-01",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "State that electromagnetic radiation has a particulate nature.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-02",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain and apply the photonic model of light to solve problems [use E = hf to solve problems, and use the electron volt (eV) as a unit of energy].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-05",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain that a photon has momentum [including that the momentum is given by p = E/c (connect with the idea that light can exert a force)].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-06",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Describe that photoelectrons may be emitted from a metal surface when it is illuminated by electromagnetic radiation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-07",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Describe and use the terms threshold frequency and threshold wavelength.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-08",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain photoelectric emission in terms of photon energy and work function energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-09",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "State and apply ℎ𝑓 = ∅ + 1 2 mv2max .",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-10",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain why the maximum kinetic energy of photoelectrons is independent of intensity, whereas the photoelectric current is proportional to intensity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-11",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Juxtapose the evidence for light as a wave and as a particle [Explain that the photoelectric effect provides evidence for a particulate nature of electromagnetic radiation while phenomena such as interference and diffraction provide evidence for wave nature].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-12",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Analyze qualitatively the evidence provided by electron diffraction for the wave nature of particles.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-13",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain and apply the de Broglie wavelength to solve problems [use /hp to solve problems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-14",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "State that there are discrete electron energy levels in isolated atoms (e.g. atomic hydrogen).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-15",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain the appearance and formation of emission and absorption line spectra.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-16",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Use hf = ΔE to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-17",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Describe the Compton effect qualitatively.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-18",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain the phenomena of pair production and pair annihilation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-19",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Explain how electron microscopes achieve very high resolution.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-20",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "State and explain Heisenberg’s uncertainty principle qualitatively.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-21",
+      "domain": "F",
+      "content_area": "Quantum Physics",
+      "description": "Use the uncertainty principle to explain why empirical measurements must necessarily have uncertainty in them.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-22",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Recognize the equivalence between energy an d mass as represented by E = Δmc2 and state and use this equation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-23",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Define and use the terms mass defect and binding energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-24",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Sketch the variation of binding energy per nucleon with nucleon number.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-25",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Recall what is meant by nuclear fusion and nuclear fission.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-26",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Explain how the neutrons produced in fission create a chain reaction and that this is controlled in a nuclear reactor [including the action of coolant, moderators and control rods].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-27",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Calculate the energy released in nuclear reactions using E = Δmc2.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-28",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Explain that fluctuations in count rate provide evidence for the random nature of radioactive decay.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-29",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Explain that radioactive decay is both spontaneous and random.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-30",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Define activity and decay constant and state the use of AN  .",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-31",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Explain half-life with examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-32",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Use 0.693 /T  to solve numerical problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-33",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "State the exponential nature of radioactive decay.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-34",
+      "domain": "F",
+      "content_area": "Particle Physics",
+      "description": "Use the relationship t ox x e  [where x could represent activity, number of undecayed nuclei or received count rate to solve problems analytically and graphically].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-35",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Describe the function of the principle components of a water moderated power reactor [core, fuel, rods, moderator, control rods, heat exchange, safety rods and shielding].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-36",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Explain why uranium fuel needs to be enriched before use.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-37",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Compare the amount of energy released in a fission reaction with the given energy released in a chemical reaction.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-38",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Explain what is a medical tracer [a substance containing radioactive nuclei that can be introduced into the body and is then absorbed by the tissue being studied].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-39",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Explain annihilation reactions [they occur when a particle interacts with its antiparticle and that mass —energy and momentum are conserved in the process].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-40",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Illustrate how PET scanning works [positrons emitted by the decay of the tracer annihilate when they interact with electrons in the tissue, producing a pair of gamma -ray photons traveling in opposite directions].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-41",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Calculate the energy of the gamma ray photons emitted during the annihilation of an electron-positron pair.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-42",
+      "domain": "F",
+      "content_area": "Nuclear Physics",
+      "description": "Explain that the gamma -ray photons from an annihilation event travel outside the body and can be detected [including that an image of the tracer concentration in the tissue can be created by processing the arrival times of the gamma-ray photon].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-43",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Explain the term luminosity [as the total power of radiation emitted by a star].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-44",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Apply the inverse square law for radiant flux intensity [F in terms of the luminosity L of the source 𝐹 = 𝐿 4𝜋𝑑2 ].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-45",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Define and apply standard candles [Explain the use of standard candles to determine distances to galaxies].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-46",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Explain blackbody radiation and apply Wien’s displacement law to solve problems max[ tanT cons t  to estimate the peak surface temperature of a star].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-47",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Apply the Stefan Boltzmann law to solve problems [ 244L r x T to solve problems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-48",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Estimate the radius of a star [applying Wien’s displacement law and the Stefan—Boltzmann law].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-49",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Explain that the lines in the emission and absorption spectra from distant objects show an increase in wavelength from their known values.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-50",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "Explain why redshift leads to the idea that the Universe is expanding [include using fv fc     for the redshift of electromagnetic radiation from a source moving relative to an observer to solve problems relating to the expanding universe].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-51",
+      "domain": "F",
+      "content_area": "Astrophysics and Cosmology",
+      "description": "State and explain Hubble’s law and how it leads to the Big Bang theory.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-52",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Describe Earth's climate system as a complex system having five interacting components [the atmosphere (air), the hydrosphere (water), the cryosphere (ice and permafrost), the lithosphere (earth's upper rock layer) and the biosphere (living things)].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-53",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Relate ocean currents and wind patterns to the climate system [as the statistical characterization of the climate system, representing the average weather, typically over a period of 30 years, and is determined by a combination of processes in the climate system, such as ocean currents and wind patterns].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-54",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain climate inertia [ as the phenomenon by which climate systems show resistance or slowness to changes in significant factors e.g. stabilization of greenhouse emissions might show a slow response due to the action of complex feedback systems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-55",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain that climate change can be categorized into internal variations and external forcing.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-56",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain how global climate is determined by energy transfer from the Sun [with specific reference to the below factors and terms: state and use the term Earth energy budget. Explain how the energy imbalance between the poles and the equator can affect atmospheric circulation].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-57",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain that due to the conservation of angular momentum, the Earth's rotation diverts the air to the right in the Northern Hemisphere and to the left in the Southern hemisphere, thus forming distinct atmospheric cells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-58",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain that ocean water that has more salt has a higher density and differences in density play an important role in ocean circulation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-59",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain how the thermohaline circulation transports heat from the tropics to the polar regions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-60",
+      "domain": "F",
+      "content_area": "Environmental Physics",
+      "description": "Explain how climate science is an example of a chaotic system, [using the metaphor of a butterfly\" wing flaps may cause hurricanes in another part of the world, mathematics of chaos theory is not required; just the idea that with very complex systems it is very difficult to predict outcomes and they are very sensitive to initial conditions].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-61",
+      "domain": "F",
+      "content_area": "Medical Physics",
+      "description": "Explain that piezo -electric effect and its application in medical science [ultrasound waves are generated and detected by a piezoelectric transducer].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-62",
+      "domain": "F",
+      "content_area": "Medical Physics",
+      "description": "Explain how ultrasound can be used to obtain diagnostic information about internal body structures.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-63",
+      "domain": "F",
+      "content_area": "Medical Physics",
+      "description": "Explain that X-rays are produced by electron bombardment of a metal target and calculate the minimum wavelength of X-rays produced from the accelerating P.d.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-64",
+      "domain": "F",
+      "content_area": "Medical Physics",
+      "description": "Explain the use of X -rays in imaging internal body structures [including a describing of the term contrast in X-ray imaging].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-F-65",
+      "domain": "F",
+      "content_area": "Medical Physics",
+      "description": "Explain how computed tomography (CT) scanning works [it produces a 3D image of an internal structure by first combining multiple X-ray images taken in the same section from different angles to obtain a 2D image of the section, then repeating this process along an axis and combining 2D images of multiple sections].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-G-01",
+      "domain": "G",
+      "content_area": "Nature of Physics and Contemporary Physics",
+      "description": "Explain, with examples, what do thinkers who hold the view that there is inherent mathematical beauty in the natural world mean by: (i) elegance of simplicity (ii) symmetry.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-G-02",
+      "domain": "G",
+      "content_area": "Nature of Physics and Contemporary Physics",
+      "description": "Explain, with an example, a counterargument to the claim that physical truths must be inherently mathematically elegant or display symmetry.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-G-03",
+      "domain": "G",
+      "content_area": "Nature of Physics and Contemporary Physics",
+      "description": "Describe the main pros and cons in the debate about: (i) Whether humans should research whether there are aliens somewhere in the universe. (ii) Whether research should continue on uncovering the secrets of subatomic particles, given the advent of nuclear weapons.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-G-04",
+      "domain": "G",
+      "content_area": "Nature of Physics and Contemporary Physics",
+      "description": "Explain how the below thought experiments helped convey important physics concepts that would have been impractical to investigate empirically: (i) Newton's cannonball.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-01",
+      "domain": "N",
+      "content_area": "Planning and Designing",
+      "description": "Develop and justify safety guidelines for a proposed procedure, that also outline the overall risks of the experiment, keeping in mind: (i) the apparatus, (ii) the surrounding environment, (iii) need for personal protective equipment].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-02",
+      "domain": "N",
+      "content_area": "Planning and Designing",
+      "description": "Formulate a testable hypothesis by: « Identifying the independent variable in the experiment « Identifying the dependent variable in the experiment « Identifying the variables that are to be kept constant.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-03",
+      "domain": "N",
+      "content_area": "Planning and Designing",
+      "description": "Explain the methods of data collection by: a. describing the method to be used to vary the independent variable b. describing how the independent and dependent variables are to be measured c. describing how other variables are to be kept constant d. describing, with the aid of a clear labeled diagram, the arrangement of apparatus for the experiment and the procedures to be followed.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-04",
+      "domain": "N",
+      "content_area": "Planning and Designing",
+      "description": "Explain the methods of data analysis by describing how the data should be used in order to reach a conclusion, including details of derived quantities to be calculated from graphs.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-05",
+      "domain": "N",
+      "content_area": "Planning and Designing",
+      "description": "Suggest how technology can be used to digitize data collection by describing as appropriate: a. the use of an oscilloscope (or storage oscilloscope) to measure voltage, current, time and frequency b. how to use light gates connected to a data logger to determine time, velocity and acceleration c. how other sensors can be used with a data logger, e.g. motion sensor",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-06",
+      "domain": "N",
+      "content_area": "Recording and Data Presentation",
+      "description": "Show uncertainty estimates, in absolute terms, beside every value in a table of results.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-07",
+      "domain": "N",
+      "content_area": "Recording and Data Presentation",
+      "description": "Show error bars, in both directions where appropriate, for each point on the graph.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-08",
+      "domain": "N",
+      "content_area": "Recording and Data Presentation",
+      "description": "Draw a straight line of best fit and a worst acceptable straight line through the points on the graph.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-09",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Rearrange expressions into the forms y mx c , ny ax and kxy ae .",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-10",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Describe how a graph of y against x is used to find the constants m and c in an equation of the form y = mx + c.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-11",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Describe how a graph of log y against log x is used to find the constants a and n in an equation of the form y = axn.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-12",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Describe how a graph of In y against x is used to find the constants a and k in an equation of the form y = aekx.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-13",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Decide what derived quantities to calculate from raw data in order to enable an appropriate graph to be plotted.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-14",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Convert absolute uncertainty estimates into fractional or percentage uncertainty estimates and vice versa.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-15",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Calculate uncertainty estimates in derived quantities.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-16",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Estimate the absolute uncertainty in the gradient of a graph by stating that absolute uncertainty = gradient of line of best fit — gradient of worst acceptable line.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-17",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Estimate the absolute uncertainty in the y - intercept of a graph by stating that absolute uncertainty = y-intercept of line of best fit — y- intercept of worst acceptable line.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-12-N-18",
+      "domain": "N",
+      "content_area": "Analysis, Conclusions and Evaluation",
+      "description": "Express a quantity as a value, an uncertainty estimates and a unit.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    }
+  ]
+}

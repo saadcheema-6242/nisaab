@@ -1,3 +1,17 @@
+import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
+import { useNavigate } from '@tanstack/react-router'
+import { Option } from 'effect'
+import {
+  CheckCircle,
+  ChevronDown,
+  RotateCcw,
+  Trophy,
+  Upload,
+  X,
+  XCircle,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
+import type { QuizQuestionDto } from '@/integrations/api/client'
 import { Button } from '@/components/ui/button'
 import {
   Collapsible,
@@ -12,20 +26,8 @@ import {
   resetQuizAtom,
   submitPendingPracticeRecordsAtom,
 } from '@/data-acess/quiz-detail-state'
-import type { QuizQuestionDto } from '@/integrations/api/client'
-import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { useNavigate } from '@tanstack/react-router'
-import { Option } from 'effect'
-import {
-  CheckCircle,
-  ChevronDown,
-  RotateCcw,
-  Trophy,
-  Upload,
-  X,
-  XCircle,
-} from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { MathText } from '@/components/math-text'
+import { latestQuizAttemptAtom } from '@/data-acess/quiz-attempt'
 
 const getOptionText = (
   question: QuizQuestionDto,
@@ -52,6 +54,44 @@ const CompletionHeader = ({ total }: CompletionHeaderProps) => (
     </p>
   </div>
 )
+
+// Each finished run is saved as a new attempt; show which one this was
+const SavedAttempt = ({
+  quizId,
+  projectId,
+}: {
+  quizId: string
+  projectId: string
+}) => {
+  const stateResult = useAtomValue(
+    latestQuizAttemptAtom(`${projectId}:${quizId}`),
+  )
+  const state = Result.isSuccess(stateResult) ? stateResult.value : null
+  if (!state?.attempt || stateResult.waiting) {
+    return (
+      <p className="text-center text-sm text-muted-foreground">
+        Saving your score…
+      </p>
+    )
+  }
+  return (
+    <div className="space-y-2 text-center">
+      <p className="text-sm text-emerald-600">
+        Saved as attempt {state.attempt.number} · {state.attempt.score}/
+        {state.attempt.max_score}
+      </p>
+      {state.history.length > 1 && (
+        <div className="flex flex-wrap justify-center gap-1.5 text-xs text-muted-foreground">
+          {state.history.map((item) => (
+            <span key={item.id} className="rounded-full border px-2 py-0.5">
+              #{item.number} · {item.score}/{item.max_score}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 type StatCardProps = {
   icon?: React.ReactNode
@@ -126,9 +166,9 @@ const QuizQuestionListItem = ({
         {index + 1}
       </span>
       <div className="flex-1 space-y-1.5 min-w-0">
-        <p className="text-sm font-medium leading-relaxed">
+        <MathText className="text-sm font-medium leading-relaxed">
           {question.question_text}
-        </p>
+        </MathText>
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">You:</span>
@@ -158,9 +198,9 @@ const QuizQuestionListItem = ({
           )}
         </div>
         {question.explanation && (
-          <div className="text-xs text-muted-foreground italic leading-relaxed">
+          <MathText className="text-xs text-muted-foreground leading-relaxed">
             {question.explanation}
-          </div>
+          </MathText>
         )}
       </div>
     </div>
@@ -366,6 +406,7 @@ export const QuizResultsView = ({
       <div className="flex flex-col flex-1 min-h-0 overflow-auto p-4">
         <div className="max-w-3xl mx-auto w-full space-y-8 py-8">
           <CompletionHeader total={total} />
+          <SavedAttempt quizId={quizId} projectId={projectId} />
 
           <StatsGrid quizId={quizId} projectId={projectId} />
 

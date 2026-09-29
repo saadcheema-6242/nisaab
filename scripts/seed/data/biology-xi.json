@@ -1,0 +1,2756 @@
+{
+  "subject": {
+    "code": "BIO",
+    "name": "Biology"
+  },
+  "grade": 11,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/curriculum_model_paper.php",
+  "domains": [
+    {
+      "code": "B",
+      "name": "Evolution and Biodiversity"
+    },
+    {
+      "code": "C",
+      "name": "Biological Molecules"
+    },
+    {
+      "code": "D",
+      "name": "Cell Biology"
+    },
+    {
+      "code": "F",
+      "name": "Bioenergetics"
+    },
+    {
+      "code": "H",
+      "name": "Reproduction and Genetics"
+    },
+    {
+      "code": "N",
+      "name": "Ecosystems"
+    },
+    {
+      "code": "P",
+      "name": "Viruses"
+    },
+    {
+      "code": "Q",
+      "name": "Plant Physiology"
+    },
+    {
+      "code": "X",
+      "name": "Practical Skills"
+    }
+  ],
+  "slos": [
+    {
+      "code": "B-11-B-01",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Explain that evolution happens due to variation in organisms and the selection pressures that organisms face",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-02",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Discuss the evidence that is provided by biogeography",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-03",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Analyse the evidence of evolution that comes from molecular biology.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-04",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Differentiate between convergent and divergent evolution on the basis of inheritance of the homologous and analogous structures.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-05",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Describe the Endosymbiotic theory about the mechanism of evolution of eukaryotes from prokaryotes",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-06",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "Describe the theory of inheritance of acquired characters, as proposed by Lamarck with example of giraffe neck",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-07",
+      "domain": "B",
+      "content_area": "Evolution",
+      "description": "State the drawbacks in Lamarckism.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-08",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Describe non vascular plants (Bryophytes,)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-09",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Explain the life cycle of polytrichome",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-10",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Describe the general features of vascular plants",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-11",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Identify the division between vascular plants (pteridophytes, gymnosperms, angiosperms)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-12",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Explain the general characteristics pteridophytes",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-13",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Explain the life cycle of ferns",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-14",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Describe the general characteristic of gymnosperms and classify them",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-15",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Describe the life cycle of pinus",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-16",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Describe the general characteristic of angiosperms and classify them",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-17",
+      "domain": "B",
+      "content_area": "Biodiversity",
+      "description": "Explain the life cycle of flowering plants (angiosperms)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-18",
+      "domain": "B",
+      "content_area": "Angiospermic families",
+      "description": "Describe general characteristics and economic importance of the following angiospermic families Brassicacaeae SolanaceaePoaceae",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-19",
+      "domain": "B",
+      "content_area": "Animal Kingdom",
+      "description": "Identify that animals are divided into two major groups as invertebrate and vertebrate",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-20",
+      "domain": "B",
+      "content_area": "Animal Kingdom",
+      "description": "Describe the general characteristics, importance and example of sponges cnidarians, Platyhelminthes, Aschelminthes (nematodes), molluscs, annelid, arthropods and echinoderms",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-21",
+      "domain": "B",
+      "content_area": "Animal Kingdom",
+      "description": "Describe the general characteristics of chordates and vertebrates.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-B-22",
+      "domain": "B",
+      "content_area": "Animal Kingdom",
+      "description": "Describe the general characteristics of amphibians, reptiles, birds and mammals.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-01",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Define biochemistry/molecular biology",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-02",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe Briefly the different types of bonds found in biology (hydrogen bonds, covalent bonds, interactions, ionic, hydrophobic and hydrophilic interactions etc.)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-03",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Distinguish carbohydrates, proteins, lipids and nucleic acids as the four fundamental kinds of biological molecules.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-04",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe and draw sketches of the condensation - synthesis and hydrolysis reactions for the making and breaking of macromolecule polymers.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-05",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "State the properties of water (high polarity, hydrogen bonding, high specific heat, high heat of vaporization, cohesion, hydrophobic exclusion, ionization and lower density of ice) allow it to be the medium of life.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-06",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Define carbohydrates and classify them.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-07",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Compare and contrast the properties and roles of monosaccharides and write their formula",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-08",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Compare the isomers and stereoisomers of glucose.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-09",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Distinguish the properties and roles of disaccharides",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-10",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe glycosidic bonds in disaccharides.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-11",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe the structure properties and roles of polysaccharides starch, glycogen, cellulose and chitin.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-12",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Define protein, amino acid and recognized essential amino acid and structural formula of amino acid.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-13",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Outline the synthesis and breakage of peptide linkages.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-14",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Justify the significance of the sequence of amino acids through the example of sickle cell haemoglobin.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-15",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Classify proteins as globular and fibrous proteins.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-16",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "List the roles of structural proteins and functional proteins with 3 examples",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-17",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Define lipids",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-18",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe the properties and roles of acylglycerols, phospholipids, terpenes and waxes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-19",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Illustrate the molecular structure (making and breaking) of an acylglycerol, a phospholipid and a terpene",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-20",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Evaluate steroids and prostaglandins as important groups of lipids",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-21",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Describe nucleic acids and molecular structure of nucleotides.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-22",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Distinguish among the nitrogenous bases found in the nucleotides of nucleic acids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-23",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Outline the examples of a mononucleotide (ATP) and a dinucleotide (NAD).",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-24",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Illustrate the formation of phosphodiester bond.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-25",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Explain the double helical structure of DNA as proposed by Watson and Crick.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-26",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Explain the general structure of RNA.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-27",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Distinguish in terms of functions and roles, the three types of RNA",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-28",
+      "domain": "C",
+      "content_area": "Biological Molecules",
+      "description": "Discuss the Central Dogma.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-C-29",
+      "domain": "C",
+      "content_area": "Conjugated Molecules",
+      "description": "Define conjugated molecules and describe the roles of common conjugated molecules i.e. glycolipids, glycoproteins, lipoproteins and nucleoproteins.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-01",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Describe that cells are the basic unit of life with respect to 7 properties of Life. (Movement, Respiration, Homeostasis, Growth, Reproduction, Excretion, Nutrition)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-02",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Identify the ultrastructure of animal and plant cells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-03",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Describe the structure and functions of subcellular organelles. (mitochondria, nucleus -cell membrane, chloroplast, lysosomes, cell wall, centrioles, - Golgi apparatus, smooth endoplasmic reticulum, rough endoplasmic reticulum, vesicles, peroxisome, vacuoles, ribosomes",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-04",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Define cell signalling.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-05",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Discuss the pathway of a signal from outside the cell to the inside. (Protein signal and steroid signal)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-06",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Define Stem cells and advantages of using stem cells",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-07",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Categorize different types of stem cells",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-08",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Evaluate the advantages and disadvantages of using induced Pluripotent Stem Cells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-09-D-09",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Explain the steps of mitosis and meiosis with diagrams.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-09",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Explain the structure of the cell membrane and the techniques that can be used to study it.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-10",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Explain the 4 membrane transport mechanisms with diagrams: (simple diffusion, Facilitated diffusion, Osmosis, Active transport).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-11",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Differentiate between prokaryotic and eukaryotic cells with diagrams.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-12",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "State cell theory (including how to validate it and exceptions to it.)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-13",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Compare and contrast the workings of a light microscope and electron microscope with focus on resolution and magnification and live vs dead samples.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-14",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Write the chemical structure of a single phospholipid (Glycerol as a three carbon molecule, phosphate group, one unsaturated fatty acid tail and one saturated fatty acid tail).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-15",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Describe endocytosis and exocytosis with diagrams.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-16",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Compare and contrast simple and facilitated diffusion.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-D-17",
+      "domain": "D",
+      "content_area": "Cell Biology",
+      "description": "Explain the steps of mitosis and meiosis with diagrams.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-01",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Identify the role and component parts of the active site of an enzyme.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-02",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Differentiate among the three types of cofactors i.e. in organic ions, prosthetic group and coenzymes, with examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-03",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Explain the mechanism of enzyme action through the Induced Fit Model, including comparing it with Lock and Key Model.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-04",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Explain enzyme catalysis with example of specific reactions",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-05",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Define energy of activation and discuss through graph how an enzyme speeds up a reaction by lowering the energy of activation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-06",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Explain the effect of temperature on the rate of enzyme action with example of human and thermophilic bacteria",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-07",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Investigate the effect of pH on enzyme activity Compare the optimum pH of different enzymes like trypsin, pepsin, papain.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-08",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Demonstrate that the concentration of enzyme affects the rate of enzyme action",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-09",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Describe enzymatic inhibition, its types and its significance with examples.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-10",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Name the molecules which act as inhibitors.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-11",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Categorize inhibitors into competitive and non- competitive inhibitors.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-12",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Explain feedback inhibition.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-13",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Classify enzymes on the basis of the reactions catalysed (oxido-reductases, transferases, hydrolases, isomerases, and ligases).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-14",
+      "domain": "F",
+      "content_area": "Enzymes",
+      "description": "Classify enzymes on the basis of the substrates they use (lipases, diastase, amylase, proteases etc.)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-15",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Explain the role of light, carbon dioxide and water in photosynthesis",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-16",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Identify the two general kinds of photosynthetic pigments (carotenoids and chlorophylls)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-17",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Describe the roles of photosynthetic pigments in the absorption and conversion of light energy",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-18",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Differentiate between the absorption spectra of chlorophyll ‘a’ and ‘b’",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-19",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Describe the arrangement of photosynthetic pigments in the form of Photosystem-I and II.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-20",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Describe the events of non-cyclic photophosphorylation and cyclic photophosphorylation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-21",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Explain the Calvin cycle (the regeneration of RuBP should be understood in outline only.)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-22",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Explain the process of anaerobic respiration in terms of glycolysis and conversion of pyruvate into lactic acid or ethanol.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-23",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Illustrate the links reaction as conversion of pyruvate to acetyl CoA.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-24",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Outline the steps of Krebs cycle.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-25",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Trace the passage of electrons through the electron transport chain.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-26",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Describe chemiosmosis and Relate it with electron transport chain.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-27",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Explain the substrate level phosphorylation during which exergonic reactions are coupled with the synthesis of ATP.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-28",
+      "domain": "F",
+      "content_area": "Photosynthesis",
+      "description": "Justify the importance of G3P in photosynthesis",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-29",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Outline the formation of acetyl CoA from fats",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-30",
+      "domain": "F",
+      "content_area": "Respiration",
+      "description": "Compare and contrast respiration of fats and glucose.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-31",
+      "domain": "F",
+      "content_area": "Photorespiration",
+      "description": "Define photorespiration",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-32",
+      "domain": "F",
+      "content_area": "Photorespiration",
+      "description": "Outline the events occurring through photorespiration.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-33",
+      "domain": "F",
+      "content_area": "Photorespiration",
+      "description": "Rationalize how the disadvantageous process of photorespiration evolved.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-34",
+      "domain": "F",
+      "content_area": "Photorespiration",
+      "description": "Explain the effect of temperature on the oxidative activity of RuBP carboxylase.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-F-35",
+      "domain": "F",
+      "content_area": "Photorespiration",
+      "description": "Outline the process of C 4 photosynthesis as an adaptation evolved in some plants to deal with the problem of photorespiration.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-01",
+      "domain": "H",
+      "content_area": "Reproduction",
+      "description": "Describe the structures of the male reproductive system and identify their functions",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-02",
+      "domain": "H",
+      "content_area": "Reproduction",
+      "description": "Define male reproductive hormones and explain their functions",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-03",
+      "domain": "H",
+      "content_area": "Reproduction",
+      "description": "Explain the structures of female reproductive system and describe their functions",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-04",
+      "domain": "H",
+      "content_area": "Reproduction",
+      "description": "Describe the menstrual cycle and the hormones involved.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-05",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Define gene (as a sequence of nucleotides as part of DNA, which codes for the formation of a polypeptide.)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-06",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain the law of segregation and independent assortment, using a suitable example related to the pea plants.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-10-H-07",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Relate the Law of independent assortment to random orientation of chromosomes during Meiosis.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-07",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Relate the Law of independent assortment to random orientation of chromosomes during Meiosis.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-08",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Express limitations of independent assortment and its usefulness.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-09",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Show that independent assortment leads to variation in the gametes.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-10",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Evaluate that inheritance of genes and their mixing during fertilization is based on mathematical probabilities.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-11",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the exceptions to the Mendel’s laws of inheritance.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-12",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain incomplete dominance and exemplify it through the inheritance of flower colour in 4 0’ clock plant",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-13",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Differentiate between incomplete dominance and codominance.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-14",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Define alleles and multiple alleles",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-15",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "State the alleles responsible for the trait of ABO blood groups.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-16",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain the case where two alleles have equal dominance through the genetics of human blood group AB.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-17",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Name the various human blood group systems.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-18",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Investigate the reasons for O -ve individual as the Universal donor and AB +ve as the Universal recipient.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-19",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the occurrence of some other blood group systems.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-20",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Associate the positive and negative blood groups with the presence and absence of Rh factor.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-21",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Justify why Rh incompatibility could be a danger to the developing foetus and mother.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-22",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain Erythroblastosisfetalis in the light of antigen-antibody reaction.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-23",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Suggest measures to counter the problem of Erythroblastosisfetalis before it occurs.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-24",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Define and relate the terms; polygenic and epistasis.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-25",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe polygenic inheritance using suitable examples from plants (grain colour in wheat) and animals (skin colour in man).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-26",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "List at least five polygenic traits discovered in humans.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-27",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Give one example of epistasis from mammals (coat colour inheritance in Labrador retrievers) and one from plants (pigment phenotype in foxgloves) and justify modified Mendelian ratios.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-28",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the terms gene linkage and crossing over.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-29",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain that gene linkage counters independent assortment and crossing-over modifies the progeny.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-30",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Suggest that linkage can be observed / evaluated only if the number of progeny is quite large.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-31",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain the XX-XY mechanism of sex determination in mammals.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-32",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Identify male and female individuals from the karyotype of man.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-33",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Solve the genetics problems related to XX-XY, sex determination.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-34",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the concept of sex linkage.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-35",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain the inheritance of sex linked traits (eye colour) in Drosophila.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-36",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the sex linked inheritance of male characters due to Y-chromosome and the effect of Hollandric genes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-37",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the X linked disorders with reference to the patterns of inheritance.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-38",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Name some of the sex-linked disorders of man (Red green colour blindness, Haemophilia) .",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-39",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain the techniques employed for embryonic screening e.g., Amniocentesis and Chorionic Villus Sampling",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-40",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Annotate the detailed structure of a chromosome.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-41",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Narrate the experimental work of Griffith and Hershey Chase, which proved that DNA is the hereditary material.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-42",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the three models proposed about the mechanism of DNA replication.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-43",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Narrate the work of Meselson and Stahl to justify the semiconservative replication as the correct method of replication.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-44",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the events of the process of DNA replication.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-45",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe DNA stability and variability as two characters of the replicating DNA molecule.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-46",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the characteristics of genetic code (universal, triplet, non-overlapping, degenerate, has no punctuation).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-47",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Differentiate between the terms genetic code and codon.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-48",
+      "domain": "H",
+      "content_area": "Classification",
+      "description": "Discussed in [SLO: B-11- H-48]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-49",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Explain why the length of transcribed mRNA molecule (in Eukaryotes) shortens as it enters the cytoplasm for translation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-50",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the mechanism of protein synthesis.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-51",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "State the difference between protein synthesis in prokaryotes and eukaryotes.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-52",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Suggest possible ways in which the synthesized protein can be used within or outside a cell that synthesized it.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-53",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "State the importance of the regulation of gene expression.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-54",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the negative control of gene expression by repressor proteins.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-55",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the positive control of gene expression by activator proteins.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-56",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Define mutation and identify various sources of mutation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-57",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Differentiate between natural and induced mutations and mutagens.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-58",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Justify most mutations are harmful.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-59",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Rationalize that mutations might be a contributing factor towards evolution.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-60",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the symptoms, causes and possible available treatments of some of the chromosomal mutations. (Down’s, Klinefelter’s and Turner’s syndrome)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-H-61",
+      "domain": "H",
+      "content_area": "Genetics",
+      "description": "Describe the symptoms, causes and possible available treatments of some of the gene mutations.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-01",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Define species, population, community and ecosystem.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-02",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Distinguish between the various modes of nutrition different species possess.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-03",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Identify plants as producers for converting light energy to chemical energy",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-04",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Define trophic levels.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-05",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Discuss the loss of energy between trophic levels.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-06",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Explain the greenhouse effect with examples of gases that exhibit this behaviour.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-07",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe the harmful effects of greenhouse gases on the environment.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-08",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Explain with regards to ocean acidification coral reefs are used as a barometer for the health of an aquatic ecosystem.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-09",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Define biogeochemical cycles and locate the primary reservoirs of the chemicals in these cycles.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-10",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe the water cycle in detail.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-11",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Define the terms aquifers and water table.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-12",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Discuss nitrogen cycle in detail.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-13",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe productivity in terms of gross primary productivity and net primary productivity.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-14",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Interpret the pyramids of number, biomass and energy.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-15",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Define ecological succession as the process through which ecosystems change from simple to complex.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-16",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe primary and secondary succession.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-17",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Differentiate between xerarch and hydrarch succession.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-18",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Explain the xerarch succession on a bare rock starting from the small pockets of lichens to the vegetations of flowering plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-19",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe characteristics of a population, such as growth, density, distribution, carrying capacity, minimum/viable size.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-20",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Explain the effect of growth of human population on the ecosystem.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-N-21",
+      "domain": "N",
+      "content_area": "Ecosystems",
+      "description": "Describe the 4 important ecosystems of Pakistan",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-01",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Justify the status of viruses among living and non-living things.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-02",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Trace the history of viruses since their discovery.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-03",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Classify viruses on the bases of their hosts and structure.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-04",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the structure of a model bacteriophage, and HIV",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-05",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Justify that a virus must have a host cell to parasitize in order to complete its life cycle.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-06",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Explain a virus survives inside a host cell, protected from the immune system.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-07",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Determine the method a virus employs to survive/ pass over unfavourable conditions when it does not have a host to complete the life cycle.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-08",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the Lytic and Lysogenic life cycles of a virus.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-09",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Outline the usage of bacteriophage in genetic engineering.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-10",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Explain the life cycle of HIV.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-11",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Justify the name of the virus i.e., “Human Immunodeficiency Virus” by establishing T helper cells as the basis of immune system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-12",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Reason out the specificity of HIV on its host cells.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-13",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "List the symptoms of AIDS.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-14",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Explain opportunistic diseases that may attack an AIDS victim.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-15",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the treatments available for AIDS.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-16",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "List some common control measures against the transmission of HIV.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-17",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the causative agent, symptoms, treatment and prevention of the following viral diseases: hepatitis C, herpes, polio and leaf curl virus disease of cotton.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-18",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "List the sources of transmission for each of the above-mentioned diseases.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-19",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the structure of prions and viroids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-20",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "List the diseases caused by prions and viroids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-21",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Interpret how viral infections cause global economic loss.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-P-22",
+      "domain": "P",
+      "content_area": "Viruses",
+      "description": "Describe the limitations of the vaccine for the common cold / flu virus",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-01",
+      "domain": "Q",
+      "content_area": "Plant Nutrition",
+      "description": "List the macro and micronutrients of plants highlighting the role of each nutrient",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-02",
+      "domain": "Q",
+      "content_area": "Plant Nutrition",
+      "description": "State the examples of carnivorous plant.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-03",
+      "domain": "Q",
+      "content_area": "Gaseous Exchange in Plants",
+      "description": "Explain the role of stomata and palisade tissue in the exchange of gasses in plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-04",
+      "domain": "Q",
+      "content_area": "Gaseous Exchange in Plants",
+      "description": "Relate transpiration with gas exchange in plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-05",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Assess the structure of xylem vessel elements, sieve tube elements, companion cells, tracheids and relate their structures with functions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-06",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Discuss the movement of water between plant cells, and between the cells and their environment in terms of water potential.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-07",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Describe the movement of water through roots in terms of symplast, apoplast and vacuolar pathways.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-08",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Explain the movement of water in xylem through TACT mechanism.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-09",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Describe the mechanisms involved in the opening and closing of stomata.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-10",
+      "domain": "Q",
+      "content_area": "Transport in Plants",
+      "description": "Explain the movement of sugars within plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-11",
+      "domain": "Q",
+      "content_area": "Homeostasis in Plants",
+      "description": "Define osmotic adjustment.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-12",
+      "domain": "Q",
+      "content_area": "Homeostasis in Plants",
+      "description": "- State movement of water into or out of the cell in isotonic, hypotonic, and hypertonic conditions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-13",
+      "domain": "Q",
+      "content_area": "Homeostasis in Plants",
+      "description": "Explain the osmotic adjustments in hydrophytic (marine and freshwater), xerophytic and mesophytic plants and plants in saline soil.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-14",
+      "domain": "Q",
+      "content_area": "Homeostasis in Plants",
+      "description": "List the adaptations in plants to cope with low and high temperatures",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-15",
+      "domain": "Q",
+      "content_area": "Support and Movement in Plants",
+      "description": "Describe Explain the turgor pressure and its significance in providing support to herbaceous plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-16",
+      "domain": "Q",
+      "content_area": "Support and Movement in Plants",
+      "description": "Describe the structure of supporting tissues in plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-17",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Define growth and explain primary and secondary growth in plants.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-18",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Justify the formation of annual rings",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-19",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Explain influence of apical meristem on the growth of lateral shoots.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-20",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Outline the role of important plant growth regulators.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-09-Q-21",
+      "domain": "Q",
+      "content_area": "Angiosperms - Diversity and Reproduction",
+      "description": "Explain the life cycle of angiosperms",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-21",
+      "domain": "Q",
+      "content_area": "Support and Movement in Plants",
+      "description": "Explain the types of movement in plants in response to light, force of gravity, touch and chemicals.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-22",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Define photoperiodism.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-23",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Classify with examples plants on the basis of photoperiodism and Describe the mechanism of photoperiodism with reference to the mode of action of phytochromes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-Q-24",
+      "domain": "Q",
+      "content_area": "Growth and Development in Plants",
+      "description": "Explain the role of low temperature treatment on flower production especially to biennials and perennials.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-01",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Decisions relating to measurements and observations",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-02",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation, students should be able to:  identify the independent variable and dependent variable  decide a suitable range of values to use for the independent variable at which measurements of the dependent variable are recorded  decide the number of different values of the independent variable (a minimum of five) and the intervals between them  decide how to change the value of the independent variable  decide how the dependent variable should be measured  decide the number of replicates at each value  decide on appropriate controls for the experiment or investigation  decide which variables need to be standardized and how to standardize them. (Variables expected to have a minimal effect, such as variation between test-tubes of the same type, do not need to be standardized. When using the light microscope and photomicrographs, students should be able to:  set up a light microscope to view and observe specimens  follow instructions to find and draw particular tissues in plant and animal specimens and label the drawings appropriately  follow instructions to find and draw particular cells and structures within the cells  make a temporary slide of stained cells or tissues  calculate actual sizes of tissues or cells from measurements of photomicrographs, using magnifications, scale bars or representations of eyepiece graticules and stage micrometers  estimate the number of cells or cell organelles in a given area using a sampling method, such as grids or fields of view.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-03",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation, students should be able to:  follow instructions to collect results  consider the hazards of the procedure, including the use of any solutions and reagents, and assess the risk as low, medium or high  take readings to obtain accurate data (quantitative results) or observations (qualitative results). When using the light microscope and photomicrographs, Students should be able to:  draw plan diagrams to show the distribution of tissues in a specimen, with no cells drawn and the correct proportions of layers of tissues  draw the observable features of cells in a specimen showing: — the correct shapes — the thicknesses of cell walls where applicable (drawn with two lines or drawn with three lines where two cells touch) — the relative sizes and proportions — observable cell contents only  measure tissue layers or cells from photomicrographs using a ruler or given scale, including representations of eyepiece graticule  make accurate observations from specimens including counting numbers of cells or cell organelles  record similarities and differences between two specimens using only their observable features.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-04",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Recording data and observations Within an investigation, students should be able to:  record raw results (unprocessed) and calculated results (processed) in an appropriate table with: — descriptive headings, including any required units (no units in body of table) — heading for the independent variable to the left of (or above, if the table is in rows) the dependent variable  record quantitative data to the number of decimal places that is appropriate for the measuring instrument used  record qualitative observations using clear descriptions - record calculated values (processed results) in an appropriate table.  When using the light microscope and photomicrographs, Students should be able to:  record the fine details of the specimen, including drawing the detailed shapes of layers or outlines of specimens in plan diagrams and drawing the shape and position of observable cell organelles in cells.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-05",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Display of calculation and reasoning",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-06",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation and when using the light microscope and photomicrographs, students should be able to:  display calculations clearly, showing all the steps and reasoning  use the correct number of significant figures for calculated quantities. This should be the same as, or one more than, the smallest number of significant figures in the data used in the calculation.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-07",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation, Students should be able to:  display data as a graph (continuous data), bar chart (discontinuous or categorical) or histogram (frequency data)  draw a graph, bar chart or histogram clearly and accurately with: — the independent variable on the x-axis and the dependent variable on the y-axis — axes labelled to match the relevant table headings, including units where appropriate — a scale where both axes should use most or all of the grid available and allow the graph to be read easily to within half a square — all graph points plotted accurately using a sharp pencil, as a small cross or a small dot in a circle, with the intersection of the cross or center of the dot exactly on the required point — the plotted points of a graph connected with a clear, sharp and unbroken line, either as a line of best fit, a smooth curve or with ruled straight lines joining the points — no extrapolation of graph lines unless this can be assumed from the data — all bars on a bar chart or histogram plotted accurately, with clear, unbroken lines that are drawn with a sharp pencil and ruler.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-08",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "When using the light microscope and photomicrographs, students should be able to:  make drawings, using a sharp pencil to give finely drawn lines that are clear and unbroken  make drawings that use most of the available space and show all the features observed in the specimen, with no shading  organize comparative observations, showing differences and similarities between specimens.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-09",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Interpreting data and observations",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-10",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation, students should be able to:  calculate an answer with the correct number of significant figures using quantitative results or data provided  use a graph to find unknown values  estimate the concentrations of unknown solutions from qualitative results  identify the contents of unknown solutions using biological molecule tests  identify anomalous results and suggest how to deal with anomalies  describe patterns and trends using the data provided in tables and graphs  evaluate the confidence with which conclusions might be made. When using the light microscope and photomicrographs, Students should be able to:  calculate an answer with the correct number of significant figures using quantitative results or data provided  compare observable features of specimens of biological material including similarities and differences between specimens on a microscope slide and specimens in photomicrographs",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-11",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "From results, observations or information provided, students should be able to:  summarize the main conclusions  state and explain whether a hypothesis is supported  make predictions from the patterns and trends in data  suggest explanations for observations, results, patterns, trends and conclusions.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "B-11-X-12",
+      "domain": "X",
+      "content_area": "Practical Skills",
+      "description": "Within an investigation and when using the light microscope and photomicrographs, students should be able to:  identify systematic or random errors in an investigation, understanding that systematic errors may not affect the trend in results whereas a random error may affect the trend  identify the main sources of error in a particular investigation suggest improvements to a procedure that will increase the accuracy of the observations or measurements, Formative  including: — using a more effective method to standardize relevant variables — using a more accurate method of measuring the dependent variable — using smaller intervals for the values of the independent variable — collecting replicate measurements so that a mean can be calculated  suggest how to extend the investigation to answer a new question, for example by investigating a different independent variable or applying the method to a new context  describe clearly, in words or diagrams, improvements to the procedure or modifications to extend the investigation.",
+      "assessment_form": "practical",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    }
+  ]
+}

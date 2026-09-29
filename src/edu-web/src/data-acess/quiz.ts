@@ -1,3 +1,7 @@
+import { Atom, Registry } from '@effect-atom/atom-react'
+import { HttpBody } from '@effect/platform'
+import { BrowserKeyValueStore } from '@effect/platform-browser'
+import { Effect, Layer, Schema, Stream } from 'effect'
 import {
   GenerateRequest,
   QuizCreate,
@@ -8,10 +12,6 @@ import {
 import { ApiClientService } from '@/integrations/api/http'
 import { makeAtomRuntime } from '@/lib/make-atom-runtime'
 import { withToast } from '@/lib/with-toast'
-import { Atom, Registry } from '@effect-atom/atom-react'
-import { HttpBody } from '@effect/platform'
-import { BrowserKeyValueStore } from '@effect/platform-browser'
-import { Effect, Layer, Schema, Stream } from 'effect'
 
 const runtime = makeAtomRuntime(
   Layer.mergeAll(
@@ -79,22 +79,34 @@ export const createQuizStreamAtom = Atom.fn(
       customInstructions?: string
       topic?: string
       difficulty?: string
+      // FBISE SLO the questions must assess, e.g. P-11-B-05
+      sloCode?: string
     },
     _get,
   ) =>
     Effect.gen(function* () {
       const registry = yield* Registry.AtomRegistry
-      const { httpClient } = yield* ApiClientService
+      const { httpClient, apiClient } = yield* ApiClientService
+      // Generation fills an existing quiz; create an empty one if none was given
+      const quizId =
+        input.quizId ||
+        (yield* apiClient.createQuizApiV1ProjectsProjectIdQuizzesPost(
+          input.projectId,
+          new QuizCreate({
+            name: input.sloCode ? `SLO ${input.sloCode} practice` : 'New quiz',
+          }),
+        )).id
       const body = HttpBody.unsafeJson(
         new GenerateRequest({
           count: input.questionCount,
           custom_instructions: input.customInstructions,
           topic: input.topic,
           difficulty: input.difficulty,
+          slo_code: input.sloCode,
         }),
       )
       const resp = yield* httpClient.post(
-        `/api/v1/projects/${input.projectId}/quizzes/${input.quizId}/generate/stream`,
+        `/api/v1/projects/${input.projectId}/quizzes/${quizId}/generate/stream`,
         { body },
       )
 
@@ -141,6 +153,7 @@ export const createQuizStreamAtom = Atom.fn(
 
       // Clear progress when done
       registry.set(quizProgressAtom, null)
+      return quizId
     }).pipe(Effect.provide(ApiClientService.Default)),
 ).pipe(Atom.keepAlive)
 

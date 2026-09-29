@@ -10,7 +10,7 @@
     "lint": "eslint",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix",
-    "gen:client": "curl localhost:8000/openapi.json > openapi.json && pnpx @tim-smart/openapi-gen --spec ./openapi.json > src/integrations/api/client.ts && pnpx rimraf openapi.json && prettier --write src/integrations/api/client.ts"
+    "gen:client": "cd ../.. && python -m uv run --package edu-api python scripts/export_openapi.py src/edu-web/openapi.json && cd src/edu-web && pnpx @tim-smart/openapi-gen@0.4.13 --spec ./openapi.json > src/integrations/api/client.ts && pnpx rimraf openapi.json && prettier --write src/integrations/api/client.ts"
   },
   "dependencies": {
     "@effect-atom/atom-react": "^0.3.4",
@@ -46,6 +46,11 @@
     "date-fns": "^4.1.0",
     "effect": "^3.18.4",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^12.19.0",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.2",
+    "katex": "0.16.23",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.25",
     "nanoid": "^5.1.6",

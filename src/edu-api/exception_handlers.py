@@ -162,3 +162,35 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             }
         },
     )
+
+
+class UnhandledErrorMiddleware:
+    """Turn unhandled exceptions into JSON 500 responses inside the CORS middleware.
+
+    Starlette runs the catch-all ``Exception`` handler outside every middleware, so
+    those 500s have no CORS headers and browsers report a bare network error.
+    """
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        started = False
+
+        async def send_wrapper(message):
+            nonlocal started
+            if message["type"] == "http.response.start":
+                started = True
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_wrapper)
+        except Exception as exc:
+            if started:
+                raise
+            response = await general_exception_handler(Request(scope), exc)
+            await response(scope, receive, send)

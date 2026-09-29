@@ -9,6 +9,156 @@ import * as S from 'effect/Schema'
 
 export class HealthCheckHealthGet200 extends S.Struct({}) {}
 
+/**
+ * FSc group
+ */
+export class StudentProfileDtoGroupCode extends S.Literal(
+  'PRE_MED',
+  'PRE_ENG',
+) {}
+
+/**
+ * Language the tutor explains in: English, Urdu or Roman Urdu
+ */
+export class StudentProfileDtoExplanationLanguage extends S.Literal(
+  'en',
+  'ur',
+  'ur-Latn',
+) {}
+
+/**
+ * The student's FSc details.
+ */
+export class StudentProfileDto extends S.Class<StudentProfileDto>(
+  'StudentProfileDto',
+)({
+  /**
+   * ID of the user
+   */
+  user_id: S.String,
+  /**
+   * Grade: 11 (HSSC-I) or 12 (HSSC-II)
+   */
+  grade: S.Int,
+  /**
+   * FSc group
+   */
+  group_code: StudentProfileDtoGroupCode,
+  /**
+   * Language the tutor explains in: English, Urdu or Roman Urdu
+   */
+  explanation_language: StudentProfileDtoExplanationLanguage,
+  /**
+   * Year of the student's annual exam
+   */
+  exam_year: S.optionalWith(S.Int, { nullable: true }),
+  /**
+   * When onboarding was completed
+   */
+  onboarding_completed_at: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+/**
+ * Whether the student has completed onboarding, and their profile if so.
+ */
+export class ProfileStateDto extends S.Class<ProfileStateDto>(
+  'ProfileStateDto',
+)({
+  /**
+   * True once onboarding is complete
+   */
+  onboarded: S.Boolean,
+  /**
+   * The student's profile
+   */
+  profile: S.optionalWith(StudentProfileDto, { nullable: true }),
+}) {}
+
+export class ProfileUpdateExplanationLanguageEnum extends S.Literal(
+  'en',
+  'ur',
+  'ur-Latn',
+) {}
+
+export class ProfileUpdate extends S.Class<ProfileUpdate>('ProfileUpdate')({
+  /**
+   * Tutor language: English, Urdu or Roman Urdu
+   */
+  explanation_language: S.optionalWith(ProfileUpdateExplanationLanguageEnum, {
+    nullable: true,
+  }),
+  /**
+   * Year of the annual exam
+   */
+  exam_year: S.optionalWith(
+    S.Int.pipe(S.greaterThanOrEqualTo(2025), S.lessThanOrEqualTo(2035)),
+    { nullable: true },
+  ),
+}) {}
+
+export class ValidationError extends S.Class<ValidationError>(
+  'ValidationError',
+)({
+  loc: S.Array(S.Union(S.String, S.Int)),
+  msg: S.String,
+  type: S.String,
+}) {}
+
+export class HTTPValidationError extends S.Class<HTTPValidationError>(
+  'HTTPValidationError',
+)({
+  detail: S.optionalWith(S.Array(ValidationError), { nullable: true }),
+}) {}
+
+/**
+ * Grade: 11 (HSSC-I) or 12 (HSSC-II)
+ */
+export class OnboardingRequestGrade extends S.Literal(11, 12) {}
+
+/**
+ * FSc group
+ */
+export class OnboardingRequestGroupCode extends S.Literal(
+  'PRE_MED',
+  'PRE_ENG',
+) {}
+
+/**
+ * Tutor language: English, Urdu or Roman Urdu
+ */
+export class OnboardingRequestExplanationLanguage extends S.Literal(
+  'en',
+  'ur',
+  'ur-Latn',
+) {}
+
+export class OnboardingRequest extends S.Class<OnboardingRequest>(
+  'OnboardingRequest',
+)({
+  /**
+   * Grade: 11 (HSSC-I) or 12 (HSSC-II)
+   */
+  grade: OnboardingRequestGrade,
+  /**
+   * FSc group
+   */
+  group_code: OnboardingRequestGroupCode,
+  /**
+   * Tutor language: English, Urdu or Roman Urdu
+   */
+  explanation_language: S.optionalWith(OnboardingRequestExplanationLanguage, {
+    nullable: true,
+    default: () => 'en' as const,
+  }),
+  /**
+   * Year of the annual exam
+   */
+  exam_year: S.optionalWith(
+    S.Int.pipe(S.greaterThanOrEqualTo(2025), S.lessThanOrEqualTo(2035)),
+    { nullable: true },
+  ),
+}) {}
+
 export class ProjectDto extends S.Class<ProjectDto>('ProjectDto')({
   /**
    * Unique ID of the project
@@ -27,13 +177,400 @@ export class ProjectDto extends S.Class<ProjectDto>('ProjectDto')({
    */
   description: S.optionalWith(S.String, { nullable: true }),
   /**
-   * Language code for the project
+   * Language code for the project: en, ur or ur-Latn (Roman Urdu)
    */
   language_code: S.String,
+  /**
+   * subject_workspace (one FBISE subject, created by onboarding) or custom
+   */
+  kind: S.optionalWith(S.String, {
+    nullable: true,
+    default: () => 'custom' as const,
+  }),
+  /**
+   * ID of the FBISE grade subject of a subject workspace
+   */
+  grade_subject_id: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Subject code of a subject workspace: PHY, CHEM, BIO or MATH
+   */
+  subject_code: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the project was created
    */
   created_at: S.String,
+}) {}
+
+/**
+ * The profile and the subject workspaces created by onboarding.
+ */
+export class OnboardingResultDto extends S.Class<OnboardingResultDto>(
+  'OnboardingResultDto',
+)({
+  profile: StudentProfileDto,
+  /**
+   * The subject workspaces
+   */
+  projects: S.Array(ProjectDto),
+}) {}
+
+/**
+ * How much of the syllabus the estimate is based on
+ */
+export class PredictedGradeDtoConfidence extends S.Literal(
+  'low',
+  'medium',
+  'high',
+) {}
+
+/**
+ * An estimate, not a result: based only on the SLOs practised so far.
+ */
+export class PredictedGradeDto extends S.Class<PredictedGradeDto>(
+  'PredictedGradeDto',
+)({
+  /**
+   * Estimated percentage in the theory paper
+   */
+  percent: S.Int,
+  /**
+   * IBCC grade band, e.g. B+
+   */
+  grade: S.String,
+  /**
+   * Band descriptor, e.g. Very Good
+   */
+  descriptor: S.String,
+  /**
+   * Share of the examined syllabus (by teaching time) practised, 0..1
+   */
+  coverage: S.Number,
+  /**
+   * How much of the syllabus the estimate is based on
+   */
+  confidence: PredictedGradeDtoConfidence,
+}) {}
+
+export class DomainProgressDto extends S.Class<DomainProgressDto>(
+  'DomainProgressDto',
+)({
+  /**
+   * Domain code, e.g. B
+   */
+  code: S.String,
+  /**
+   * Domain name, e.g. Mechanics
+   */
+  name: S.String,
+  /**
+   * Examined (summative) SLOs
+   */
+  examined_count: S.Int,
+  /**
+   * Examined SLOs practised at least once
+   */
+  practised_count: S.Int,
+  /**
+   * Average mastery of practised SLOs
+   */
+  mastery: S.optionalWith(S.Number, { nullable: true }),
+}) {}
+
+export class ProgressSloDto extends S.Class<ProgressSloDto>('ProgressSloDto')({
+  /**
+   * FBISE SLO code
+   */
+  code: S.String,
+  /**
+   * SLO text
+   */
+  description: S.String,
+  /**
+   * Domain code
+   */
+  domain_code: S.String,
+  /**
+   * Mastery 0..1, null if not practised
+   */
+  mastery: S.optionalWith(S.Number, { nullable: true }),
+  /**
+   * Practice answers recorded
+   */
+  attempts: S.optionalWith(S.Int, {
+    nullable: true,
+    default: () => 0 as const,
+  }),
+}) {}
+
+export class SubjectProgressDto extends S.Class<SubjectProgressDto>(
+  'SubjectProgressDto',
+)({
+  /**
+   * ID of the subject workspace
+   */
+  project_id: S.String,
+  /**
+   * ID of the grade subject
+   */
+  grade_subject_id: S.String,
+  /**
+   * PHY, CHEM, BIO or MATH
+   */
+  subject_code: S.String,
+  /**
+   * Workspace name, e.g. Physics XI
+   */
+  name: S.String,
+  /**
+   * False while the SLO map is coming soon
+   */
+  has_slos: S.Boolean,
+  /**
+   * Examined (summative) SLOs
+   */
+  examined_count: S.optionalWith(S.Int, {
+    nullable: true,
+    default: () => 0 as const,
+  }),
+  /**
+   * Examined SLOs practised at least once
+   */
+  practised_count: S.optionalWith(S.Int, {
+    nullable: true,
+    default: () => 0 as const,
+  }),
+  /**
+   * Average mastery of practised SLOs
+   */
+  mastery: S.optionalWith(S.Number, { nullable: true }),
+  /**
+   * Estimated grade band
+   */
+  predicted: S.optionalWith(PredictedGradeDto, { nullable: true }),
+  domains: S.optionalWith(S.Array(DomainProgressDto), { nullable: true }),
+  /**
+   * Practised SLOs with the lowest mastery
+   */
+  weakest: S.optionalWith(S.Array(ProgressSloDto), { nullable: true }),
+  /**
+   * Examined SLOs not practised yet, largest first
+   */
+  suggested: S.optionalWith(S.Array(ProgressSloDto), { nullable: true }),
+}) {}
+
+export class ProgressDto extends S.Class<ProgressDto>('ProgressDto')({
+  subjects: S.Array(SubjectProgressDto),
+}) {}
+
+export class ListGradeSubjectsApiV1CurriculumGradeSubjectsGetParams extends S.Struct(
+  {
+    /**
+     * Only this grade (11 or 12)
+     */
+    grade: S.optionalWith(S.Int, { nullable: true }),
+  },
+) {}
+
+/**
+ * available once the SLOs are loaded
+ */
+export class GradeSubjectDtoStatus extends S.Literal(
+  'available',
+  'coming_soon',
+) {}
+
+/**
+ * A subject in one grade, e.g. Physics XI.
+ */
+export class GradeSubjectDto extends S.Class<GradeSubjectDto>(
+  'GradeSubjectDto',
+)({
+  /**
+   * Unique ID of the grade subject
+   */
+  id: S.String,
+  /**
+   * Subject code: PHY, CHEM, BIO or MATH
+   */
+  subject_code: S.String,
+  /**
+   * Subject name, e.g. Physics
+   */
+  subject_name: S.String,
+  /**
+   * Grade: 11 (HSSC-I) or 12 (HSSC-II)
+   */
+  grade: S.Int,
+  /**
+   * FBISE scheme of studies, e.g. ISS-2024
+   */
+  scheme: S.String,
+  /**
+   * Curriculum, e.g. NCP 2022-23
+   */
+  curriculum: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * FBISE Assessment Framework the SLOs come from
+   */
+  source_url: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * available once the SLOs are loaded
+   */
+  status: GradeSubjectDtoStatus,
+  /**
+   * Number of SLOs
+   */
+  slo_count: S.optionalWith(S.Int, {
+    nullable: true,
+    default: () => 0 as const,
+  }),
+}) {}
+
+export class ListGradeSubjectsApiV1CurriculumGradeSubjectsGet200 extends S.Array(
+  GradeSubjectDto,
+) {}
+
+/**
+ * summative: examined in the annual exam; formative: classroom only; practical: assessed in the practical exam
+ */
+export class SloDtoAssessmentForm extends S.Literal(
+  'summative',
+  'formative',
+  'practical',
+  'unknown',
+) {}
+
+/**
+ * A Student Learning Outcome with the student's progress on it.
+ */
+export class SloDto extends S.Class<SloDto>('SloDto')({
+  /**
+   * Unique ID of the SLO
+   */
+  id: S.String,
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  code: S.String,
+  /**
+   * ID of the grade subject
+   */
+  grade_subject_id: S.String,
+  /**
+   * Domain code, e.g. B
+   */
+  domain_code: S.String,
+  /**
+   * Domain name, e.g. Mechanics
+   */
+  domain_name: S.String,
+  /**
+   * Content area, e.g. Vectors
+   */
+  content_area: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * SLO text as published by FBISE
+   */
+  description: S.String,
+  /**
+   * summative: examined in the annual exam; formative: classroom only; practical: assessed in the practical exam
+   */
+  assessment_form: SloDtoAssessmentForm,
+  /**
+   * Knowledge, Understanding, Application
+   */
+  cognitive_levels: S.optionalWith(S.Array(S.Literal('K', 'U', 'A')), {
+    nullable: true,
+  }),
+  /**
+   * Teaching periods (40 minutes each)
+   */
+  periods: S.optionalWith(S.Int, { nullable: true }),
+  /**
+   * Practice answers recorded for this SLO
+   */
+  attempts: S.optionalWith(S.Int, {
+    nullable: true,
+    default: () => 0 as const,
+  }),
+  /**
+   * Estimated mastery 0..1, null before any practice
+   */
+  mastery: S.optionalWith(S.Number, { nullable: true }),
+}) {}
+
+/**
+ * A curriculum domain with its SLOs.
+ */
+export class DomainDto extends S.Class<DomainDto>('DomainDto')({
+  /**
+   * Domain code, e.g. B
+   */
+  code: S.String,
+  /**
+   * Domain name, e.g. Mechanics
+   */
+  name: S.String,
+  /**
+   * Number of SLOs
+   */
+  slo_count: S.Int,
+  /**
+   * Number of summative (examined) SLOs
+   */
+  examined_count: S.Int,
+  /**
+   * Average mastery of the practised SLOs, 0..1
+   */
+  mastery: S.optionalWith(S.Number, { nullable: true }),
+  slos: S.optionalWith(S.Array(SloDto), { nullable: true }),
+}) {}
+
+/**
+ * The syllabus map of one grade subject.
+ */
+export class CurriculumTreeDto extends S.Class<CurriculumTreeDto>(
+  'CurriculumTreeDto',
+)({
+  grade_subject: GradeSubjectDto,
+  domains: S.Array(DomainDto),
+}) {}
+
+export class GetSloApiV1CurriculumSlosCodeGetParams extends S.Struct({
+  /**
+   * Limit to one grade subject
+   */
+  grade_subject_id: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+export class SloExplainerDto extends S.Class<SloExplainerDto>(
+  'SloExplainerDto',
+)({
+  /**
+   * FBISE SLO code
+   */
+  slo_code: S.String,
+  /**
+   * Explainer title
+   */
+  title: S.String,
+  /**
+   * Explainer in Markdown with LaTeX
+   */
+  content: S.String,
+  /**
+   * True once a subject teacher approved it
+   */
+  reviewed: S.Boolean,
+}) {}
+
+export class SloExplainerStateDto extends S.Class<SloExplainerStateDto>(
+  'SloExplainerStateDto',
+)({
+  /**
+   * The explainer, or null if none has been written yet
+   */
+  explainer: S.optionalWith(SloExplainerDto, { nullable: true }),
 }) {}
 
 export class ListProjectsApiV1ProjectsGet200 extends S.Array(ProjectDto) {}
@@ -54,20 +591,6 @@ export class ProjectCreate extends S.Class<ProjectCreate>('ProjectCreate')({
     nullable: true,
     default: () => 'en' as const,
   }),
-}) {}
-
-export class ValidationError extends S.Class<ValidationError>(
-  'ValidationError',
-)({
-  loc: S.Array(S.Union(S.String, S.Int)),
-  msg: S.String,
-  type: S.String,
-}) {}
-
-export class HTTPValidationError extends S.Class<HTTPValidationError>(
-  'HTTPValidationError',
-)({
-  detail: S.optionalWith(S.Array(ValidationError), { nullable: true }),
 }) {}
 
 export class ProjectUpdate extends S.Class<ProjectUpdate>('ProjectUpdate')({
@@ -181,6 +704,15 @@ export class DocumentUpdate extends S.Class<DocumentUpdate>('DocumentUpdate')({
    * Auto-generated summary of the document
    */
   summary: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+export class DocumentPreviewDto extends S.Class<DocumentPreviewDto>(
+  'DocumentPreviewDto',
+)({
+  /**
+   * URL of the document preview
+   */
+  url: S.String,
 }) {}
 
 export class ChatDto extends S.Class<ChatDto>('ChatDto')({
@@ -550,6 +1082,10 @@ export class GenerateRequest extends S.Class<GenerateRequest>(
    * Difficulty level (for flashcards/quizzes)
    */
   difficulty: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * FBISE SLO to target, e.g. P-11-B-05 (for flashcards/quizzes)
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
 }) {}
 
 export class GenerateNoteStreamApiV1ProjectsProjectIdNotesNoteIdGenerateStreamPost200 extends S.Struct(
@@ -573,6 +1109,10 @@ export class QuizDto extends S.Class<QuizDto>('QuizDto')({
    * Description of the quiz
    */
   description: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the quiz was created
    */
@@ -667,6 +1207,14 @@ export class QuizQuestionDto extends S.Class<QuizQuestionDto>(
    * Position for ordering within quiz
    */
   position: S.Int,
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Cognitive level: K, U or A
+   */
+  cognitive_level: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the question was created
    */
@@ -775,14 +1323,689 @@ export class ReorderQuizQuestionsApiV1ProjectsProjectIdQuizzesQuizIdQuestionsReo
   QuizQuestionDto,
 ) {}
 
-export class ListFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGetParams extends S.Struct(
-  {
-    /**
-     * Filter by study session ID
-     */
-    study_session_id: S.optionalWith(S.String, { nullable: true }),
-  },
+export class QuizAnswer extends S.Class<QuizAnswer>('QuizAnswer')({
+  /**
+   * ID of the quiz question
+   */
+  question_id: S.String,
+  /**
+   * Chosen option: a, b, c or d (null if skipped)
+   */
+  option: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+export class QuizAttemptCreate extends S.Class<QuizAttemptCreate>(
+  'QuizAttemptCreate',
+)({
+  /**
+   * One answer per question
+   */
+  answers: S.Array(QuizAnswer).pipe(S.maxItems(100)),
+}) {}
+
+export class QuizAnswerResultDto extends S.Class<QuizAnswerResultDto>(
+  'QuizAnswerResultDto',
+)({
+  /**
+   * ID of the quiz question
+   */
+  question_id: S.String,
+  /**
+   * Option the student chose: a, b, c or d
+   */
+  chosen: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * The correct option
+   */
+  correct_option: S.String,
+  /**
+   * Whether the student was right
+   */
+  is_correct: S.Boolean,
+}) {}
+
+/**
+ * A finished attempt at a quiz.
+ */
+export class QuizAttemptDto extends S.Class<QuizAttemptDto>('QuizAttemptDto')({
+  /**
+   * Unique ID of the attempt
+   */
+  id: S.String,
+  /**
+   * ID of the quiz
+   */
+  quiz_id: S.String,
+  /**
+   * Attempt number at this quiz: 1 for the first try
+   */
+  number: S.optionalWith(S.Int, { nullable: true, default: () => 1 as const }),
+  /**
+   * Number of correct answers
+   */
+  score: S.Number,
+  /**
+   * Number of questions
+   */
+  max_score: S.Number,
+  /**
+   * Result per question
+   */
+  answers: S.Array(QuizAnswerResultDto),
+  /**
+   * When the attempt was submitted
+   */
+  created_at: S.String,
+}) {}
+
+/**
+ * The score of one attempt, for a list of earlier attempts.
+ */
+export class AttemptSummaryDto extends S.Class<AttemptSummaryDto>(
+  'AttemptSummaryDto',
+)({
+  /**
+   * Unique ID of the attempt
+   */
+  id: S.String,
+  /**
+   * Attempt number: 1 for the first try
+   */
+  number: S.Int,
+  /**
+   * Marks or correct answers
+   */
+  score: S.Number,
+  /**
+   * Marks available
+   */
+  max_score: S.Number,
+  /**
+   * When the attempt was submitted
+   */
+  created_at: S.String,
+}) {}
+
+export class QuizAttemptStateDto extends S.Class<QuizAttemptStateDto>(
+  'QuizAttemptStateDto',
+)({
+  /**
+   * The latest attempt, or null if the quiz was not attempted yet
+   */
+  attempt: S.optionalWith(QuizAttemptDto, { nullable: true }),
+  /**
+   * Every attempt at this quiz, first to last
+   */
+  history: S.optionalWith(S.Array(AttemptSummaryDto), { nullable: true }),
+}) {}
+
+export class ListSrqsApiV1ProjectsProjectIdSrqGetParams extends S.Struct({
+  /**
+   * Only questions for this SLO
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+/**
+ * A short-response question; the rubric and model answer are shown after marking.
+ */
+export class SrqQuestionDto extends S.Class<SrqQuestionDto>('SrqQuestionDto')({
+  /**
+   * Unique ID of the question
+   */
+  id: S.String,
+  /**
+   * ID of the project
+   */
+  project_id: S.String,
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Question text (Markdown with LaTeX)
+   */
+  question: S.String,
+  /**
+   * Total marks
+   */
+  marks: S.Int,
+  /**
+   * K, U or A
+   */
+  cognitive_level: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * When the question was created
+   */
+  created_at: S.String,
+}) {}
+
+export class ListSrqsApiV1ProjectsProjectIdSrqGet200 extends S.Array(
+  SrqQuestionDto,
 ) {}
+
+export class SrqCreate extends S.Class<SrqCreate>('SrqCreate')({
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  slo_code: S.String.pipe(S.maxLength(32)),
+}) {}
+
+export class SrqPointResultDto extends S.Class<SrqPointResultDto>(
+  'SrqPointResultDto',
+)({
+  /**
+   * The rubric point
+   */
+  point: S.String,
+  /**
+   * Marks available for this point
+   */
+  marks: S.Number,
+  /**
+   * Marks awarded
+   */
+  awarded: S.Number,
+  /**
+   * What the student wrote or missed
+   */
+  comment: S.optionalWith(S.String, {
+    nullable: true,
+    default: () => '' as const,
+  }),
+}) {}
+
+/**
+ * A marked written answer. Marks are AI-estimated.
+ */
+export class SrqAttemptDto extends S.Class<SrqAttemptDto>('SrqAttemptDto')({
+  /**
+   * Unique ID of the attempt
+   */
+  id: S.String,
+  /**
+   * ID of the question
+   */
+  question_id: S.String,
+  /**
+   * The student's answer
+   */
+  answer: S.String,
+  /**
+   * AI-estimated marks
+   */
+  awarded_marks: S.Number,
+  /**
+   * Total marks
+   */
+  max_marks: S.Int,
+  /**
+   * Marks per rubric point
+   */
+  points: S.Array(SrqPointResultDto),
+  /**
+   * How to get full marks
+   */
+  feedback: S.optionalWith(S.String, {
+    nullable: true,
+    default: () => '' as const,
+  }),
+  /**
+   * Rubric points not fully earned
+   */
+  missing: S.optionalWith(S.Array(S.String), { nullable: true }),
+  /**
+   * A full-marks answer
+   */
+  model_answer: S.String,
+  /**
+   * When the answer was marked
+   */
+  created_at: S.String,
+}) {}
+
+export class SrqDetailDto extends S.Class<SrqDetailDto>('SrqDetailDto')({
+  question: SrqQuestionDto,
+  /**
+   * The student's attempts, newest first
+   */
+  attempts: S.Array(SrqAttemptDto),
+}) {}
+
+export class SrqAnswer extends S.Class<SrqAnswer>('SrqAnswer')({
+  /**
+   * The student's written answer
+   */
+  answer: S.String.pipe(S.minLength(1), S.maxLength(5000)),
+}) {}
+
+export class PaperSummaryDtoLength extends S.Literal('mini', 'standard') {}
+
+export class PaperSummaryDtoStatus extends S.Literal('ready', 'submitted') {}
+
+export class PaperSummaryDto extends S.Class<PaperSummaryDto>(
+  'PaperSummaryDto',
+)({
+  id: S.String,
+  title: S.String,
+  length: PaperSummaryDtoLength,
+  status: PaperSummaryDtoStatus,
+  total_marks: S.Number,
+  score: S.optionalWith(S.Number, { nullable: true }),
+  created_at: S.String,
+}) {}
+
+export class ListPapersApiV1ProjectsProjectIdPapersGet200 extends S.Array(
+  PaperSummaryDto,
+) {}
+
+/**
+ * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ
+ */
+export class PaperCreateLength extends S.Literal('mini', 'standard') {}
+
+export class PaperCreate extends S.Class<PaperCreate>('PaperCreate')({
+  /**
+   * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ
+   */
+  length: S.optionalWith(PaperCreateLength, {
+    nullable: true,
+    default: () => 'mini' as const,
+  }),
+  /**
+   * A domain (e.g. Mechanics) or topic; empty for the whole syllabus
+   */
+  topic: S.optionalWith(S.String.pipe(S.maxLength(200)), { nullable: true }),
+}) {}
+
+/**
+ * Paper length
+ */
+export class PaperDtoLength extends S.Literal('mini', 'standard') {}
+
+/**
+ * ready or submitted
+ */
+export class PaperDtoStatus extends S.Literal('ready', 'submitted') {}
+
+/**
+ * MCQ, short or long question
+ */
+export class PaperItemDtoType extends S.Literal('mcq', 'srq', 'erq') {}
+
+export class PaperItemDto extends S.Class<PaperItemDto>('PaperItemDto')({
+  /**
+   * ID of the item within the paper (SRQ/ERQ: the question ID)
+   */
+  id: S.String,
+  /**
+   * MCQ, short or long question
+   */
+  type: PaperItemDtoType,
+  /**
+   * Marks for this item
+   */
+  marks: S.Number,
+  /**
+   * FBISE SLO the item assesses
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * K, U or A
+   */
+  cognitive_level: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Question text (Markdown with LaTeX)
+   */
+  question: S.String,
+  /**
+   * MCQ options a-d
+   */
+  options: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
+    nullable: true,
+  }),
+}) {}
+
+export class PaperSectionDto extends S.Class<PaperSectionDto>(
+  'PaperSectionDto',
+)({
+  /**
+   * A, B or C
+   */
+  id: S.String,
+  /**
+   * Section title
+   */
+  title: S.String,
+  items: S.Array(PaperItemDto),
+}) {}
+
+export class PaperSectionResultDto extends S.Class<PaperSectionResultDto>(
+  'PaperSectionResultDto',
+)({
+  id: S.String,
+  title: S.String,
+  score: S.Number,
+  max_score: S.Number,
+}) {}
+
+export class PaperItemResultDtoType extends S.Literal('mcq', 'srq', 'erq') {}
+
+export class PaperItemResultDto extends S.Class<PaperItemResultDto>(
+  'PaperItemResultDto',
+)({
+  /**
+   * ID of the item
+   */
+  id: S.String,
+  type: PaperItemResultDtoType,
+  /**
+   * Marks available
+   */
+  marks: S.Number,
+  /**
+   * Marks awarded (AI-estimated for written answers)
+   */
+  awarded: S.Number,
+  /**
+   * MCQ: the option chosen
+   */
+  chosen: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * MCQ: the correct option
+   */
+  correct_option: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * MCQ: why the answer is right
+   */
+  explanation: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Written: the student's answer
+   */
+  answer: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Written: marks per rubric point
+   */
+  marking: S.optionalWith(SrqAttemptDto, { nullable: true }),
+  /**
+   * Written: a full-marks answer
+   */
+  model_answer: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+export class PaperResultDto extends S.Class<PaperResultDto>('PaperResultDto')({
+  /**
+   * Total marks awarded
+   */
+  score: S.Number,
+  /**
+   * Total marks
+   */
+  max_score: S.Number,
+  /**
+   * Score as a percentage
+   */
+  percent: S.Int,
+  /**
+   * IBCC grade band for this paper
+   */
+  grade: S.String,
+  /**
+   * Band descriptor
+   */
+  descriptor: S.String,
+  sections: S.Array(PaperSectionResultDto),
+  items: S.Array(PaperItemResultDto),
+}) {}
+
+/**
+ * A practice paper; answers and marking appear once it is submitted.
+ */
+export class PaperDto extends S.Class<PaperDto>('PaperDto')({
+  /**
+   * Unique ID of the paper
+   */
+  id: S.String,
+  /**
+   * ID of the subject workspace
+   */
+  project_id: S.String,
+  /**
+   * Paper title
+   */
+  title: S.String,
+  /**
+   * Paper length
+   */
+  length: PaperDtoLength,
+  /**
+   * Time allowed
+   */
+  time_limit_minutes: S.Int,
+  /**
+   * Total marks
+   */
+  total_marks: S.Number,
+  /**
+   * ready or submitted
+   */
+  status: PaperDtoStatus,
+  sections: S.Array(PaperSectionDto),
+  /**
+   * Saved answers by item ID
+   */
+  answers: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
+    nullable: true,
+  }),
+  /**
+   * Marks, once submitted
+   */
+  result: S.optionalWith(PaperResultDto, { nullable: true }),
+  created_at: S.String,
+  submitted_at: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+export class PaperAnswers extends S.Class<PaperAnswers>('PaperAnswers')({
+  /**
+   * Answers by item ID (MCQ: a-d; written: text)
+   */
+  answers: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
+    nullable: true,
+  }),
+}) {}
+
+/**
+ * One finished attempt in the student's practice history.
+ */
+export class PracticeHistoryItemDto extends S.Class<PracticeHistoryItemDto>(
+  'PracticeHistoryItemDto',
+)({
+  /**
+   * Unique ID of the attempt
+   */
+  id: S.String,
+  /**
+   * quiz, flashcards or paper
+   */
+  kind: S.String,
+  /**
+   * ID of the quiz, flashcard set or paper
+   */
+  ref_id: S.String,
+  /**
+   * Name of the quiz, flashcard set or paper
+   */
+  title: S.String,
+  /**
+   * Attempt number at this item: 1 for the first try
+   */
+  number: S.Int,
+  /**
+   * Marks, correct answers or cards known
+   */
+  score: S.Number,
+  /**
+   * Marks, questions or cards
+   */
+  max_score: S.Number,
+  /**
+   * When the attempt was submitted
+   */
+  created_at: S.String,
+}) {}
+
+export class ListPracticeHistoryApiV1ProjectsProjectIdAttemptsGet200 extends S.Array(
+  PracticeHistoryItemDto,
+) {}
+
+export class ReviewerStateDto extends S.Class<ReviewerStateDto>(
+  'ReviewerStateDto',
+)({
+  /**
+   * True if this user may review content
+   */
+  is_reviewer: S.Boolean,
+}) {}
+
+export class ListReviewItemsApiV1ReviewItemsGetParams extends S.Struct({
+  /**
+   * Grade subject to review
+   */
+  grade_subject_id: S.String,
+  /**
+   * Only this domain, e.g. B
+   */
+  domain_code: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * explainer, mcq or srq
+   */
+  kind: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * draft, approved or rejected
+   */
+  review_status: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Only this SLO
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
+}) {}
+
+/**
+ * Type of item
+ */
+export class ContentItemDtoKind extends S.Literal('explainer', 'mcq', 'srq') {}
+
+/**
+ * Review status
+ */
+export class ContentItemDtoReviewStatus extends S.Literal(
+  'draft',
+  'approved',
+  'rejected',
+) {}
+
+/**
+ * A shared content item for one SLO, as shown in the review queue.
+ */
+export class ContentItemDto extends S.Class<ContentItemDto>('ContentItemDto')({
+  /**
+   * Unique ID of the item
+   */
+  id: S.String,
+  /**
+   * ID of the grade subject
+   */
+  grade_subject_id: S.String,
+  /**
+   * FBISE SLO code
+   */
+  slo_code: S.String,
+  /**
+   * SLO text
+   */
+  slo_description: S.optionalWith(S.String, {
+    nullable: true,
+    default: () => '' as const,
+  }),
+  /**
+   * Type of item
+   */
+  kind: ContentItemDtoKind,
+  /**
+   * explainer: {title, content}; mcq: {question_text, option_a..option_d, correct_option, explanation, cognitive_level}; srq: {question, marks, model_answer, rubric}
+   */
+  payload: S.Record({ key: S.String, value: S.Unknown }),
+  /**
+   * Review status
+   */
+  review_status: ContentItemDtoReviewStatus,
+  /**
+   * Reviewer's note
+   */
+  review_note: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Reviewer's email
+   */
+  reviewed_by: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * When the item was generated
+   */
+  created_at: S.String,
+}) {}
+
+export class ListReviewItemsApiV1ReviewItemsGet200 extends S.Array(
+  ContentItemDto,
+) {}
+
+export class ReviewSummaryApiV1ReviewSummaryGetParams extends S.Struct({
+  /**
+   * Grade subject
+   */
+  grade_subject_id: S.String,
+}) {}
+
+export class ContentSummaryDto extends S.Class<ContentSummaryDto>(
+  'ContentSummaryDto',
+)({
+  /**
+   * explainer, mcq or srq
+   */
+  kind: S.String,
+  /**
+   * draft, approved or rejected
+   */
+  review_status: S.String,
+  /**
+   * Number of items
+   */
+  count: S.Int,
+}) {}
+
+export class ReviewSummaryApiV1ReviewSummaryGet200 extends S.Array(
+  ContentSummaryDto,
+) {}
+
+/**
+ * New review status
+ */
+export class ContentReviewReviewStatus extends S.Literal(
+  'draft',
+  'approved',
+  'rejected',
+) {}
+
+export class ContentReview extends S.Class<ContentReview>('ContentReview')({
+  /**
+   * New review status
+   */
+  review_status: ContentReviewReviewStatus,
+  /**
+   * What is wrong or should change
+   */
+  review_note: S.optionalWith(S.String.pipe(S.maxLength(2000)), {
+    nullable: true,
+  }),
+}) {}
 
 export class FlashcardGroupDto extends S.Class<FlashcardGroupDto>(
   'FlashcardGroupDto',
@@ -804,9 +2027,9 @@ export class FlashcardGroupDto extends S.Class<FlashcardGroupDto>(
    */
   description: S.optionalWith(S.String, { nullable: true }),
   /**
-   * ID of the study session if this group belongs to one
+   * FBISE SLO code, e.g. P-11-B-05
    */
-  study_session_id: S.optionalWith(S.String, { nullable: true }),
+  slo_code: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the flashcard group was created
    */
@@ -832,10 +2055,6 @@ export class FlashcardGroupCreate extends S.Class<FlashcardGroupCreate>(
    * Description of the flashcard group
    */
   description: S.optionalWith(S.String, { nullable: true }),
-  /**
-   * ID of the study session if this group belongs to one
-   */
-  study_session_id: S.optionalWith(S.String, { nullable: true }),
 }) {}
 
 export class FlashcardGroupUpdate extends S.Class<FlashcardGroupUpdate>(
@@ -884,6 +2103,10 @@ export class FlashcardDto extends S.Class<FlashcardDto>('FlashcardDto')({
    * Position of the flashcard within the group
    */
   position: S.Int,
+  /**
+   * FBISE SLO code, e.g. P-11-B-05
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the flashcard was created
    */
@@ -939,6 +2162,86 @@ export class FlashcardUpdate extends S.Class<FlashcardUpdate>(
   position: S.optionalWith(S.Int, { nullable: true }),
 }) {}
 
+export class FlashcardRating extends S.Class<FlashcardRating>(
+  'FlashcardRating',
+)({
+  /**
+   * ID of the flashcard
+   */
+  flashcard_id: S.String,
+  /**
+   * Whether the student knew it
+   */
+  knew: S.Boolean,
+}) {}
+
+export class FlashcardAttemptCreate extends S.Class<FlashcardAttemptCreate>(
+  'FlashcardAttemptCreate',
+)({
+  /**
+   * One rating per card
+   */
+  results: S.Array(FlashcardRating).pipe(S.maxItems(100)),
+}) {}
+
+export class FlashcardResultDto extends S.Class<FlashcardResultDto>(
+  'FlashcardResultDto',
+)({
+  /**
+   * ID of the flashcard
+   */
+  flashcard_id: S.String,
+  /**
+   * Whether the student said they knew it
+   */
+  knew: S.Boolean,
+}) {}
+
+/**
+ * A finished run through a flashcard set.
+ */
+export class FlashcardAttemptDto extends S.Class<FlashcardAttemptDto>(
+  'FlashcardAttemptDto',
+)({
+  /**
+   * Unique ID of the attempt
+   */
+  id: S.String,
+  /**
+   * ID of the flashcard set
+   */
+  group_id: S.String,
+  /**
+   * Run number through this set: 1 for the first
+   */
+  number: S.optionalWith(S.Int, { nullable: true, default: () => 1 as const }),
+  /**
+   * Cards the student knew
+   */
+  known: S.Number,
+  /**
+   * Cards rated
+   */
+  total: S.Number,
+  /**
+   * Result per card
+   */
+  results: S.Array(FlashcardResultDto),
+  /**
+   * When the run was finished
+   */
+  created_at: S.String,
+}) {}
+
+export class FlashcardAttemptStateDto extends S.Class<FlashcardAttemptStateDto>(
+  'FlashcardAttemptStateDto',
+)({
+  /**
+   * The latest run, or null if the set was not studied yet
+   */
+  attempt: S.optionalWith(FlashcardAttemptDto, { nullable: true }),
+}) {}
+
 /**
  * Practice record data transfer object.
  */
@@ -981,6 +2284,10 @@ export class PracticeRecordDto extends S.Class<PracticeRecordDto>(
    * Whether the user got it right
    */
   was_correct: S.Boolean,
+  /**
+   * FBISE SLO of the practised item, e.g. P-11-B-05
+   */
+  slo_code: S.optionalWith(S.String, { nullable: true }),
   /**
    * Date and time the practice record was created
    */
@@ -1331,6 +2638,99 @@ export const make = (
           }),
         ),
       ),
+    getProfileApiV1ProfileGet: () =>
+      HttpClientRequest.get(`/api/v1/profile`).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ProfileStateDto),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    updateProfileApiV1ProfilePut: (options) =>
+      HttpClientRequest.put(`/api/v1/profile`).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(StudentProfileDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    completeOnboardingApiV1OnboardingPost: (options) =>
+      HttpClientRequest.post(`/api/v1/onboarding`).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(OnboardingResultDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getProgressApiV1ProgressGet: () =>
+      HttpClientRequest.get(`/api/v1/progress`).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ProgressDto),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listGradeSubjectsApiV1CurriculumGradeSubjectsGet: (options) =>
+      HttpClientRequest.get(`/api/v1/curriculum/grade-subjects`).pipe(
+        HttpClientRequest.setUrlParams({ grade: options?.['grade'] as any }),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(
+              ListGradeSubjectsApiV1CurriculumGradeSubjectsGet200,
+            ),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getCurriculumTreeApiV1CurriculumGradeSubjectsGradeSubjectIdTreeGet: (
+      gradeSubjectId,
+    ) =>
+      HttpClientRequest.get(
+        `/api/v1/curriculum/grade-subjects/${gradeSubjectId}/tree`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(CurriculumTreeDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getSloApiV1CurriculumSlosCodeGet: (code, options) =>
+      HttpClientRequest.get(`/api/v1/curriculum/slos/${code}`).pipe(
+        HttpClientRequest.setUrlParams({
+          grade_subject_id: options?.['grade_subject_id'] as any,
+        }),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(SloDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getSloExplainerApiV1CurriculumGradeSubjectsGradeSubjectIdSlosCodeExplainerGet:
+      (gradeSubjectId, code) =>
+        HttpClientRequest.get(
+          `/api/v1/curriculum/grade-subjects/${gradeSubjectId}/slos/${code}/explainer`,
+        ).pipe(
+          withResponse(
+            HttpClientResponse.matchStatus({
+              '2xx': decodeSuccess(SloExplainerStateDto),
+              '422': decodeError('HTTPValidationError', HTTPValidationError),
+              orElse: unexpectedStatus,
+            }),
+          ),
+        ),
     listProjectsApiV1ProjectsGet: () =>
       HttpClientRequest.get(`/api/v1/projects`).pipe(
         withResponse(
@@ -1465,6 +2865,21 @@ export const make = (
         withResponse(
           HttpClientResponse.matchStatus({
             '2xx': decodeSuccess(DocumentDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getDocumentPreviewApiV1ProjectsProjectIdDocumentsDocumentIdPreviewGet: (
+      projectId,
+      documentId,
+    ) =>
+      HttpClientRequest.get(
+        `/api/v1/projects/${projectId}/documents/${documentId}/preview`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(DocumentPreviewDto),
             '422': decodeError('HTTPValidationError', HTTPValidationError),
             orElse: unexpectedStatus,
           }),
@@ -1842,16 +3257,224 @@ export const make = (
             }),
           ),
         ),
-    listFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGet: (
+    submitQuizAttemptApiV1ProjectsProjectIdQuizzesQuizIdAttemptsPost: (
       projectId,
+      quizId,
       options,
     ) =>
+      HttpClientRequest.post(
+        `/api/v1/projects/${projectId}/quizzes/${quizId}/attempts`,
+      ).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(QuizAttemptDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getLatestQuizAttemptApiV1ProjectsProjectIdQuizzesQuizIdAttemptsLatestGet: (
+      projectId,
+      quizId,
+    ) =>
+      HttpClientRequest.get(
+        `/api/v1/projects/${projectId}/quizzes/${quizId}/attempts/latest`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(QuizAttemptStateDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listSrqsApiV1ProjectsProjectIdSrqGet: (projectId, options) =>
+      HttpClientRequest.get(`/api/v1/projects/${projectId}/srq`).pipe(
+        HttpClientRequest.setUrlParams({
+          slo_code: options?.['slo_code'] as any,
+        }),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ListSrqsApiV1ProjectsProjectIdSrqGet200),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    createSrqApiV1ProjectsProjectIdSrqPost: (projectId, options) =>
+      HttpClientRequest.post(`/api/v1/projects/${projectId}/srq`).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(SrqQuestionDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getSrqApiV1ProjectsProjectIdSrqQuestionIdGet: (projectId, questionId) =>
+      HttpClientRequest.get(
+        `/api/v1/projects/${projectId}/srq/${questionId}`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(SrqDetailDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    markSrqApiV1ProjectsProjectIdSrqQuestionIdMarkPost: (
+      projectId,
+      questionId,
+      options,
+    ) =>
+      HttpClientRequest.post(
+        `/api/v1/projects/${projectId}/srq/${questionId}/mark`,
+      ).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(SrqAttemptDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listPapersApiV1ProjectsProjectIdPapersGet: (projectId) =>
+      HttpClientRequest.get(`/api/v1/projects/${projectId}/papers`).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ListPapersApiV1ProjectsProjectIdPapersGet200),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    createPaperApiV1ProjectsProjectIdPapersPost: (projectId, options) =>
+      HttpClientRequest.post(`/api/v1/projects/${projectId}/papers`).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(PaperDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getPaperApiV1ProjectsProjectIdPapersPaperIdGet: (projectId, paperId) =>
+      HttpClientRequest.get(
+        `/api/v1/projects/${projectId}/papers/${paperId}`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(PaperDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    savePaperAnswersApiV1ProjectsProjectIdPapersPaperIdAnswersPut: (
+      projectId,
+      paperId,
+      options,
+    ) =>
+      HttpClientRequest.put(
+        `/api/v1/projects/${projectId}/papers/${paperId}/answers`,
+      ).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            '204': () => Effect.void,
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    submitPaperApiV1ProjectsProjectIdPapersPaperIdSubmitPost: (
+      projectId,
+      paperId,
+      options,
+    ) =>
+      HttpClientRequest.post(
+        `/api/v1/projects/${projectId}/papers/${paperId}/submit`,
+      ).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(PaperDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listPracticeHistoryApiV1ProjectsProjectIdAttemptsGet: (projectId) =>
+      HttpClientRequest.get(`/api/v1/projects/${projectId}/attempts`).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(
+              ListPracticeHistoryApiV1ProjectsProjectIdAttemptsGet200,
+            ),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    getReviewerStateApiV1ReviewMeGet: () =>
+      HttpClientRequest.get(`/api/v1/review/me`).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ReviewerStateDto),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listReviewItemsApiV1ReviewItemsGet: (options) =>
+      HttpClientRequest.get(`/api/v1/review/items`).pipe(
+        HttpClientRequest.setUrlParams({
+          grade_subject_id: options?.['grade_subject_id'] as any,
+          domain_code: options?.['domain_code'] as any,
+          kind: options?.['kind'] as any,
+          review_status: options?.['review_status'] as any,
+          slo_code: options?.['slo_code'] as any,
+        }),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ListReviewItemsApiV1ReviewItemsGet200),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    reviewSummaryApiV1ReviewSummaryGet: (options) =>
+      HttpClientRequest.get(`/api/v1/review/summary`).pipe(
+        HttpClientRequest.setUrlParams({
+          grade_subject_id: options?.['grade_subject_id'] as any,
+        }),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ReviewSummaryApiV1ReviewSummaryGet200),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    reviewItemApiV1ReviewItemsItemIdPatch: (itemId, options) =>
+      HttpClientRequest.patch(`/api/v1/review/items/${itemId}`).pipe(
+        HttpClientRequest.bodyUnsafeJson(options),
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(ContentItemDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    listFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGet: (projectId) =>
       HttpClientRequest.get(
         `/api/v1/projects/${projectId}/flashcard-groups`,
       ).pipe(
-        HttpClientRequest.setUrlParams({
-          study_session_id: options?.['study_session_id'] as any,
-        }),
         withResponse(
           HttpClientResponse.matchStatus({
             '2xx': decodeSuccess(
@@ -2029,6 +3652,33 @@ export const make = (
             }),
           ),
         ),
+    submitFlashcardAttemptApiV1ProjectsProjectIdFlashcardGroupsGroupIdAttemptsPost:
+      (projectId, groupId, options) =>
+        HttpClientRequest.post(
+          `/api/v1/projects/${projectId}/flashcard-groups/${groupId}/attempts`,
+        ).pipe(
+          HttpClientRequest.bodyUnsafeJson(options),
+          withResponse(
+            HttpClientResponse.matchStatus({
+              '2xx': decodeSuccess(FlashcardAttemptDto),
+              '422': decodeError('HTTPValidationError', HTTPValidationError),
+              orElse: unexpectedStatus,
+            }),
+          ),
+        ),
+    getLatestFlashcardAttemptApiV1ProjectsProjectIdFlashcardGroupsGroupIdAttemptsLatestGet:
+      (projectId, groupId) =>
+        HttpClientRequest.get(
+          `/api/v1/projects/${projectId}/flashcard-groups/${groupId}/attempts/latest`,
+        ).pipe(
+          withResponse(
+            HttpClientResponse.matchStatus({
+              '2xx': decodeSuccess(FlashcardAttemptStateDto),
+              '422': decodeError('HTTPValidationError', HTTPValidationError),
+              orElse: unexpectedStatus,
+            }),
+          ),
+        ),
     listPracticeRecordsApiV1ProjectsProjectIdPracticeRecordsGet: (projectId) =>
       HttpClientRequest.get(
         `/api/v1/projects/${projectId}/practice-records`,
@@ -2111,6 +3761,21 @@ export const make = (
           HttpClientResponse.matchStatus({
             '2xx': decodeSuccess(MindMapDto),
             '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
+    deleteMindMapApiV1ProjectsProjectIdMindMapsMindMapIdDelete: (
+      projectId,
+      mindMapId,
+    ) =>
+      HttpClientRequest.del(
+        `/api/v1/projects/${projectId}/mind-maps/${mindMapId}`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            '204': () => Effect.void,
             orElse: unexpectedStatus,
           }),
         ),
@@ -2233,6 +3898,90 @@ export interface Client {
     HttpClientError.HttpClientError | ParseError
   >
   /**
+   * Get the student's profile and whether onboarding is complete.
+   */
+  readonly getProfileApiV1ProfileGet: () => Effect.Effect<
+    typeof ProfileStateDto.Type,
+    HttpClientError.HttpClientError | ParseError
+  >
+  /**
+   * Update the explanation language or exam year.
+   */
+  readonly updateProfileApiV1ProfilePut: (
+    options: typeof ProfileUpdate.Encoded,
+  ) => Effect.Effect<
+    typeof StudentProfileDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Save grade, group and language, and create the subject workspaces.
+   */
+  readonly completeOnboardingApiV1OnboardingPost: (
+    options: typeof OnboardingRequest.Encoded,
+  ) => Effect.Effect<
+    typeof OnboardingResultDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Mastery per subject and domain, weakest SLOs and a predicted grade band.
+   */
+  readonly getProgressApiV1ProgressGet: () => Effect.Effect<
+    typeof ProgressDto.Type,
+    HttpClientError.HttpClientError | ParseError
+  >
+  /**
+   * List FSc subjects per grade and whether their SLOs are available.
+   */
+  readonly listGradeSubjectsApiV1CurriculumGradeSubjectsGet: (
+    options?:
+      | typeof ListGradeSubjectsApiV1CurriculumGradeSubjectsGetParams.Encoded
+      | undefined,
+  ) => Effect.Effect<
+    typeof ListGradeSubjectsApiV1CurriculumGradeSubjectsGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Get the syllabus map: domains and SLOs with the student's mastery.
+   */
+  readonly getCurriculumTreeApiV1CurriculumGradeSubjectsGradeSubjectIdTreeGet: (
+    gradeSubjectId: string,
+  ) => Effect.Effect<
+    typeof CurriculumTreeDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Get one SLO by its FBISE code, e.g. P-11-B-05.
+   */
+  readonly getSloApiV1CurriculumSlosCodeGet: (
+    code: string,
+    options?: typeof GetSloApiV1CurriculumSlosCodeGetParams.Encoded | undefined,
+  ) => Effect.Effect<
+    typeof SloDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * The prepared explainer for an SLO, if one has been written.
+   */
+  readonly getSloExplainerApiV1CurriculumGradeSubjectsGradeSubjectIdSlosCodeExplainerGet: (
+    gradeSubjectId: string,
+    code: string,
+  ) => Effect.Effect<
+    typeof SloExplainerStateDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
    * List all projects for a user.
    */
   readonly listProjectsApiV1ProjectsGet: () => Effect.Effect<
@@ -2352,6 +4101,18 @@ export interface Client {
     options: typeof DocumentUpdate.Encoded,
   ) => Effect.Effect<
     typeof DocumentDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Get a preview URL for a document.
+   */
+  readonly getDocumentPreviewApiV1ProjectsProjectIdDocumentsDocumentIdPreviewGet: (
+    projectId: string,
+    documentId: string,
+  ) => Effect.Effect<
+    typeof DocumentPreviewDto.Type,
     | HttpClientError.HttpClientError
     | ParseError
     | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
@@ -2680,13 +4441,199 @@ export interface Client {
     | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
   >
   /**
+   * Score a finished quiz on the server and record the answers for SLO mastery.
+   */
+  readonly submitQuizAttemptApiV1ProjectsProjectIdQuizzesQuizIdAttemptsPost: (
+    projectId: string,
+    quizId: string,
+    options: typeof QuizAttemptCreate.Encoded,
+  ) => Effect.Effect<
+    typeof QuizAttemptDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * The student's most recent attempt at this quiz (if any) and all their attempts.
+   */
+  readonly getLatestQuizAttemptApiV1ProjectsProjectIdQuizzesQuizIdAttemptsLatestGet: (
+    projectId: string,
+    quizId: string,
+  ) => Effect.Effect<
+    typeof QuizAttemptStateDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * List the project's short-response questions, newest first.
+   */
+  readonly listSrqsApiV1ProjectsProjectIdSrqGet: (
+    projectId: string,
+    options?:
+      | typeof ListSrqsApiV1ProjectsProjectIdSrqGetParams.Encoded
+      | undefined,
+  ) => Effect.Effect<
+    typeof ListSrqsApiV1ProjectsProjectIdSrqGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Generate a short-response question for an SLO (takes a few seconds).
+   */
+  readonly createSrqApiV1ProjectsProjectIdSrqPost: (
+    projectId: string,
+    options: typeof SrqCreate.Encoded,
+  ) => Effect.Effect<
+    typeof SrqQuestionDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Get a question with the student's marked answers.
+   */
+  readonly getSrqApiV1ProjectsProjectIdSrqQuestionIdGet: (
+    projectId: string,
+    questionId: string,
+  ) => Effect.Effect<
+    typeof SrqDetailDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Mark a written answer like an FBISE examiner (AI-estimated marks).
+   */
+  readonly markSrqApiV1ProjectsProjectIdSrqQuestionIdMarkPost: (
+    projectId: string,
+    questionId: string,
+    options: typeof SrqAnswer.Encoded,
+  ) => Effect.Effect<
+    typeof SrqAttemptDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * The student's practice papers in this workspace, newest first.
+   */
+  readonly listPapersApiV1ProjectsProjectIdPapersGet: (
+    projectId: string,
+  ) => Effect.Effect<
+    typeof ListPapersApiV1ProjectsProjectIdPapersGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Assemble a practice paper (takes a few seconds).
+   */
+  readonly createPaperApiV1ProjectsProjectIdPapersPost: (
+    projectId: string,
+    options: typeof PaperCreate.Encoded,
+  ) => Effect.Effect<
+    typeof PaperDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * A paper; marks and model answers are included once it is submitted.
+   */
+  readonly getPaperApiV1ProjectsProjectIdPapersPaperIdGet: (
+    projectId: string,
+    paperId: string,
+  ) => Effect.Effect<
+    typeof PaperDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Save answers while the student works.
+   */
+  readonly savePaperAnswersApiV1ProjectsProjectIdPapersPaperIdAnswersPut: (
+    projectId: string,
+    paperId: string,
+    options: typeof PaperAnswers.Encoded,
+  ) => Effect.Effect<
+    void,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Submit and mark the paper (written answers are AI-estimated, like an examiner).
+   */
+  readonly submitPaperApiV1ProjectsProjectIdPapersPaperIdSubmitPost: (
+    projectId: string,
+    paperId: string,
+    options: typeof PaperAnswers.Encoded,
+  ) => Effect.Effect<
+    typeof PaperDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Every finished quiz, flashcard run and paper in this workspace, newest first.
+   */
+  readonly listPracticeHistoryApiV1ProjectsProjectIdAttemptsGet: (
+    projectId: string,
+  ) => Effect.Effect<
+    typeof ListPracticeHistoryApiV1ProjectsProjectIdAttemptsGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Whether the current user may review content.
+   */
+  readonly getReviewerStateApiV1ReviewMeGet: () => Effect.Effect<
+    typeof ReviewerStateDto.Type,
+    HttpClientError.HttpClientError | ParseError
+  >
+  /**
+   * Content items in syllabus order.
+   */
+  readonly listReviewItemsApiV1ReviewItemsGet: (
+    options: typeof ListReviewItemsApiV1ReviewItemsGetParams.Encoded,
+  ) => Effect.Effect<
+    typeof ListReviewItemsApiV1ReviewItemsGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Item counts per kind and review status.
+   */
+  readonly reviewSummaryApiV1ReviewSummaryGet: (
+    options: typeof ReviewSummaryApiV1ReviewSummaryGetParams.Encoded,
+  ) => Effect.Effect<
+    typeof ReviewSummaryApiV1ReviewSummaryGet200.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Approve or reject an item, with an optional note on what to fix.
+   */
+  readonly reviewItemApiV1ReviewItemsItemIdPatch: (
+    itemId: string,
+    options: typeof ContentReview.Encoded,
+  ) => Effect.Effect<
+    typeof ContentItemDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
    * List all flashcard groups for a project.
    */
   readonly listFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGet: (
     projectId: string,
-    options?:
-      | typeof ListFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGetParams.Encoded
-      | undefined,
   ) => Effect.Effect<
     typeof ListFlashcardGroupsApiV1ProjectsProjectIdFlashcardGroupsGet200.Type,
     | HttpClientError.HttpClientError
@@ -2834,6 +4781,31 @@ export interface Client {
     | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
   >
   /**
+   * Record which cards the student knew, for SLO mastery.
+   */
+  readonly submitFlashcardAttemptApiV1ProjectsProjectIdFlashcardGroupsGroupIdAttemptsPost: (
+    projectId: string,
+    groupId: string,
+    options: typeof FlashcardAttemptCreate.Encoded,
+  ) => Effect.Effect<
+    typeof FlashcardAttemptDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * The student's most recent run through this flashcard set, if any.
+   */
+  readonly getLatestFlashcardAttemptApiV1ProjectsProjectIdFlashcardGroupsGroupIdAttemptsLatestGet: (
+    projectId: string,
+    groupId: string,
+  ) => Effect.Effect<
+    typeof FlashcardAttemptStateDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
    * List practice records for a project.
    */
   readonly listPracticeRecordsApiV1ProjectsProjectIdPracticeRecordsGet: (
@@ -2902,6 +4874,18 @@ export interface Client {
     mindMapId: string,
   ) => Effect.Effect<
     typeof MindMapDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
+  /**
+   * Delete a mind map.
+   */
+  readonly deleteMindMapApiV1ProjectsProjectIdMindMapsMindMapIdDelete: (
+    projectId: string,
+    mindMapId: string,
+  ) => Effect.Effect<
+    void,
     | HttpClientError.HttpClientError
     | ParseError
     | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>

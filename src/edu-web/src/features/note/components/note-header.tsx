@@ -1,3 +1,6 @@
+import { Result, useAtomValue } from '@effect-atom/atom-react'
+import { Link } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { noteAtom } from '@/data-acess/note'
-import { Result, useAtomValue } from '@effect-atom/atom-react'
-import { Link } from '@tanstack/react-router'
-import { ArrowLeft } from 'lucide-react'
+import { NoteDownload } from '@/components/downloads'
 
 type NoteHeaderContentProps = {
   noteId: string
@@ -75,6 +76,9 @@ export const NoteHeader = ({ noteId, projectId }: NoteHeaderProps) => {
           className="mr-2 data-[orientation=vertical]:h-4"
         />
         <NoteHeaderContent noteId={noteId} projectId={projectId} />
+      </div>
+      <div className="flex items-center gap-2 px-3">
+        <NoteDownload projectId={projectId} noteId={noteId} />
       </div>
     </header>
   )

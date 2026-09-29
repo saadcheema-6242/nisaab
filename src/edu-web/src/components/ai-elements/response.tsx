@@ -3,12 +3,13 @@
 import { memo } from 'react'
 import { Streamdown } from 'streamdown'
 import type { ComponentProps } from 'react'
+import { normalizeMath } from '@/lib/math'
 import { cn } from '@/lib/utils'
 
 type ResponseProps = ComponentProps<typeof Streamdown>
 
 export const Response = memo(
-  ({ className, ...props }: ResponseProps) => (
+  ({ className, children, ...props }: ResponseProps) => (
     <Streamdown
       className={cn(
         'size-full prose prose-sm dark:prose-invert max-w-none',
@@ -33,7 +34,9 @@ export const Response = memo(
         className,
       )}
       {...props}
-    />
+    >
+      {typeof children === 'string' ? normalizeMath(children) : children}
+    </Streamdown>
   ),
   (prevProps, nextProps) => prevProps.children === nextProps.children,
 )

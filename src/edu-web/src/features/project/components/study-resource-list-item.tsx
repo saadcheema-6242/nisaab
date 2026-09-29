@@ -26,6 +26,7 @@ import {
   exportFlashcardGroupAtom,
   importFlashcardGroupAtom,
 } from '@/data-acess/flashcard'
+import { deleteMindMapAtom } from '@/data-acess/mind-map'
 import { deleteNoteAtom } from '@/data-acess/note'
 import {
   deleteQuizAtom,
@@ -71,6 +72,7 @@ export const StudyResourceListItem = ({ studyResource }: Props) => {
   })
   const deleteQuiz = useAtomSet(deleteQuizAtom, { mode: 'promise' })
   const deleteNote = useAtomSet(deleteNoteAtom, { mode: 'promise' })
+  const deleteMindMap = useAtomSet(deleteMindMapAtom, { mode: 'promise' })
   const confirmationDialog = useConfirmationDialog()
 
   return StudyResource.$match(studyResource, {
@@ -414,6 +416,26 @@ export const StudyResourceListItem = ({ studyResource }: Props) => {
       )
     },
     MindMap: ({ data: mindMap }) => {
+      const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const confirmed = await confirmationDialog.open({
+          title: 'Delete Mind Map',
+          description: `Are you sure you want to delete "${mindMap.title}"? This action cannot be undone.`,
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel',
+          variant: 'destructive',
+        })
+
+        if (confirmed) {
+          await deleteMindMap({
+            mindMapId: mindMap.id,
+            projectId: mindMap.project_id,
+          })
+        }
+      }
+
       return (
         <li className="rounded-md p-3 hover:bg-muted/50 group">
           <div className="flex items-center gap-2">
@@ -431,6 +453,24 @@ export const StudyResourceListItem = ({ studyResource }: Props) => {
                 icon: NetworkIcon,
               })}
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVerticalIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleDelete} variant="destructive">
+                  <TrashIcon className="size-4" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </li>
       )

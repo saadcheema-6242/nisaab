@@ -96,7 +96,10 @@ export const SignInPage = () => {
           {signInResult._tag === 'Failure' && (
             <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
               <p className="text-sm text-destructive">
-                {Cause.pretty(signInResult.cause)}
+                {(() => {
+                  const error = Cause.squash(signInResult.cause)
+                  return error instanceof Error ? error.message : 'Sign in failed'
+                })()}
               </p>
             </div>
           )}

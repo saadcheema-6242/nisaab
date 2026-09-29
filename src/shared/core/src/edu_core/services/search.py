@@ -3,11 +3,10 @@
 from contextlib import contextmanager
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from edu_ai.llm import create_embeddings
 from edu_db.models import Document, Project
 from edu_db.session import get_session_factory
 from langchain_core.documents import Document as LangchainDocument
-from langchain_openai import AzureOpenAIEmbeddings
 from langchain_postgres import PGEngine, PGVectorStore
 
 from edu_core.exceptions import NotFoundError
@@ -32,14 +31,10 @@ class SearchService:
         """
         self.database_url = database_url
 
-        token_provider = get_bearer_token_provider(
-            DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
-        )
-        self.embeddings = AzureOpenAIEmbeddings(
+        self.embeddings = create_embeddings(
             azure_deployment=azure_openai_embedding_deployment,
             azure_endpoint=azure_openai_endpoint,
-            api_version=azure_openai_api_version,
-            azure_ad_token_provider=token_provider,
+            azure_api_version=azure_openai_api_version,
         )
         self._vector_store: PGVectorStore | None = None
 
@@ -124,7 +119,9 @@ class SearchService:
             )
         )
 
-        pg_engine = PGEngine.from_connection_string(url=async_url)
+        pg_engine = PGEngine.from_connection_string(
+            url=async_url, pool_size=3, max_overflow=2, pool_pre_ping=True
+        )
 
         self._vector_store = await PGVectorStore.create(
             pg_engine,

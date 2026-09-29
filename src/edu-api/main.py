@@ -2,9 +2,11 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from config import get_settings
+from dependencies import get_storage
 from edu_core.exceptions import NotFoundError, UsageLimitExceededError
 from edu_db.session import init_db
 from exception_handlers import (
+    UnhandledErrorMiddleware,
     general_exception_handler,
     http_exception_handler,
     not_found_error_handler,
@@ -15,15 +17,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError
 from routers import (
+    attempts_router,
     auth_router,
     chats_router,
+    curriculum_router,
     documents_router,
     flashcard_groups_router,
     mind_maps_router,
     notes_router,
+    papers_router,
     practice_records_router,
+    profile_router,
+    progress_router,
     projects_router,
     quizzes_router,
+    review_router,
+    srq_router,
     study_plans_router,
     usage_router,
     users_router,
@@ -47,6 +56,8 @@ class Api:
             settings = get_settings()
             # Initialize the database
             init_db(settings.database_url)
+            # Uploads go to this bucket; the worker may not have started yet
+            get_storage().ensure_bucket()
             print(
                 f"[{self.config.name}] Startup: Ready to serve on port {self.config.port}"
             )
@@ -67,6 +78,8 @@ class Api:
 
     def setup_cors(self):
         """Configure CORS middleware."""
+        # Added first so it sits inside CORS: error responses keep their CORS headers
+        self.app.add_middleware(UnhandledErrorMiddleware)
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],  # Allow all origins
@@ -91,11 +104,18 @@ class Api:
             return {"status": "healthy", "api": self.config.name}
 
         # Register all routers
+        self.app.include_router(profile_router)
+        self.app.include_router(progress_router)
+        self.app.include_router(curriculum_router)
         self.app.include_router(projects_router)
         self.app.include_router(documents_router)
         self.app.include_router(chats_router)
         self.app.include_router(notes_router)
         self.app.include_router(quizzes_router)
+        self.app.include_router(srq_router)
+        self.app.include_router(papers_router)
+        self.app.include_router(attempts_router)
+        self.app.include_router(review_router)
         self.app.include_router(flashcard_groups_router)
         self.app.include_router(practice_records_router)
         self.app.include_router(mind_maps_router)
@@ -123,6 +143,6 @@ class Api:
 
 
 if __name__ == "__main__":
-    config = ApiConfig(name="Edu API", port=8000)
+    config = ApiConfig(name="Edu API", port=get_settings().port)
     api = Api(config)
     api.run()

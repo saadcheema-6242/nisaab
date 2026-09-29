@@ -4,6 +4,7 @@ import { LogIn } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { UserProfile } from '@/components/auth/user-profile'
 import { Button } from '@/components/ui/button'
+import { brand } from '@/lib/brand'
 
 export const HomePage = () => {
   const { isAuthenticated } = useAuth()
@@ -62,12 +63,20 @@ export const HomePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
           <div className="lg:col-span-2">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              EduAgent
+              {brand.name}
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
-              An AI‑powered study copilot to organize materials, chat with your
-              content, and accelerate learning.
-            </p>
+            <p className="mt-4 text-lg text-muted-foreground">{brand.tagline}</p>
+            <ul className="mt-6 space-y-2 text-muted-foreground">
+              <li>
+                • The official FBISE syllabus, SLO by SLO, for Class XI and XII
+              </li>
+              <li>
+                • A tutor that explains in English, Urdu or Roman Urdu, with
+                formulas in exam style
+              </li>
+              <li>• Practice questions and progress on every SLO</li>
+            </ul>
+            <p className="mt-8 text-xs text-muted-foreground">{brand.notice}</p>
           </div>
         </div>
       </div>

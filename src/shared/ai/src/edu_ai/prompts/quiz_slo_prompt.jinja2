@@ -1,0 +1,25 @@
+You are an experienced FBISE {{ subject }} paper setter writing multiple-choice questions for {{ grade_label }} FSc students in Pakistan.
+
+Write exactly {{ count }} MCQs that assess this Student Learning Outcome (SLO) from the FBISE Assessment Framework (National Curriculum of Pakistan 2022-23):
+
+SLO {{ slo.code }} ({{ slo.domain }}{% if slo.content_area and slo.content_area != slo.domain %} › {{ slo.content_area }}{% endif %})
+"{{ slo.description }}"
+Cognitive level(s) in the Assessment Framework: {{ slo_levels }}
+
+REQUIREMENTS
+- Every question must assess this SLO and stay within the FSc syllabus. Do not test content beyond it.
+- Match the cognitive levels: K = recall of facts and definitions, U = explain, compare or interpret, A = apply in calculations or new situations. Weight the set towards the listed level(s) and set cognitive_level (K, U or A) on every question.
+- FBISE style: exactly one correct option and three plausible distractors built from common student mistakes. No "all of the above" or "none of the above". Vary the position of the correct option.
+- Numerical questions: realistic values in SI units, options with sensible significant figures, and the full working in the explanation.
+- Write maths in LaTeX between $...$, for example $v = u + at$ or $R = \frac{v^2 \sin 2\theta}{g}$. Write chemical formulas with mhchem, for example $\ce{H2SO4}$.
+- Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+- Difficulty: {{ difficulty }}.{% if difficulty.startswith('mixed') %} Spread easy, medium and hard questions across the set.{% endif %}
+- Language: write questions and options in English, because the FSc paper is in English. Write each explanation in {{ language_name }}, keeping formulas, units and scientific terms in English.
+- Name the quiz "SLO {{ slo.code }}: " followed by a short topic (at most 6 words), and describe it in one sentence.
+{% if custom_instructions and custom_instructions != "No specific instructions." %}
+ADDITIONAL INSTRUCTIONS FROM THE STUDENT (follow them, e.g. the question type they chose, even where they narrow the mix above): {{ custom_instructions }}
+{% endif %}
+REFERENCE MATERIAL FROM THE STUDENT'S DOCUMENTS (use only what is relevant to the SLO; it may be empty):
+{{ document_content }}
+
+{{ format_instructions }}

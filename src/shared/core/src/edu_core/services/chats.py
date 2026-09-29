@@ -7,9 +7,9 @@ from datetime import datetime
 from typing import Any, Union
 from uuid import uuid4
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from edu_ai.chatbot.context import ChatbotContext
+from edu_ai.chatbot.context import ChatbotContext, FbiseContext
 from edu_ai.chatbot.factory import make_chatbot
+from edu_ai.llm import TUTOR, create_chat_model
 from edu_db.models import (
     Chat,
     Document,
@@ -23,7 +23,6 @@ from edu_db.models import (
 )
 from edu_db.session import get_session_factory
 from langchain_core.messages import AIMessage, BaseMessage, ToolCall, ToolMessage
-from langchain_openai import AzureChatOpenAI
 from sqlalchemy.orm import joinedload, load_only
 
 from edu_core.exceptions import NotFoundError
@@ -74,7 +73,6 @@ class ChatService:
         azure_openai_chat_deployment: str | None = None,
         azure_openai_endpoint: str | None = None,
         azure_openai_api_version: str | None = None,
-        azure_storage_connection_string: str | None = None,
         usage_service=None,
         queue_service=None,
     ) -> None:
@@ -85,7 +83,6 @@ class ChatService:
             azure_openai_chat_deployment: Azure OpenAI chat deployment name
             azure_openai_endpoint: Azure OpenAI endpoint URL
             azure_openai_api_version: Azure OpenAI API version
-            azure_storage_connection_string: Azure Storage connection string
             usage_service: Optional usage tracking service
             queue_service: Optional QueueService for async task processing
         """
@@ -93,31 +90,18 @@ class ChatService:
         self.usage_service = usage_service
         self._queue_service = queue_service
 
-        # Initialize LLM instances
-        self.credential = DefaultAzureCredential()
-        self.token_provider = get_bearer_token_provider(
-            self.credential, "https://cognitiveservices.azure.com/.default"
-        )
-
-        # Build LLM kwargs, only include api_version if provided
+        # Initialize LLM instances for the configured provider
         llm_kwargs = {
+            "task": TUTOR,
+            "temperature": 0.25,
             "azure_deployment": azure_openai_chat_deployment,
             "azure_endpoint": azure_openai_endpoint,
-            "azure_ad_token_provider": self.token_provider,
-            "temperature": 0.25,
+            "azure_api_version": azure_openai_api_version,
         }
-        if azure_openai_api_version:
-            llm_kwargs["api_version"] = azure_openai_api_version
 
-        llm_streaming = AzureChatOpenAI(
-            streaming=True,
-            **llm_kwargs,
-        )
+        llm_streaming = create_chat_model(streaming=True, **llm_kwargs)
 
-        self.llm_non_streaming = AzureChatOpenAI(
-            streaming=False,
-            **llm_kwargs,
-        )
+        self.llm_non_streaming = create_chat_model(streaming=False, **llm_kwargs)
 
         self.chatbot = make_chatbot(llm=llm_streaming)
 
@@ -248,6 +232,21 @@ class ChatService:
             order=order,
         )
 
+    @staticmethod
+    def _fbise_context(project: Project | None) -> FbiseContext | None:
+        """The FBISE subject of a subject workspace, for the tutor prompt."""
+        grade_subject = project.grade_subject if project else None
+        if grade_subject is None:
+            return None
+        grade = {11: "Class XI (HSSC-I)", 12: "Class XII (HSSC-II)"}
+        return FbiseContext(
+            grade_subject_id=grade_subject.id,
+            subject=grade_subject.subject.name,
+            grade_label=grade.get(grade_subject.grade, f"Grade {grade_subject.grade}"),
+            curriculum=grade_subject.curriculum,
+            has_slos=grade_subject.status == "available",
+        )
+
     def _convert_messages_to_llm_format(
         self, messages: list[ChatMessageDto]
     ) -> list[dict[str, Any]]:
@@ -267,11 +266,57 @@ class ChatService:
                     content_parts.append(
                         {"type": "text", "text": part_dto.text_content}
                     )
+                elif isinstance(part_dto, ToolCallPartDto):
+                    # Practice cards end the turn without text; tell the tutor what was shown.
+                    # A note is only context, so it must never break the chat.
+                    note = None
+                    with suppress(Exception):
+                        note = self._practice_note(part_dto)
+                    if note:
+                        content_parts.append({"type": "text", "text": note})
                 elif isinstance(part_dto, FilePartDto):
                     # Filter out file parts - file upload is not supported
                     continue
+            if not content_parts:
+                continue
             llm_chat_history.append({"role": msg_dto.role, "content": content_parts})
         return llm_chat_history
+
+    @staticmethod
+    def _practice_note(part: ToolCallPartDto) -> str | None:
+        """A short note of the practice card a tool showed, e.g. a quiz, for chat history."""
+        if part.tool_state != ToolState.OUTPUT_AVAILABLE:
+            return None
+        output: dict[str, Any] = {}
+        if isinstance(part.tool_output, dict):
+            output = part.tool_output
+        elif isinstance(part.tool_output, str):
+            with suppress(ValueError):
+                parsed = json.loads(part.tool_output)
+                output = parsed if isinstance(parsed, dict) else {}
+        args = part.tool_input or {}
+        topic = args.get("topic") or "the syllabus"
+        slo = f" (SLO {output['slo_code']})" if output.get("slo_code") else ""
+        name = part.tool_name
+        if name == "practice_quiz":
+            shown = f"an interactive quiz card with {output.get('questions', '')} MCQs on {topic}{slo}"
+        elif name == "practice_flashcards":
+            shown = f"{output.get('cards', '')} interactive flashcards on {topic}{slo}"
+        elif name == "practice_mind_map":
+            shown = f"a mind map: {output.get('title') or topic}"
+        elif name == "practice_paper":
+            shown = f"a practice paper card: {output.get('title') or topic}"
+        elif name == "ask_practice_questions":
+            asked = output.get("questions")
+            questions = "; ".join(
+                q.get("question", "") for q in asked if isinstance(q, dict)
+            ) if isinstance(asked, list) else ""
+            kind = str(output.get("kind") or "practice").replace("_", " ")
+            shown = f"questions about the {kind} to make on {output.get('topic') or topic}: {questions}"
+        else:
+            return None
+        # Worded as a record of the tool, so the tutor calls the tool again for a new one
+        return f"(Shown by the {name} tool: {shown}.)"
 
     def _extract_sources_from_chunk(
         self, chunk: dict[str, Any]
@@ -836,6 +881,7 @@ class ChatService:
                 language_code = (
                     getattr(project, "language_code", "en") if project else "en"
                 )
+                fbise = self._fbise_context(project)
 
                 # Build query string from text parts for backward compatibility
                 query = " ".join(text_content_parts) if text_content_parts else ""
@@ -859,6 +905,7 @@ class ChatService:
                     user_id=user_id,
                     assistant_message_id=assistant_message_id,
                     db_session=db,
+                    fbise=fbise,
                 ):
                     # If this is the final chunk, save the complete message to database
                     if stream_chunk.done:
@@ -979,6 +1026,7 @@ class ChatService:
         user_id: str | None = None,
         assistant_message_id: str | None = None,
         db_session=None,
+        fbise: FbiseContext | None = None,
     ) -> AsyncGenerator[StreamingChatMessage]:
         """Get response stream from agent.
 
@@ -1014,6 +1062,7 @@ class ChatService:
             search=self.search_service,
             queue=self._queue_service,
             language=language_code,
+            fbise=fbise,
             llm=self.llm_non_streaming,  # Use non-streaming LLM for tools
         )
 
@@ -1148,6 +1197,9 @@ class ChatService:
                             # Create or update tool call entry for non-RAG tools
                             if tc_id not in tool_calls:
                                 tool_calls[tc_id] = ToolCallPartDto(
+                                    # A stable ID from the start, so the web app updates
+                                    # this part in place instead of adding it again
+                                    id=str(uuid4()),
                                     tool_call_id=tc_id,
                                     tool_name=tc_name,
                                     tool_input=tc_args,

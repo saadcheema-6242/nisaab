@@ -25,6 +25,7 @@ class FlashcardGenerationData(TypedDict):
     user_id: NotRequired[str]
     count: NotRequired[int]
     difficulty: NotRequired[str]
+    slo_code: NotRequired[str]  # FBISE SLO the flashcards must cover
 
 
 class QuizGenerationData(TypedDict):
@@ -36,6 +37,7 @@ class QuizGenerationData(TypedDict):
     custom_instructions: NotRequired[str]
     user_id: NotRequired[str]
     count: NotRequired[int]
+    slo_code: NotRequired[str]  # FBISE SLO the questions must assess
 
 
 class NoteGenerationData(TypedDict):

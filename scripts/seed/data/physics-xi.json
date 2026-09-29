@@ -1,0 +1,2198 @@
+{
+  "subject": {
+    "code": "PHY",
+    "name": "Physics"
+  },
+  "grade": 11,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/ModelPaper/2025/Assessment%20Frameworks/HSSC-I/Final%20Assessment%20Framework%20Model%20Question%20Paper%20Physics%20HSSC-I.pdf",
+  "domains": [
+    {
+      "code": "A",
+      "name": "Measurements"
+    },
+    {
+      "code": "B",
+      "name": "Mechanics"
+    },
+    {
+      "code": "C",
+      "name": "Heat and Thermodynamics"
+    },
+    {
+      "code": "D",
+      "name": "Waves"
+    },
+    {
+      "code": "E",
+      "name": "Electricity and Magnetism"
+    },
+    {
+      "code": "F",
+      "name": "Modern Physics"
+    },
+    {
+      "code": "N",
+      "name": "Experimentation Skills"
+    }
+  ],
+  "slos": [
+    {
+      "code": "P-11-A-01",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Make reasonable estimates of physical quantities [of those quantities that are discussed in the topics of this grade]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": 7
+    },
+    {
+      "code": "P-11-A-02",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Express derived units as products or quotients of the SI base units",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-A-03",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Analyze the homogeneity of physical equations [Through dimensional analysis]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-A-04",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Derive formulae in simple cases [Through using dimensional analysis]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-A-05",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Analyze and critique the accuracy and precision of data collected by measuring instruments",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": 5
+    },
+    {
+      "code": "P-11-A-06",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Assess the uncertainty in a derived quantity [By simple addition of absolute, fractional or percentage uncertainties]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-A-07",
+      "domain": "A",
+      "content_area": "Measurements",
+      "description": "Justify why all measurements contain some uncertainty",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-01",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Represent a vector in 2-D as two perpendicular components",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-02",
+      "domain": "B",
+      "content_area": "Vectors",
+      "description": "Describe the product of two vectors (dot and cross-product) along with their properties.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-03",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Derive the equations of motion [For uniform acceleration cases only. Derive from the definitions of velocity and acceleration as well as graphically].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-04",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Solve problems using the equations of motion [For the cases of uniformly accelerated motion in a straight line, including the motion of bodies falling in a uniform gravitational field without air resistance. This also includes situations where the equations of motion need to be resolved into vertical and horizontal components for 2-D motion]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-05",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Evaluate and analyze projectile motion in the absence of air resistance [This includes solving problems making use of the below facts: (i) Horizontal component (VH) of velocity is constant. (i) Acceleration is in the vertical direction and is the same as that of a vertically free falling object. (ii) The horizontal motion and vertical motion are independent of each other. Situations may require students to determine for projectiles: – How high does it go? – How far would it go along the level land? – Where would it be after a given time? – How long will it remain in flight? Situations may also require students to calculate for a projectile launched from ground height the – launch angle that results in the maximum range. – relation between the launch angles that result in the same range.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-06",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Predict qualitatively how air resistance affects projectile motion [This includes analysis of both the horizontal component and vertical component of velocity and hence predicting qualitatively the range of the projectile.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-07",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Express angles in radians",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": 5
+    },
+    {
+      "code": "P-11-B-08",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Define and calculate angular displacement, angular velocity and angular acceleration [This involves use of S = 𝑟 θ, v = 𝑟ω, ω = 2π/𝑇, 𝑎 == 𝑟ω2 and 𝑎 = 𝑣2/𝑟 to solve problems].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-09",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Use equations of angular motion to solve problems involving rotational motions.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-10",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Analyze qualitatively motion in a curved path due to a perpendicular force.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-11",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Apply the principle of conservation of momentum to solve simple problems [Including elastic and inelastic interactions between objects in both one and two dimensions. Knowledge of the concept of coefficient of restitution is not required. Examples of applications include: – karate chops to break a pile of bricks – car crashes – ball & bat – the motion under thrust of a rocket in a straight line considering short thrusts during which the mass remains constant]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": 5
+    },
+    {
+      "code": "P-11-B-12",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Predict and analyze motion for elastic collisions [This include making use of the fact that for an elastic collision, total kinetic energy is conserved and the relative speed of approach is equal to the relative speed of separation]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-13",
+      "domain": "B",
+      "content_area": "Translatory motion",
+      "description": "Justify why though the momentum of a closed system is always conserved, some change in kinetic energy may take place",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-14",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Define and calculate centripetal force [Use F = mrω², F = mv² /r]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "A"
+      ],
+      "periods": 15
+    },
+    {
+      "code": "P-11-B-15",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Analyze situations involving circular motion in terms of centripetal force [e.g. situations in which centripetal acceleration is caused by a tension force, a frictional force, a gravitational force, or a normal force.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-16",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Explain why the objects in orbiting satellites appear to be weightless.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-17",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Describe how artificial gravity is created to counter weightlessness.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-18",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Define and calculate moment of inertia of a body and angular momentum.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-19",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Derive and apply the relation between torque, moment of inertia and angular acceleration.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-20",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "State and apply the law of conservation of angular momentum. Illustrate the applications of conservation of angular momentum in real life [Such as by flywheels to store rotational energy, by gyroscopes in navigation systems, by ice skaters to adjust their angular velocity].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-21",
+      "domain": "B",
+      "content_area": "Rotational and circular motion",
+      "description": "Justify how a centrifuge is used to separate materials using centripetal force",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-22",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Distinguish between the structures of crystalline, glassy, amorphous, and polymeric solids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": 32
+    },
+    {
+      "code": "P-11-B-23",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Describe that deformation of solids in one dimension [that it is caused by a force and that in one dimension, the deformation can be tensile or compressive].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-24",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Define and use the terms stress, strain and the Young modulus",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-25",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Describe an experiment to determine the Young modulus of a metal wire.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-26",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Describe and use the terms elastic deformation, plastic deformation and elastic limit",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-27",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Justify why and apply the fact that the area under the force– extension graph represents the work done",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-28",
+      "domain": "B",
+      "content_area": "Deformation of solids",
+      "description": "Determine the elastic potential energy of a material [that is deformed within its limit of proportionality from the area under the force-extension graph. Also state and use E  1 Fx  1 kx2 for a material deformed within its limit of P 2 2 proportionality].",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-29",
+      "domain": "B",
+      "content_area": "Work and kinetic energy",
+      "description": "Derive the formula for kinetic Energy [using the equations of motion]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-30",
+      "domain": "B",
+      "content_area": "Work and kinetic energy",
+      "description": "Deduce the work done from force- displacement graph",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-31",
+      "domain": "B",
+      "content_area": "Work and kinetic energy",
+      "description": "Differentiate between conservative and non-conservative forces",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-32",
+      "domain": "B",
+      "content_area": "Work and kinetic energy",
+      "description": "Utilize the work – energy theorem in a resistive medium to solve problems.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-33",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Justify and use Archimedes’ principle of flotation",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-34",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Justify how ships are engineered to float in the sea",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-35",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Define and apply the terms: steady (streamline or laminar) flow, incompressible flow and non-viscous flow as applied to the motion of an ideal fluid",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-36",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Use equation of continuity to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-37",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Explain that squeezing the end of a rubber pipe results in increase in flow velocity",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-38",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Justify that the continuity is a form of the principle of conservation of mass.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-39",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Justify that the pressure difference can arise from different rates of flow of a fluid [Bernoulli effect].",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-40",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Explain and apply Bernoulli’s equation for horizontal and vertical fluid flow",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-41",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Explain why real fluids are viscous fluids.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-42",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Describe how viscous forces in a fluid cause a retarding force on an object moving through it.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-43",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Describe super fluidity [As the state in which a liquid will experience zero viscosity. Students should know the implications of this state e.g. this allows for super fluids to creep over the walls of containers to 'empty' themselves. It also implies that if you stir a superfluid, the vortices will keep spinning indefinitely.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-B-44",
+      "domain": "B",
+      "content_area": "Fluid dynamics",
+      "description": "Analyze the real world applications of the Bernoulli effect [For example, atomisers in perfume bottles, the swinging trajectory of a spinning cricket ball and the lift of a spinning golf ball (the magnus effect), the use of Venturi ducts in filter pumps and car engines to adjust the flow of fluid, etc]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-01",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State that regions of equal temperature are in thermal equilibrium",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-02",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Relate a rise in temperature of an object to an increase in its internal energy",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-03",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Apply the equation of state for an ideal gas [expressed as pV = nRT, where n = amount of substance (number of moles) and as pV = NkT, where N = number of molecules]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-04",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State that the Boltzmann constant k is given by k=R/NA",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-05",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Describe the basic assumptions of the kinetic theory of gasses [Including understanding the temperature, pressure and density conditions under which an ideal gas is a good approximation of a real gas.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-06",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Use W = p∆V for the work done when the volume of a gas changes at constant pressure.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-07",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Describe the difference between the work done by a gas and the work done on a gas.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-08",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Define and use the first law of thermodynamics [Q = ΔU + W expressed in terms of the increase in internal energy, the heating of the system (energy transferred to the system by heating) and the work done on the system]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-09",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Explain qualitatively, in terms of particles, the relationship between the pressure, temperature and volume of a gas [Specifically the below case: (a) pressure and temperature at constant volume. (b) volume and temperature at constant pressure (c) pressure and volume at a constant temperature]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-10",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Use the equation, including a graphical representation of the relationship between pressure and volume for a gas at constant temperature.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-11",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Justify how the first law of thermodynamics expresses the conservation of energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-12",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Relate a rise in temperature of a body to an increase in its internal energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-13",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State the working principle of a heat engine.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-14",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Describe the concept of reversible and irreversible processes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-15",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State and explain the second law of thermodynamics.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-16",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State the working principle of Carnot’s engine",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-17",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Describe that refrigerator is a heat engine operating in reverse as that of an ideal heat engine.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-18",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Explain that an increase in temperature increases the disorder of the system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-19",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Explain that increase in entropy means degradation of energy.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-20",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Explain that energy is degraded during all natural processes.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-21",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Identifying that system tends to become less orderly over time.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-22",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "Explain that Entropy, S, is a thermodynamic quantity that relates to the degree of disorder of the particles in a system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-C-23",
+      "domain": "C",
+      "content_area": "Heat and thermodynamics",
+      "description": "State that the Carnot cycle sets a limit for the efficiency of a heat engine at the temperatures of its heat reservoirs given by Efficiency=1- T(cold reservoir)/T(hot reservoir) Domain D: Waves",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-01",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Use intensity = power/area to solve problems. Use Intensity ∝ (amplitude)2 for a progressive wave to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": 26
+    },
+    {
+      "code": "P-11-D-02",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain that when a source of sound waves moves relative to a stationary observer, the observed frequency is different from the source frequency [describing of the Doppler effect for a stationary source and a moving observer is not required]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-03",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Use the expression fo =(fs⋅v)/(v±vs ) for the observed frequency when a source of sound waves moves relative to a stationary observer.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-04",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain the applications of the Doppler effect [such as radar, sonar, astronomy, satellite, radar speed traps and studying cardiac problems in humans]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-05",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain that polarization is a phenomenon associated with transverse waves",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-06",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Define and apply Malus’s law [I = Io cos2θ to calculate the intensity of a plane-polarized electromagnetic wave after transmission through a polarizing filter or a series of polarizing filters. (calculation of the effect of a polarizing filter on the intensity of an unpolarized wave is not required).]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-07",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Use the principle of superposition of waves to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-08",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Differentiate between constructive and destructive interference.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-09",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Apply the principle of superposition to explain the working of noise canceling headphones.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-10",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Illustrate experiments that demonstrate stationary waves [using microwaves, stretched strings and air columns (it will be assumed that end corrections are negligible; knowledge of the concept of end corrections is not required)]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-11",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain the formation of a stationary wave using graphical representation",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-12",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain the formation of harmonics in stationary waves.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-13",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Analyze experiments that demonstrate diffraction [including the qualitative effect of the gap width relative to the wavelength of the wave; for example diffraction of water waves in a ripple tank]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-14",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain the term coherence.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-15",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain beats [as the pulsation caused by two waves of slightly different frequencies interfering with each other]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-16",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Illustrate examples of how beats are generated in musical instruments",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-17",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Explain the use of polaroids in sky photography and stress analysis of materials",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-18",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Describe qualitatively gravitational waves [as waves of the intensity of gravity generated by the accelerated masses of an orbital binary system that propagate as waves outward from their source at the speed of light]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-19",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "State that as a gravitational wave passes a body with mass the distortion in space-time can cause the body to stretch and compress periodically",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-20",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "State that gravitational waves pass through the Earth due to far off celestial events, but they are very minute amplitude",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-D-21",
+      "domain": "D",
+      "content_area": "Waves",
+      "description": "Describe the use of interferometers in detecting gravitational waves [Interferometers are very sensitive detection devices that make use of the interference of laser beams (working and set up details are not required) and were used to first detect the existence of gravitational waves]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-01",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "State that an electric field is an example of a field of force",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-02",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Define and calculate electric field strength [Use F = qE for the ∆𝑉 force on a charge in an electric field. Use E= to calculate the field strength of ∆𝑑 the uniform field between charged parallel plates]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-03",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Represent an electric field by means of field lines",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-04",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Describe the effect of a uniform electric field on the motion of charged particles",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-05",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "State that, for a point outside a spherical conductor, the charge on the sphere may be considered to be a point charge at its center",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-06",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Explain how a Faraday cage works [by inducing internal electric fields that work to shield the inside from the influence of external electric fields]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-07",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "State and apply Coulomb’s law [F= 𝑄1𝑄2 for the force between k 𝑟2 1 two point charges in free space, where k = ] 4𝜋∈𝑜",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-E-08",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Use E = k for the electric field strength due to a point charge 𝑟2 in free space.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-09",
+      "domain": "E",
+      "content_area": "Electrostatics",
+      "description": "Describe how Ferro fluids work [they make use of temporary soft magnetic materials suspended in liquids to develop fluids that react to the poles of a magnet and have many applications in fields such as electronics]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-10",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Use, for a current-carrying conductor, the expression I=Anvq [where n is the number of charge carriers per unit volume.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-11",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State and use V=W/Q",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-12",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State and use P=IV, P=I2 R and P=V2/R",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-13",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State and use R=ρL/A",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-14",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State that the resistance of a light-dependent resistor (LDR) decreases as the light intensity increases",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-15",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Define and use the electromotive force(e.m.f.) [of a source as energy transferred per unit charge in driving charge around a complete circuit]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-16",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Distinguish between e.m.f. and potential difference (p.d.) in terms of energy considerations",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-17",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Explain the effects of the internal resistance of a source of e.m.f. on the terminal potential difference",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-18",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State Kirchhoff’s first law and describe that it is a consequence of conservation of charge",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-19",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State Kirchhoff’s second law and describe that it is a consequence of conservation of Energy",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-20",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Derive, using Kirchhoff’s laws, a formula for the combined resistance of two or more resistors in series",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-21",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Derive and apply a formula for the combined resistance of two or more resistors in parallel",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-22",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Use Kirchhoff’s laws to solve simple circuit problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-23",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "State and use the principle of the potentiometer as a means of comparing potential differences",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-24",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Explain the use of a galvanometer in null methods",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-25",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Explain the use of thermistors and light-dependent resistors in potential dividers [to provide a potential difference that is dependent on temperature and light intensity]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-26",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Explain the internal resistance of sources and its consequences for external circuits",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-27",
+      "domain": "E",
+      "content_area": "Electricity",
+      "description": "Explain how inspectors can easily check the reliability of a concrete bridge with carbon fibers as the fibers conduct electricity",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-28",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Define and explain magnetic fields",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": 18
+    },
+    {
+      "code": "P-09-E-29",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "State that a force might act on a current-carrying conductor placed in a magnetic field",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-30",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Use the equation F=BIL sin(θ) [ with directions as interpreted by Fleming’s left-hand rule to solve problems]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-31",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Define magnetic flux density [as the force acting per unit current per unit length on a wire placed at right angles to the magnetic field]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-32",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Use F=BqV sin(θ) to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-33",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Describe the motion of a charged particle moving in a uniform magnetic field perpendicular to the direction of motion of the particle",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-34",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Explain how electric and magnetic fields can be used in velocity selection",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-35",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Sketch magnetic field patterns due to the currents in a long straight wire, a flat circular coil and a long solenoid",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-36",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "State that the magnetic field due to the current in a solenoid is increased by a ferrous core.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-37",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Explain the origin of the forces between current-carrying conductors and determine the direction of the forces.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-38",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Define magnetic flux [as the product of the magnetic flux density and the cross-sectional area perpendicular to the direction of the magnetic flux density]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-39",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Use Φ=BA to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-40",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Use the concept of magnetic flux linkage",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-41",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Explain experiments that demonstrate Faraday’s and Lenz’s laws [(a) that a changing magnetic flux can induce an e.m.f. in a circuit, (b) that the induced e.m.f. is in such a direction as to oppose the change producing it, (c) the factors affecting the magnitude of the induced e.m.f.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-42",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Use Faraday’s and Lenz’s laws of electromagnetic induction to solve problems",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-09-E-43",
+      "domain": "E",
+      "content_area": "Magnetism",
+      "description": "Explain how seismometers make use of electromagnetic induction to the earthquake detection [specifically in terms of: (i) any movement or vibration of the rock on which the seismometer rests (buried in a protective case) results in relative motion between the magnet and the coil (suspended by a spring from the frame.) (ii) the emf induced in the coil is directly proportional to the displacement associated]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-01",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "Distinguish between inertial and non-inertial frames of reference.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-02",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "Describe the significance of Einstein’s assumption of the constancy of the speed of light.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-03",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "Describe that if c is constant then space and time become relative.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-04",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "State the postulates of Special relativity",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-05",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "Explain qualitatively and quantitatively the consequences of special relativity [Specifically in the case of: a— the relativity of simultaneity. b— the equivalence between mass and energy. c— length contraction. d— time dilation. e— mass increase]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-06",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "State that space-time is a mathematical model in relativity that treats time as a fourth dimension of the traditional three dimensions of space (It can be thought of as a metaphorical sheet of paper that can bend, and when it bends it can cause effects such as stretching and compression seen when gravitational waves pass through objects.)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-07",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "State that nucleon number and charge are conserved in nuclear processes",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": 26
+    },
+    {
+      "code": "P-11-F-08",
+      "domain": "F",
+      "content_area": "Relativity",
+      "description": "Describe the composition, mass and charge of α, β and γ radiations [both B— (electrons) and B+ (positrons) are included]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-09",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain that an antiparticle has the same mass but opposite charge to the corresponding particle [give the example that a positron is the antiparticle of an electron]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-10",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State that (electron) antineutrinos are produced during β–decay and (electron) neutrinos are produced during β+ decay",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-11",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain that α-particles have discrete energies but that β- particles have a continuous range of energies because (anti)neutrinos are emitted in β-decay",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-12",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe quarks and antiquarks (as a fundamental) [including that there are six flavors (types) of quark: up, down, strange, charm, top and bottom]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-13",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe protons and neutrons in terms of their quark composition",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-14",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State that a hadron may be either a baryon (consisting of three quarks) or a meson (consisting of one quark and an antiquark)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-15",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe the changes to quark composition that take place during β– and β+ decay",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-16",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State that electrons and neutrinos are fundamental particles called leptons",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-17",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State, W, Z, gluon, and photons as fundamental particles called exchange particles or force carriers",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-18",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State the Higgs Boson as a fundamental particle which is responsible for the particle's mass.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-19",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain that every subatomic particle has a corresponding antiparticle [that has the same mass as a given particle but opposite electric or magnetic properties according to the Standard Model of Particle Physics)]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-20",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe protons and neutrons in terms of their quark composition",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-21",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State that a hadron may be either a baryon (consisting of three quarks) or a meson (consisting of one quark and an antiquark)",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-22",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain that there are various contending theories about what 'mass' and 'force' are generated from [e.g. that these are generated from quantum fields when they are energized, or from multidimensional 'strings' that vibrate in higher dimensions to give rise to particles (no further technical knowledge beyond these simple descriptions is expected at this level)]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-23",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain the working principle of particle accelerators and also their uses.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-24",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Explain that antimatter is the counterpart of matter [e.g. a positron is the antimatter counterpart to an electron]",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-25",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Illustrate that antiparticles usually have the same weight, but opposite charge, compared to their matter counterparts",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-26",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "State that most of the matter in the observable universe is matter",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "K"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-27",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe the asymmetry of matter and antimatter in the universe as an unsolved mystery",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-F-28",
+      "domain": "F",
+      "content_area": "Particle physics",
+      "description": "Describe annihilation reactions [a particle meets its corresponding antiparticle, they undergo annihilation reactions in which either all the mass is converted to heat and light energy, or some mass is left over in the form of new subatomic particles.]",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-01",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "test that the lab equipment is functioning properly, without any potential risk of injury, before conducting an experiment",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-02",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "ensure that work space for conducting the experiment is not too crowded with apparatus as to be hazardous",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-03",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "ensure that safe distance is kept at all times from other investigators who may be handling lab apparatus",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-04",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "suggest broadly what potential bodily harm could occur from physical, chemical, biological and safety hazards in the context of the experiment being conducted",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-05",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "State that it is always better to ask for help from the lab instructor when unsure of how to use new apparatus",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-06",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Set up apparatus correctly without assistance from a supervisor",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-07",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Follow instructions given in the form of written instructions and diagrams (including circuit diagrams)",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-08",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Use apparatus to collect an appropriate quantity of data",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-09",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Repeat readings where appropriate",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-10",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Make measurements that span the largest possible range of values within the limits either of the equipment provided or of the instructions given.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-11",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Use a false origin where appropriate while plotting graphs",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-12",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Estimate the absolute uncertainty in Measurements",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-13",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Express the uncertainty in a measurement as an absolute or percentage uncertainty, and translate between these forms",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-14",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Express the absolute uncertainty in a repeated measurement as half the range of the repeated readings, where this is appropriate.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-15",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Draw straight lines of best fit or curves to show the trend of a graph",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-16",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Draw tangents to curved trend lines and determine the gradient of a straight-line graph or of a tangent to a curve",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-17",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Relate straight-line graphs to equations of the form y = mx + c, and derive expressions that equate to the gradient and/or the y-intercept of their graphs",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-18",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Read the coordinates of points on the trend line of a graph",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-20",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "determine the y-intercept of a straight-line graph or of a tangent to a curve, including where these are on graphs with a false origin.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-21",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "draw conclusions from an experiment, including determining the values of constants",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-22",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Explain whether experimental data supports a given hypothesis and make predictions based on the data",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-23",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Determine whether a relationship containing a constant is supported by experimental data",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-24",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "For results of an experiment: Calculate the percentage difference between values of the constant Compare this percentage difference with a pre-given percentage uncertainty Give a conclusion based on this comparison.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-25",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Identify and describe the limitations in an experimental procedure",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-26",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Identify the most significant sources of uncertainty in an experiment.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-27",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "An experimental arrangement that will improve the accuracy of the experiment or to extend the investigation to answer a new question",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "P-11-N-28",
+      "domain": "N",
+      "content_area": "Experimentation skills",
+      "description": "Describe these modifications clearly in words or diagrams.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
+      ],
+      "periods": null
+    }
+  ]
+}

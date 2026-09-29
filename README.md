@@ -104,28 +104,21 @@ Before you begin, ensure you have the following installed:
 
 ## 🚀 Quick Start
 
-Get EduAgent running locally using Docker for the backend and Vite for the frontend:
+Local development uses the Supabase CLI (database, storage, logins) and a free Gemini API key:
 
 ```bash
-# Clone the repository
-git clone https://github.com/StudentTraineeCenter/edu-agent.git
-cd edu-agent
+uv sync --all-packages && (cd src/edu-web && pnpm install)
+npx supabase start                       # in a folder outside the repo
+cp .env.example .env                     # fill in the keys printed by supabase start + your Gemini key
+DATABASE_URL="postgresql+psycopg2://postgres:postgres@127.0.0.1:54322/postgres" uv run alembic upgrade head
 
-# Start backend stack (API, worker, Postgres, Azurite)
-docker-compose up --build api worker db azurite
-
-# In a separate terminal, run DB migrations (one-time)
-# Make sure DATABASE_URL is set correctly for your local Postgres
-export DATABASE_URL="postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
-alembic upgrade head
-
-# In a new terminal, start the web frontend
-cd src/edu-web
-pnpm install
-pnpm dev
+cd src/edu-api    && uv run --package edu-api python main.py      # API
+cd src/edu-worker && uv run --package edu-worker python main.py   # worker
+cd src/edu-web    && pnpm dev                                     # web on http://localhost:3000
 ```
 
-Visit `http://localhost:3000` for the web app and `http://localhost:8000` for the API.
+Full guide: [docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md). Production deploys to Google Cloud
+(Cloud Run + Vertex AI) with Supabase for data: [deploy/gcp/README.md](deploy/gcp/README.md).
 
 ## 📦 Installation
 

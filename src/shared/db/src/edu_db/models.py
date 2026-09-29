@@ -2,7 +2,18 @@ from datetime import datetime
 from uuid import uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -48,11 +59,20 @@ class Project(Base):
     name: Mapped[str] = mapped_column(String, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     language_code: Mapped[str] = mapped_column(String, default="en")
+    # "subject_workspace" (created by onboarding for one FBISE subject) or "custom"
+    kind: Mapped[str] = mapped_column(String, default="custom", server_default="custom")
+    grade_subject_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("grade_subjects.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     owner = relationship("User", back_populates="projects")
+    grade_subject = relationship("GradeSubject")
     documents = relationship(
         "Document", back_populates="project", cascade="all, delete-orphan"
     )
@@ -238,6 +258,8 @@ class FlashcardGroup(Base):
     name: Mapped[str] = mapped_column(String, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
+    # FBISE SLO this set practises, e.g. P-11-B-05
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -273,6 +295,8 @@ class Flashcard(Base):
     position: Mapped[int] = mapped_column(
         Integer, default=0, index=True
     )  # Position for ordering within group
+    # FBISE SLO this item practises, e.g. P-11-B-05
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -295,6 +319,8 @@ class Quiz(Base):
     name: Mapped[str] = mapped_column(String, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
+    # FBISE SLO this set practises, e.g. P-11-B-05
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -334,6 +360,9 @@ class QuizQuestion(Base):
     position: Mapped[int] = mapped_column(
         Integer, default=0, index=True
     )  # Position for ordering within quiz
+    # FBISE SLO this item practises, e.g. P-11-B-05
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
+    cognitive_level: Mapped[str] = mapped_column(String, nullable=True)  # K, U or A
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -386,6 +415,8 @@ class PracticeRecord(Base):
         String, index=True
     )  # flashcard_id or quiz_question_id - ID of the study resource
     topic: Mapped[str] = mapped_column(Text)  # Extracted from question/flashcard text
+    # FBISE SLO this item practises, e.g. P-11-B-05
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
     user_answer: Mapped[str] = mapped_column(
         String, nullable=True
     )  # Only for quizzes, what user selected; null for flashcards
@@ -395,6 +426,8 @@ class PracticeRecord(Base):
     was_correct: Mapped[bool] = mapped_column(
         Boolean, default=False
     )  # Whether the user got it right
+    # Share of marks for written answers (0..1); null for right/wrong items
+    score: Mapped[float] = mapped_column(Float, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -518,6 +551,36 @@ class UserUsage(Base):
     user = relationship("User")
 
 
+class Job(Base):
+    """Background job for the worker (replaces the Azure Storage Queue)."""
+
+    __tablename__ = "jobs"
+    __table_args__ = (Index("ix_jobs_status_run_after", "status", "run_after"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    type: Mapped[str] = mapped_column(String, index=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(
+        String, default="queued"
+    )  # queued, running, done, failed
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=3)
+    run_after: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    locked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_error: Mapped[str] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class StudyPlan(Base):
     __tablename__ = "study_plans"
     id: Mapped[str] = mapped_column(
@@ -542,3 +605,268 @@ class StudyPlan(Base):
     # Relationships
     user = relationship("User")
     project = relationship("Project")
+
+
+class Subject(Base):
+    """An FSc subject, e.g. PHY Physics."""
+
+    __tablename__ = "subjects"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    code: Mapped[str] = mapped_column(String, unique=True)  # PHY, CHEM, BIO, MATH
+    name: Mapped[str] = mapped_column(String)
+    has_practical: Mapped[bool] = mapped_column(Boolean, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+    grade_subjects = relationship("GradeSubject", back_populates="subject")
+
+
+class GradeSubject(Base):
+    """A subject in one grade under one scheme of studies, e.g. Physics XI (ISS-2024)."""
+
+    __tablename__ = "grade_subjects"
+    __table_args__ = (UniqueConstraint("subject_id", "grade", "scheme"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    subject_id: Mapped[str] = mapped_column(
+        String, ForeignKey("subjects.id", ondelete="CASCADE"), index=True
+    )
+    grade: Mapped[int] = mapped_column(Integer)  # 11 or 12
+    scheme: Mapped[str] = mapped_column(String)  # ISS-2024
+    curriculum: Mapped[str] = mapped_column(String, nullable=True)  # NCP 2022-23
+    source_url: Mapped[str] = mapped_column(Text, nullable=True)  # FBISE AF PDF
+    # "available" once the SLOs are seeded, otherwise "coming_soon"
+    status: Mapped[str] = mapped_column(String, default="coming_soon")
+
+    subject = relationship("Subject", back_populates="grade_subjects")
+    domains = relationship(
+        "CurriculumDomain",
+        back_populates="grade_subject",
+        cascade="all, delete-orphan",
+        order_by="CurriculumDomain.sort_order",
+    )
+
+
+class CurriculumDomain(Base):
+    """A domain of the FBISE SLO table, e.g. B Mechanics."""
+
+    __tablename__ = "curriculum_domains"
+    __table_args__ = (UniqueConstraint("grade_subject_id", "code"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    grade_subject_id: Mapped[str] = mapped_column(
+        String, ForeignKey("grade_subjects.id", ondelete="CASCADE"), index=True
+    )
+    code: Mapped[str] = mapped_column(String)  # A..N
+    name: Mapped[str] = mapped_column(String)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+    grade_subject = relationship("GradeSubject", back_populates="domains")
+    slos = relationship(
+        "Slo",
+        back_populates="domain",
+        cascade="all, delete-orphan",
+        order_by="Slo.sort_order",
+    )
+
+
+class Slo(Base):
+    """A Student Learning Outcome from the FBISE Assessment Framework."""
+
+    __tablename__ = "slos"
+    __table_args__ = (UniqueConstraint("grade_subject_id", "code"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    grade_subject_id: Mapped[str] = mapped_column(
+        String, ForeignKey("grade_subjects.id", ondelete="CASCADE"), index=True
+    )
+    domain_id: Mapped[str] = mapped_column(
+        String, ForeignKey("curriculum_domains.id", ondelete="CASCADE"), index=True
+    )
+    code: Mapped[str] = mapped_column(String, index=True)  # P-11-B-05
+    content_area: Mapped[str] = mapped_column(String, nullable=True)
+    description: Mapped[str] = mapped_column(Text)
+    # summative (examined), formative (classroom only) or practical (PBA)
+    assessment_form: Mapped[str] = mapped_column(String)
+    cognitive_levels: Mapped[list[str]] = mapped_column(JSON, default=list)  # K, U, A
+    periods: Mapped[int] = mapped_column(Integer, nullable=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+    domain = relationship("CurriculumDomain", back_populates="slos")
+
+
+class StudentProfile(Base):
+    """The student's FSc details, filled in by onboarding."""
+
+    __tablename__ = "student_profiles"
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    grade: Mapped[int] = mapped_column(Integer)  # 11 or 12
+    group_code: Mapped[str] = mapped_column(String)  # PRE_MED or PRE_ENG
+    explanation_language: Mapped[str] = mapped_column(String, default="en")
+    exam_year: Mapped[int] = mapped_column(Integer, nullable=True)
+    onboarding_completed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user = relationship("User")
+
+
+class SrqQuestion(Base):
+    """A short-response question (SRQ) for one SLO, with its marking rubric."""
+
+    __tablename__ = "srq_questions"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    project_id: Mapped[str] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    slo_code: Mapped[str] = mapped_column(String, nullable=True, index=True)
+    question: Mapped[str] = mapped_column(Text)  # Markdown with LaTeX
+    marks: Mapped[int] = mapped_column(Integer)
+    model_answer: Mapped[str] = mapped_column(Text)
+    # [{"point": "...", "marks": 1}, ...]; the marks add up to `marks`
+    rubric: Mapped[list[dict]] = mapped_column(JSON, default=list)
+    cognitive_level: Mapped[str] = mapped_column(String, nullable=True)  # K, U or A
+    source: Mapped[str] = mapped_column(String, default="ai_generated")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    attempts = relationship(
+        "SrqAttempt", back_populates="question", cascade="all, delete-orphan"
+    )
+
+
+class SrqAttempt(Base):
+    """A student's written answer to an SRQ and its AI-estimated marks."""
+
+    __tablename__ = "srq_attempts"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("srq_questions.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    answer: Mapped[str] = mapped_column(Text)
+    awarded_marks: Mapped[float] = mapped_column(Float)
+    max_marks: Mapped[int] = mapped_column(Integer)
+    # {"points": [{"point", "marks", "awarded", "comment"}], "feedback": "...", "missing": [...]}
+    result: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    question = relationship("SrqQuestion", back_populates="attempts")
+
+
+class ContentItem(Base):
+    """Shared, reviewable content for one SLO: an explainer, an MCQ or an SRQ.
+
+    Generated ahead of time (scripts/content/generate_bank.py) and checked by a
+    subject teacher, so practice can start instantly with reviewed material.
+    """
+
+    __tablename__ = "content_items"
+    __table_args__ = (Index("ix_content_items_slo", "grade_subject_id", "slo_code", "kind"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    grade_subject_id: Mapped[str] = mapped_column(
+        String, ForeignKey("grade_subjects.id", ondelete="CASCADE")
+    )
+    slo_code: Mapped[str] = mapped_column(String)
+    kind: Mapped[str] = mapped_column(String)  # explainer, mcq, srq
+    # explainer: {title, content}; mcq: quiz question fields; srq: {question, marks, model_answer, rubric}
+    payload: Mapped[dict] = mapped_column(JSON)
+    review_status: Mapped[str] = mapped_column(
+        String, default="draft", index=True
+    )  # draft, approved, rejected
+    review_note: Mapped[str] = mapped_column(Text, nullable=True)
+    reviewed_by: Mapped[str] = mapped_column(String, nullable=True)
+    reviewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    source: Mapped[str] = mapped_column(String, default="ai_generated")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class PracticeAttempt(Base):
+    """One finished attempt at a quiz, flashcard set or practice paper.
+
+    Keeps the score and answers so a chat card or results page can show them
+    again later; the individual answers also go to practice_records for mastery.
+    """
+
+    __tablename__ = "practice_attempts"
+    __table_args__ = (Index("ix_practice_attempts_ref", "user_id", "kind", "ref_id"),)
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
+    )
+    project_id: Mapped[str] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    kind: Mapped[str] = mapped_column(String)  # quiz, flashcards, paper
+    ref_id: Mapped[str] = mapped_column(String)  # quiz, flashcard group or paper ID
+    # quiz: [{"question_id", "chosen", "correct_option", "is_correct"}]
+    answers: Mapped[list[dict]] = mapped_column(JSON, default=list)
+    score: Mapped[float] = mapped_column(Float)
+    max_score: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class PracticePaper(Base):
+    """A practice paper in FBISE style: MCQs, short questions (SRQ) and long questions (ERQ).
+
+    sections: [{"id": "A", "title", "items": [{"id", "type": "mcq"|"srq"|"erq", "marks",
+    "slo_code", ...}]}]. MCQ items carry the question inline; SRQ/ERQ items point to
+    srq_questions rows so they are marked like any written answer.
+    """
+
+    __tablename__ = "practice_papers"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    project_id: Mapped[str] = mapped_column(
+        String, ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    title: Mapped[str] = mapped_column(String)
+    length: Mapped[str] = mapped_column(String)  # mini, standard
+    time_limit_minutes: Mapped[int] = mapped_column(Integer)
+    sections: Mapped[list[dict]] = mapped_column(JSON)
+    total_marks: Mapped[float] = mapped_column(Float)
+    answers: Mapped[dict] = mapped_column(JSON, default=dict)  # saved as the student types
+    status: Mapped[str] = mapped_column(String, default="ready")  # ready, submitted
+    result: Mapped[dict] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)

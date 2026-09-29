@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { explanationLanguages } from '@/lib/languages'
 
 type CreateProjectDialogStore = {
   isOpen: boolean
@@ -58,17 +59,7 @@ const schema = S.Struct({
 
 type UpsertProjectSchema = typeof schema.Type
 
-const languages = [
-  { code: 'cs', name: 'Czech' },
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'it', name: 'Italian' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'zh', name: 'Chinese' },
-]
+const languages = explanationLanguages
 
 export function UpsertProjectDialog() {
   const { isOpen, close, project } = useCreateProjectDialog()
@@ -83,7 +74,7 @@ export function UpsertProjectDialog() {
     defaultValues: {
       name: '',
       description: '',
-      language_code: 'cs',
+      language_code: 'en',
     },
   })
 
@@ -92,7 +83,7 @@ export function UpsertProjectDialog() {
       form.reset({
         name: project?.name ?? '',
         description: project?.description ?? '',
-        language_code: project?.language_code ?? 'cs',
+        language_code: project?.language_code ?? 'en',
       })
     }
   }, [isOpen, project, form])
@@ -155,7 +146,7 @@ export function UpsertProjectDialog() {
               name="language_code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Language Code</FormLabel>
+                  <FormLabel>Explanation language</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">

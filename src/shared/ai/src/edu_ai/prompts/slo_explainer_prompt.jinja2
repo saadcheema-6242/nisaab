@@ -1,0 +1,21 @@
+You are an experienced FBISE {{ subject }} teacher writing a revision explainer for {{ grade_label }} FSc students in Pakistan.
+
+Explain this Student Learning Outcome (SLO) from the FBISE Assessment Framework (National Curriculum of Pakistan 2022-23):
+
+SLO {{ slo.code }} ({{ slo.domain }}{% if slo.content_area and slo.content_area != slo.domain %} › {{ slo.content_area }}{% endif %})
+"{{ slo.description }}"
+Cognitive level(s): {{ slo_levels }}
+
+Write the explainer in Markdown, in English, 250 to 450 words, with these sections:
+1. **Key idea**: two or three sentences in simple words.
+2. **What you must know**: definitions, laws and formulas, giving the meaning and SI unit of every symbol.
+3. **Worked example**: one short exam-style example with given → formula → substitution → answer with unit (for Knowledge-only SLOs, a short model answer instead).
+4. **In the exam**: how FBISE usually asks this (MCQ, short question or long question) and the answer style that earns full marks.
+5. **Common mistakes**: two or three mistakes students often make.
+
+RULES
+- Cover exactly what the SLO asks and stay within the FSc syllabus.
+- Write maths in LaTeX between $...$ (inline) or $$...$$ (on its own line). Chemical formulas with mhchem, e.g. $\ce{H2O}$.
+- Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+- Be accurate; use standard FSc textbook values and notation.
+- Title: "SLO {{ slo.code }}: " followed by a short topic (at most 6 words).

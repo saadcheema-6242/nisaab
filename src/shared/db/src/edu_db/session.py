@@ -20,8 +20,15 @@ def init_db(database_url: str) -> None:
     if _engine is not None:
         return  # Already initialized, skip
 
-    # Create the engine
-    _engine = create_engine(database_url, pool_pre_ping=True)
+    # Small pool: the Cloud SQL instance allows few connections, shared by the
+    # API, worker and jobs
+    _engine = create_engine(
+        database_url,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=5,
+        pool_recycle=1800,
+    )
 
     # Create the session factory
     _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_engine)

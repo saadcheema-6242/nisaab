@@ -2,13 +2,16 @@ import json
 from contextlib import suppress
 from typing import Any
 
+from edu_ai.agents.slo_context import language_name
 from edu_ai.chatbot.context import ChatbotContext, ChatbotState
 from edu_ai.prompts.prompts_utils import render_prompt
 from edu_ai.tools.flashcard import tools as flashcard_tools
 from edu_ai.tools.mind_map import tools as mind_map_tools
 from edu_ai.tools.note import tools as note_tools
+from edu_ai.tools.practice import tools as practice_tools
 from edu_ai.tools.quiz import tools as quiz_tools
 from edu_ai.tools.rag import tools as rag_tools
+from edu_ai.tools.syllabus import tools as syllabus_tools
 from langchain.agents import create_agent
 from langchain.agents.middleware import (
     ModelRequest,
@@ -17,7 +20,7 @@ from langchain.agents.middleware import (
     wrap_tool_call,
 )
 from langchain_core.messages import ToolMessage
-from langchain_openai import AzureChatOpenAI
+from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.runtime import Runtime
 
 
@@ -57,8 +60,8 @@ async def capture_sources_from_rag(request, handler):
     return result
 
 
-# Cache system prompts by language for performance
-_prompt_cache = {}
+# Cache system prompts by language and FBISE subject for performance
+_prompt_cache: dict[tuple, str] = {}
 
 
 def get_instructions(language: str = "English") -> str:
@@ -66,19 +69,38 @@ def get_instructions(language: str = "English") -> str:
     return render_prompt("system_prompt", language=language)
 
 
+def get_fbise_instructions(ctx: ChatbotContext) -> str:
+    """The FBISE tutor prompt for a subject workspace, e.g. Physics XI."""
+    fbise = ctx.fbise
+    return render_prompt(
+        "system_prompt_fbise",
+        subject=fbise.subject,
+        grade_label=fbise.grade_label,
+        curriculum=fbise.curriculum,
+        has_slos=fbise.has_slos,
+        language_code=ctx.language,
+        language_name=language_name(ctx.language),
+    )
+
+
 @dynamic_prompt
 async def dynamic_system_prompt(request: ModelRequest) -> str:
     """Generate dynamic system prompt."""
-    language = request.runtime.context.language or "English"
+    ctx = request.runtime.context
+    language = ctx.language or "en"
+    key = (language, ctx.fbise.model_dump_json() if ctx.fbise else None)
 
     # Return cached prompt if available
-    if language in _prompt_cache:
-        return _prompt_cache[language]
+    if key in _prompt_cache:
+        return _prompt_cache[key]
 
     # Generate and cache the prompt
-    prompt = get_instructions(language)
+    if ctx.fbise:
+        prompt = get_fbise_instructions(ctx)
+    else:
+        prompt = get_instructions(language_name(language))
 
-    _prompt_cache[language] = prompt
+    _prompt_cache[key] = prompt
     return prompt
 
 
@@ -91,9 +113,11 @@ def ensure_sources_in_stream(
     return {"sources": sources} if sources else None
 
 
-def make_chatbot(llm: AzureChatOpenAI):
+def make_chatbot(llm: BaseChatModel):
     tools = [
         *rag_tools,
+        *syllabus_tools,
+        *practice_tools,
         *flashcard_tools,
         *quiz_tools,
         *note_tools,

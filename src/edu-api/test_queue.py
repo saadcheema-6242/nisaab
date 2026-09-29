@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from config import get_settings
+from edu_db.session import init_db
 from edu_queue.schemas import (
     FlashcardGenerationData,
     QueueTaskMessage,
@@ -17,10 +18,8 @@ def main():
 
     console.print("[bold green]Edu API started[/bold green]")
 
-    queue_svc = QueueService(
-        connection_string=settings.azure_storage_connection_string,
-        queue_name="ai-generation-tasks",  # Make sure this queue exists in Azure/Azurite
-    )
+    init_db(settings.database_url)
+    queue_svc = QueueService()  # jobs are stored in the database
 
     # Note: group_id is now required - the flashcard group should already exist in the database
     task_data: FlashcardGenerationData = {

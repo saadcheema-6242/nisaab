@@ -44,6 +44,7 @@ class ProjectService:
                     name=name,
                     description=description,
                     language_code=language_code or "en",
+                    kind="custom",
                     created_at=datetime.now(),
                 )
                 db.add(project)
@@ -101,7 +102,13 @@ class ProjectService:
                     .order_by(Project.created_at.desc())
                     .all()
                 )
-                return [self._model_to_dto(project) for project in projects]
+                # Subject workspaces first, in the order onboarding created them
+                workspaces = sorted(
+                    (p for p in projects if p.kind == "subject_workspace"),
+                    key=lambda p: p.created_at,
+                )
+                custom = [p for p in projects if p.kind != "subject_workspace"]
+                return [self._model_to_dto(project) for project in workspaces + custom]
             except Exception:
                 raise
 
@@ -191,6 +198,11 @@ class ProjectService:
             name=project.name,
             description=project.description,
             language_code=project.language_code,
+            kind=project.kind or "custom",
+            grade_subject_id=project.grade_subject_id,
+            subject_code=project.grade_subject.subject.code
+            if project.grade_subject
+            else None,
             created_at=project.created_at,
         )
 

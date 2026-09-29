@@ -15,8 +15,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export const LoginButton = () => {
-  const { login, sendMagicLink, isLoading, loginError, magicLinkError } =
-    useAuth()
+  const {
+    login,
+    sendPasswordReset,
+    isLoading,
+    loginError,
+    passwordResetError,
+    passwordResetSent,
+  } = useAuth()
   const search = useSearch({ from: '/' })
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,12 +37,8 @@ export const LoginButton = () => {
     login({ email, password })
   }
 
-  const handleMagicLink = async () => {
-    // Store the redirect URL before login
-    if (search?.redirect) {
-      sessionStorage.setItem('auth.redirect', search.redirect)
-    }
-    sendMagicLink(email)
+  const handlePasswordReset = () => {
+    sendPasswordReset(email)
   }
 
   return (
@@ -51,7 +53,7 @@ export const LoginButton = () => {
         <DialogHeader>
           <DialogTitle>Sign in</DialogTitle>
           <DialogDescription>
-            Sign in with your email and password, or use a magic link.
+            Sign in with your email and password.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleLogin} className="space-y-4">
@@ -76,13 +78,18 @@ export const LoginButton = () => {
               placeholder="Enter your password"
             />
           </div>
-          {(loginError || magicLinkError) && (
+          {(loginError || passwordResetError) && (
             <p className="text-sm text-red-500">
               {loginError instanceof Error
                 ? loginError.message
-                : magicLinkError instanceof Error
-                  ? magicLinkError.message
+                : passwordResetError instanceof Error
+                  ? passwordResetError.message
                   : 'Login failed'}
+            </p>
+          )}
+          {passwordResetSent && (
+            <p className="text-sm text-muted-foreground">
+              Password reset email sent to {email}.
             </p>
           )}
           <div className="flex gap-2">
@@ -92,10 +99,10 @@ export const LoginButton = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={handleMagicLink}
+              onClick={handlePasswordReset}
               disabled={isLoading || !email}
             >
-              Send magic link
+              Forgot password
             </Button>
           </div>
         </form>

@@ -1,11 +1,12 @@
+import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
+import { Option } from 'effect'
+import { CheckCircle, XCircle } from 'lucide-react'
 import {
   currentQuestionAtom,
   quizDetailStateAtom,
   setSelectedAnswerAtom,
 } from '@/data-acess/quiz-detail-state'
-import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { Option } from 'effect'
-import { CheckCircle, XCircle } from 'lucide-react'
+import { MathText } from '@/components/math-text'
 
 type QuizQuestionCardProps = {
   quizId: string
@@ -81,9 +82,9 @@ export const QuizQuestionCard = ({
         <div className="bg-card border rounded-xl shadow-lg p-12">
           <div className="space-y-10">
             <div>
-              <h3 className="text-lg font-medium leading-relaxed mb-6">
+              <MathText className="text-lg font-medium leading-relaxed mb-6">
                 {currentQuestion.question_text}
-              </h3>
+              </MathText>
               {showResults && (
                 <div className="flex items-center gap-2 mb-4">
                   {selected === currentQuestion.correct_option ? (
@@ -119,7 +120,7 @@ export const QuizQuestionCard = ({
                 >
                   <div className="flex gap-3">
                     <span className="font-semibold shrink-0">{opt.key}.</span>
-                    <span className="leading-relaxed">{opt.label}</span>
+                    <MathText className="leading-relaxed">{opt.label}</MathText>
                   </div>
                 </button>
               ))}
@@ -131,15 +132,17 @@ export const QuizQuestionCard = ({
                   <span className="text-muted-foreground">
                     Correct answer:{' '}
                   </span>
-                  <span className="font-semibold text-green-700">
-                    {currentQuestion.correct_option}.{' '}
-                    {getOptionText(currentQuestion.correct_option)}
-                  </span>
+                  <div className="flex gap-1 font-semibold text-green-700">
+                    <span>{currentQuestion.correct_option}.</span>
+                    <MathText>
+                      {getOptionText(currentQuestion.correct_option)}
+                    </MathText>
+                  </div>
                 </div>
                 {currentQuestion.explanation && (
                   <div className="text-sm text-muted-foreground leading-relaxed">
                     <span className="font-medium">Explanation: </span>
-                    {currentQuestion.explanation}
+                    <MathText>{currentQuestion.explanation}</MathText>
                   </div>
                 )}
               </div>

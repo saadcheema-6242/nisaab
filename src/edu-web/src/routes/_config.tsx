@@ -1,8 +1,8 @@
-import { AppShell } from '@/routes/_app-shell'
 import { createRootRoute, createRoute, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { Suspense, lazy } from 'react'
 import { z } from 'zod'
+import { AppShell } from '@/routes/_app-shell'
 
 const LoadingPage = () => {
   return (
@@ -64,6 +64,18 @@ const MindMapDetailRoute = lazy(() =>
   })),
 )
 
+const ReviewPage = lazy(() =>
+  import('@/features/review/review-page').then((m) => ({
+    default: m.ReviewPage,
+  })),
+)
+const PaperRoute = lazy(() =>
+  import('./paper-route').then((m) => ({ default: m.PaperRoute })),
+)
+const SrqRoute = lazy(() =>
+  import('./srq-route').then((m) => ({ default: m.SrqRoute })),
+)
+
 const StudyPlanRoute = lazy(() =>
   import('./study-plan-route').then((m) => ({
     default: m.StudyPlanRoute,
@@ -77,6 +89,11 @@ const SettingsPage = lazy(() =>
 const DashboardRoute = lazy(() =>
   import('./dashboard-route').then((m) => ({ default: m.DashboardRoute })),
 )
+const OnboardingPage = lazy(() =>
+  import('@/features/onboarding/onboarding-page').then((m) => ({
+    default: m.OnboardingPage,
+  })),
+)
 const DashboardPage = lazy(() =>
   import('@/features/dashboard/dashboard-page').then((m) => ({
     default: m.DashboardPage,
@@ -84,13 +101,9 @@ const DashboardPage = lazy(() =>
 )
 
 const requireAuth = async () => {
-  // Check if user is authenticated by checking Supabase session
-  const { supabase } = await import('@/lib/supabase')
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const isAuthenticated = !!session
+  // Check if user is signed in (waits for the saved session to be restored)
+  const { getCurrentUser } = await import('@/lib/auth-client')
+  const isAuthenticated = !!(await getCurrentUser())
 
   if (!isAuthenticated) {
     const isSignInPage = window.location.pathname === '/sign-in'
@@ -136,6 +149,17 @@ export const indexRoute = createRoute({
   ),
 })
 
+export const onboardingRoute = createRoute({
+  path: '/onboarding',
+  getParentRoute: () => rootRoute,
+  beforeLoad: requireAuth,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <OnboardingPage />
+    </Suspense>
+  ),
+})
+
 export const signInRoute = createRoute({
   path: '/sign-in',
   getParentRoute: () => rootRoute,
@@ -171,6 +195,8 @@ export const dashboardIndexRoute = createRoute({
 export const projectDetailRoute = createRoute({
   path: '/p/$projectId',
   getParentRoute: () => dashboardRoute,
+  // slo: open the syllabus map with this SLO's panel (e.g. from the dashboard)
+  validateSearch: z.object({ slo: z.string().optional() }).optional(),
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <ProjectDetailRoute />
@@ -181,6 +207,8 @@ export const projectDetailRoute = createRoute({
 export const chatDetailRoute = createRoute({
   path: '/p/$projectId/c/$chatId',
   getParentRoute: () => dashboardRoute,
+  // ask: a first message to send automatically (e.g. from the syllabus map)
+  validateSearch: z.object({ ask: z.string().optional() }).optional(),
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <ChatDetailRoute />
@@ -258,6 +286,36 @@ export const mindMapDetailRoute = createRoute({
   ),
 })
 
+export const reviewRoute = createRoute({
+  path: '/review',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <ReviewPage />
+    </Suspense>
+  ),
+})
+
+export const paperRoute = createRoute({
+  path: '/p/$projectId/paper/$paperId',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <PaperRoute />
+    </Suspense>
+  ),
+})
+
+export const srqRoute = createRoute({
+  path: '/p/$projectId/srq/$questionId',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <SrqRoute />
+    </Suspense>
+  ),
+})
+
 export const studyPlanRoute = createRoute({
   path: '/p/$projectId/study-plan',
   getParentRoute: () => dashboardRoute,
@@ -290,11 +348,15 @@ export const routeTree = rootRoute.addChildren([
     quizEditRoute,
     noteDetailRoute,
     mindMapDetailRoute,
+    srqRoute,
+    paperRoute,
+    reviewRoute,
 
     studyPlanRoute,
     settingsRoute,
   ]),
   indexRoute,
+  onboardingRoute,
   signInRoute,
   signUpRoute,
 ])

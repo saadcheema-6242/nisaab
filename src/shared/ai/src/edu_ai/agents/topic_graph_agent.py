@@ -1,8 +1,8 @@
 from contextlib import suppress
 from typing import Any
 
-from azure.storage.blob import BlobServiceClient
 from edu_core.schemas.documents import DocumentStatus
+from edu_core.storage import StorageService, document_contents_path
 from edu_db.models import Document, Project
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel, Field
@@ -33,13 +33,11 @@ class TopicGraphAgent:
         self,
         search_service: Any,
         llm: AzureChatOpenAI,
-        blob_service_client: BlobServiceClient,
-        output_container: str,
+        storage: StorageService | None,
     ):
         self.search_service = search_service
         self.llm = llm
-        self.blob_service_client = blob_service_client
-        self.output_container = output_container
+        self.storage = storage
 
     async def generate_topic_graph(
         self,
@@ -77,15 +75,13 @@ class TopicGraphAgent:
                 return TopicGraph(root_topics=[])
 
             document_contents = []
-            if self.blob_service_client:
+            if self.storage:
                 for doc in documents:
-                    blob_name = f"{project_id}/{doc.id}.contents.txt"
-                    blob_client = self.blob_service_client.get_blob_client(
-                        container=self.output_container, blob=blob_name
-                    )
                     with suppress(Exception):
                         document_contents.append(
-                            blob_client.download_blob().readall().decode("utf-8")
+                            self.storage.download(
+                                document_contents_path(project_id, doc.id)
+                            ).decode("utf-8")
                         )
 
             full_content = "\n\n".join(document_contents)
@@ -100,5 +96,7 @@ class TopicGraphAgent:
                 language_code=project.language_code,
                 custom_instructions=custom_instructions,
                 document_content=full_content,
+                # Recursive Topic schema is not supported by function calling
+                structured=False,
                 **kwargs,
             )
