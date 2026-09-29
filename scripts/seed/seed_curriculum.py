@@ -1,6 +1,6 @@
 """Load the FBISE FSc curriculum into the database.
 
-Creates the four FSc subjects for grades XI and XII (as "coming soon"), then
+Creates the FSc subjects for grades XI and XII (as "coming soon"), then
 loads every reviewed SLO file in scripts/seed/data/ and marks those grade
 subjects "available". Safe to run again: rows are matched by code and
 updated; SLOs no longer in a file are removed.
@@ -26,6 +26,7 @@ SUBJECTS = [
     {"code": "CHEM", "name": "Chemistry", "has_practical": True},
     {"code": "BIO", "name": "Biology", "has_practical": True},
     {"code": "MATH", "name": "Mathematics", "has_practical": False},
+    {"code": "CS", "name": "Computer Science", "has_practical": True},
 ]
 
 

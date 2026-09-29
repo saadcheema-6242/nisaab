@@ -710,7 +710,7 @@ class StudentProfile(Base):
         String, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
     grade: Mapped[int] = mapped_column(Integer)  # 11 or 12
-    group_code: Mapped[str] = mapped_column(String)  # PRE_MED or PRE_ENG
+    group_code: Mapped[str] = mapped_column(String)  # PRE_MED, PRE_ENG or ICS
     explanation_language: Mapped[str] = mapped_column(String, default="en")
     exam_year: Mapped[int] = mapped_column(Integer, nullable=True)
     onboarding_completed_at: Mapped[datetime] = mapped_column(

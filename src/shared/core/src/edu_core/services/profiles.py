@@ -20,6 +20,8 @@ SCHEME = "ISS-2024"
 GROUP_SUBJECTS = {
     "PRE_MED": ["PHY", "CHEM", "BIO"],
     "PRE_ENG": ["PHY", "CHEM", "MATH"],
+    # General Science / Computer Science group as offered by FBISE for FSc: ICS
+    "ICS": ["PHY", "MATH", "CS"],
 }
 GRADE_NAMES = {11: ("XI", "HSSC-I"), 12: ("XII", "HSSC-II")}
 SUBJECT_WORKSPACE = "subject_workspace"

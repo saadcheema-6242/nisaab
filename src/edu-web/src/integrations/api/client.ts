@@ -15,6 +15,7 @@ export class HealthCheckHealthGet200 extends S.Struct({}) {}
 export class StudentProfileDtoGroupCode extends S.Literal(
   'PRE_MED',
   'PRE_ENG',
+  'ICS',
 ) {}
 
 /**
@@ -121,6 +122,7 @@ export class OnboardingRequestGrade extends S.Literal(11, 12) {}
 export class OnboardingRequestGroupCode extends S.Literal(
   'PRE_MED',
   'PRE_ENG',
+  'ICS',
 ) {}
 
 /**

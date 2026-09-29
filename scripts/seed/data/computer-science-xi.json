@@ -1,0 +1,325 @@
+{
+  "subject": {
+    "code": "CS",
+    "name": "Computer Science"
+  },
+  "grade": 11,
+  "scheme": "ISS-2024",
+  "curriculum": "NCP 2022-23",
+  "source_url": "https://www.fbise.edu.pk/ModelPaper/50_percent/Computer_HSSC_I_model_paper_50_percent.pdf",
+  "domains": [
+    {
+      "code": "A",
+      "name": "Computer Systems"
+    },
+    {
+      "code": "B",
+      "name": "Computational Thinking and Algorithms"
+    },
+    {
+      "code": "C",
+      "name": "Programming Fundamentals"
+    },
+    {
+      "code": "D",
+      "name": "Data and Analysis"
+    },
+    {
+      "code": "E",
+      "name": "Applications of Computer Science"
+    },
+    {
+      "code": "F",
+      "name": "Impacts of Computing"
+    },
+    {
+      "code": "G",
+      "name": "Digital Literacy"
+    },
+    {
+      "code": "H",
+      "name": "Entrepreneurship in the Digital Age"
+    }
+  ],
+  "slos": [
+    {
+      "code": "CS-11-A-01",
+      "domain": "A",
+      "content_area": "Computer Systems",
+      "description": "Students will be able to understand and apply logic gates in digital systems, define and create truth tables using Boolean operators like AND, OR, NOT, NAND, XOR) and logic diagrams.\nStudents will understand: Boolean functions; Boolean expressions; Boolean identities; Duality; What is digital logic; What makes analog and digital signals different; What are logic gates; What are truth tables; What are switches.\nStudents will be able to: Construct Boolean functions, expressions, and identities; Recognize duality; Identify different logic gates and explain their uses; Create truth tables for expressions up to 3 inputs; Draw logic gates for a Boolean expression; Draw a truth table for a logic gate to identify the outputs.\nStudent will know: Key terms: Karnaugh maps, AND, OR, NOT, NAND gates, XOR; How to create truth tables; How to identify logic gates and understand their usage.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 30
+    },
+    {
+      "code": "CS-11-A-02",
+      "domain": "A",
+      "content_area": "Computer Systems",
+      "description": "Students will be able to understand and evaluate stages of the systems design, e.g. software development life cycle (analysis, design, coding, and testing etc.), and software development methodologies.\nStudents will understand that: What is a Software Development Life Cycle(SDLC); What are the different activities involved in each phase of the SDLC; (Advanced) What are basic software processes and Agile, Water fall software process models.\nStudents will know: Key terms: SDLC, bug, Agile, Waterfall, debugging, testing, design patterns, UML; Key activities in software development and the role of software development processes; The engineering nature of software development; Key concepts in software development such as risk and quality.\nStudents will be able to: Relate the different stages of SDLC(analysis, design, coding, testing etc.) to a case study; Plan a software project from beginning (design) to end(test and launch); (Advanced)Explain common software development processes(agile etc.); Explain black box and white box testing.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-A-03",
+      "domain": "A",
+      "content_area": "Computer Systems",
+      "description": "Students will be able to understand and explain the scalability and reliability of networking systems via network topology\nStudents will understand: Different types of network topologies; Design, common access, and use of topologies; Scalability and reliability; Preparing for scale and reliability through load and system testing; Scalability and reliability in cloud computing.\nStudents will know: Key terms: Network topology, Bus, Ring, Tree, Star, Mesh, Hybrid, Ethernet, CSMA, Token passing, client, Server, root, node…; Advantages and disadvantages of each network topology.\nStudents will be able to: Measure availability of a system; Prepare systems so they run with high reliability and can scale well; Test the scalability and reliability of a system.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-A-04",
+      "domain": "A",
+      "content_area": "Computer Systems",
+      "description": "Understand and explain the need for cyber security and contrast different methods of encryption to transmit data.\nStudents will understand: Cybersecurity; Encryption; Ways a system can be attacked; Basic security frameworks; Security analysis and proactive protection of systems against cyberattacks; Data policies and privacy policies and how they can help keep your information safe.\nStudents will know: Key terms: Cryptography, 2FA, firewall, DDoS, Hacking, Authentication, Authorization, Hashing, Malware, Phishing, XSS, Plaintext, Ciphertext, Encryption, Decryption….\nStudents will be able to: Protect their computers and setup online access taking into account the security risks they are prone to; Understand how basic cyberattacks are constructed and applies to real systems; Analyze cyber security risk and create a plan to prioritize risk decisions; Understand basic encryption techniques and algorithms used to protect sensitive data; How to protect sensitive apps and data through strong passwords, 2 factor authentication and encryption techniques.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-B-01",
+      "domain": "B",
+      "content_area": "Computational Thinking and Algorithms",
+      "description": "Plan, develop, systematically test, and refine computational artifacts for problem-solving such as pseudocode, etc.\nStudents will understand: How to use different methods to design and construct a solution to a computational problem.\nStudents will be able to: Create pseudocode to address computational problems in the correct font, size, style, indentation, case, line numbers, comments, data type keywords, variable assignments & declarations, common operators, and key commands; Systematically test computational artifacts; Analyse an algorithm presented as a flow chart in terms of include tracing an algorithm as well as assessing its correctness; Evaluate algorithms in terms of their efficiency, correctness, and clarity.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 20
+    },
+    {
+      "code": "CS-11-B-02",
+      "domain": "B",
+      "content_area": "Computational Thinking and Algorithms",
+      "description": "Apply common search, and sort algorithms\nStudents will understand: Problem solving methods using simple example of a) Abstraction b) Decomposition c) Pattern recognition; Algorithmic approaches to solve practical exercises of algorithms; When to use various search and sort algorithms such as linear search, binary search, insertion sort, bubble sort, etc.\nStudents will be able to: Use and adapt classic algorithms to solve computational problems (e.g. sorting and searching algorithms such as linear search, binary search, insertion sort, bubble sort, etc.).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-01",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should understand the importance of computer programming and applications\nStudents will understand: Programs use the basic components of a computer to take inputs, process the input, and produce output; The Agile and Waterfall are models of the Software Development Life cycle and are used to gather requirements and implement software.\nStudents will be able to: Take a real-world problem, propose a software solution, and implement it.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 40
+    },
+    {
+      "code": "CS-11-C-02",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should be able to write and execute simple programs in Python.\nStudents will understand: What is Python, why is it used; What type of problems can be solved using Python; Input/Output handling; Variables in Python; Operators in Python; Sequence, Selection, Repetition in Python.\nStudents will be able to: Write and execute a program in Python using an IDE like replit.com (online) VS Code(offline) that uses variables, sequence, selection, and repetition.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-03",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should be able to draw shapes using Turtle Graphics functions in Python\nStudents will understand: How to use the Python Turtle Library; Turtle methods; Methods of screen; Turtle motion; Use of events; Create/draw shapes; Compound Shapes; How to create shapes by means of instructions to a “turtle” to move in a given direction; How to create more complex shapes by allowing the “turtle” to lift the pen while moving.\nStudents will be able to: Write and execute a program in Python to create complex shapes using the Turtle library.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-04",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should be able to understand the need for libraries and learn the use of some simple libraries in Python.\nStudents will understand: The concept of abstraction allows the use of complex libraries without knowing their internal implementation.\nStudents will be able to: Find and use a third-party Python library that is simple to use but has a complex implementation.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-05",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should be able to translate simple algorithms that use sequence and repetition in Python.\nStudents will understand: What are variables, sequence, repetition, and lists in Python; How to use sequence and repetition to manipulate lists in Python.\nStudents will be able to: Write and execute a Python program that uses variables, sequence, and repetition to populate a list; Write and execute a Python program that uses variables, sequence, and repetition to find an element in a list.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-06",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students should be able to decompose a problem into sub-problems and implement those sub-problems using functions in Python\nStudents will understand: Why we need functions; How to decompose a large problem into sub-problems; How to identify duplication in their code; How to move duplicated code into a function; How to create/define/invoke a function; Types of Functions; Function parameters/arguments; Scope of variables; Returning value from a function; Pass by value.\nStudents will be able to: Write and execute a Python program that solves a large problem by decomposing into subproblems; Write a Python program that invokes functions within loops; Write a Python program that performs some mathematical operation on a value passed to it, and returns the updated value (for example Celsius to Fahrenheit conversion etc.).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-C-07",
+      "domain": "C",
+      "content_area": "Programming Fundamentals",
+      "description": "Students will determine ways of debugging their code in Python\nStudents will understand: Code written outside of a function is hard to test; Code written inside a function can be tested; That they can write code that calls functions to ensure the results are correct; Using a debugger allows programmers to set a breakpoint to stop execution of their code to see the state of variables mid-execution for the purpose of discovering errors in their code.\nStudents will be able to: Write code to invoke functions and check their return values for correctness; Read through code and dry run by hand to find bugs.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-D-01",
+      "domain": "D",
+      "content_area": "Data and Analysis",
+      "description": "Students will be able to relate the role and importance of model building with their real-world applications\nStudents will know: how statistical modeling can find relationships between real world events and can be used to make recommendations based on statistical findings. They will know use cases for modeling, when they can be used, which models fit which use cases and basic statistical techniques such as linear regression and multiple linear regression.\nStudents will know: The linear relationship between variables (using correlation coefficients and build the y = mx + c using slope and intercept); The structure of linear models, K-means, Smoothing.\nStudents will be able to: Use the information from one variable to make predictions about another variable (fitting a line to understand the relationship between wo variables and use the correlation coefficient to access the linear association); Identify the slope and intercept for the linear relationship; Build their first statistical model (Microsoft Excel Python, Weka, or Microsoft Excel); (Advanced) Interpret the results of the model including statistical significance and beta values; (Advanced) Draw conclusions from the model output to inform real world policies.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 25
+    },
+    {
+      "code": "CS-11-D-02",
+      "domain": "D",
+      "content_area": "Data and Analysis",
+      "description": "Students will understand and explain experimental design in data science\nStudents will understand: The importance of experimentation in data science as a tool to differentiate between correlation and causation; Measures used in experimentation; Real work experimentation examples.\nStudent will know: Data collection methods, including traditional methods of designed experiments and observational studies and surveys; Statistics as a process for making inferences about population parameters based on a random sample from that population.\nStudents will be able to: Differentiate between correlation and causation; Compare and contrast population vs. sample; Compare and contrast parameter vs. statistic; How to do their own experiments through in-class activities; Apply a real-world business problem where experimentation is used.(e.g. Facebook, YouTube, on line retail); Explain situations where one measure of central tendency or spread may be more appropriate than others; (Advanced) Identify reports that use special data structures (census, survey, observational study, and randomized experiment); (Advanced) Use RStudio/python to re-randomize data; (Advanced) Compute measures of central tendency and spread in RStudio/python.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-D-03",
+      "domain": "D",
+      "content_area": "Data and Analysis",
+      "description": "Students will analyze pre-existing data sets to create summary statistics and data visuals (such as bar charts, pie charts, line graphs, etc.)\nStudents will understand: Definitions and analysis of data and data products (charts, graphs, statistics); How to construct multiple views of data; How to use analyze data through computational tools such as Excel, Google Sheets, R, or Python Students will; Apply their knowledge of visualization techniques (such as measures of center and spread, boxplots, bar plots , histograms, scatterplots) to data; Read plots (identify the name of the plot, interpret the axes, look for trends, identify confounding factors); Use visualization to tell stories with data; (Advanced) Create basic plots in RStudio; (Advanced) Create frequency tables in RStudio; (Advanced) Critically read reports from media sources to evaluate their claims and communicate their evaluations in written or verbal form using different types of media.\nStudents will be able to: Collect, clean, and manipulate data using tools such as Excel, Google Sheets, R, or Python; Analyze data using statistical techniques and create visualizations to communicate their findings; Understand the connection of databases to machine learning; (Advanced) Understand how evidence was collected, what the perspective or bias of the creator might be and look behind the scenes to the process used to create the product. Even the way data are represented embeds within it decisions on the part of the data creator.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-E-01",
+      "domain": "E",
+      "content_area": "Applications of Computer Science",
+      "description": "Students should be able to describe technologies that are the foundations of IoT systems, Cloud Computing, and Blockchain\nStudents will understand: Advancement in technologies like smaller size, higher processing power, longer battery power, AI techniques, cloud computing, and connectivity have enabled IoT applications; Network connectivity, Processing power, and Cryptography are technologies that enable blockchains.\nStudents will be able to: Analyze technologies that have enabled IoT and blockchain applications.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": 15
+    },
+    {
+      "code": "CS-11-E-02",
+      "domain": "E",
+      "content_area": "Applications of Computer Science",
+      "description": "Students should be able to evaluate how different stakeholder’s culture, values, and (sometimes conflicting) interests affect AI System designs\nStudents will understand: That there are different stakeholders that have vested interest in the outcomes of an AI algorithm; These different stakeholders might have conflicting requirements for these algorithms.\nStudents will be able to: Explore some of the stakeholders and describe their interest in AI algorithms; Assess policies that can help protect different stakeholders' interests; Evaluate how different stakeholder’s culture, values, and (sometimes conflicting) interests affect AI System designs.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-F-01",
+      "domain": "F",
+      "content_area": "Impacts of Computing",
+      "description": "Understand and apply safe & responsible use of information sources, identifying sources of reliable information compared to unreliable information and its sources\nStudents will understand: Safe & responsible use of information sources; Human bias is everywhere including data collection and information sharing.\nStudents will know: The difference between data source verification tasks that should be completed by humans and those that are ideally completed by computing devices.\nStudents will be able to: Identify sources of reliable and unreliable information; Address issues of bias in the designs of their computing applications; Conduct data searches to obtain reliable information.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": 15
+    },
+    {
+      "code": "CS-11-F-02",
+      "domain": "F",
+      "content_area": "Impacts of Computing",
+      "description": "Define and discuss how computing has increased connectivity by enabling communication between people and the environmental, cultural, and human impact of increased connectivity\nStudents will understand: The uses of assistive technologies for people with disabilities and the elderly; The impact of the digital divide on connectivity and how accessibility to information affects the lives of different people.\nStudents will know: The different technological innovations we are using to improve communication between people such as Wi-Fi networks, Bluetooth etc.\nStudents will be able to: Discuss the impact of computing technology on business and commerce; Collaborate on strategies to provide equity and equal access to information; (Advanced) Distinguish between impact of tasks that are ideally completed by humans and those that are ideally completed by computing devices.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U"
+      ],
+      "periods": null
+    },
+    {
+      "code": "CS-11-G-01",
+      "domain": "G",
+      "content_area": "Digital Literacy",
+      "description": "Perform advanced searches to locate information and/or design a data-collection approach to gather original data (e.g. qualitative interviews, surveys, prototypes, simulations)\nStudents will understand: Definitions of data collection strategies (e.g. qualitative interviews, surveys, prototypes, simulations); Best practices on how to present primary & secondary data for a research question; How to design data-collection approach to gather original data.\nStudents will know: How to use appropriate data collection strategies for various types of research questions.\nStudents will be able to: Design a data-collection approach to gather original data (e.g. qualitative interviews, surveys, prototypes, simulations); Present data using appropriate digital tools (such as graphs or infographics in worksheets, presentations, reports etc.).",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 10
+    },
+    {
+      "code": "EN-11-H-01",
+      "domain": "H",
+      "content_area": "Entrepreneurship in the Digital Age",
+      "description": "Students will create, test, and iterate a prototype for a business idea\nStudents will understand: What is prototyping and why is it important; How to design and test a prototype.\nStudents will be able to: Design, build and test the prototype; Derive learnings from prototype testing; Iterate business solution based on prototype test results.",
+      "assessment_form": "summative",
+      "cognitive_levels": [
+        "K",
+        "U",
+        "A"
+      ],
+      "periods": 10
+    }
+  ]
+}

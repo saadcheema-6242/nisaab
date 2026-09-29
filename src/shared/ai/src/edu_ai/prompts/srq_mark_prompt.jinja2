@@ -23,3 +23,7 @@ HOW TO MARK
 - For each point write a one-sentence comment. Then write two or three sentences of feedback: what was good, and exactly what to add or fix for full marks.
 - Write the comments and feedback in {{ language_name }}, keeping formulas, units and scientific terms in English. Use LaTeX between $...$ for maths.
 - Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+{%- if slo and slo.subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+- The answer may contain code: judge whether it would work in Python 3 and meets the rubric point; ignore small differences in names, spacing or style.
+{%- endif %}

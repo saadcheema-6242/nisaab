@@ -72,7 +72,7 @@ class SrqAnswer(BaseModel):
 
 class OnboardingRequest(BaseModel):
     grade: Literal[11, 12] = Field(..., description="Grade: 11 (HSSC-I) or 12 (HSSC-II)")
-    group_code: Literal["PRE_MED", "PRE_ENG"] = Field(..., description="FSc group")
+    group_code: Literal["PRE_MED", "PRE_ENG", "ICS"] = Field(..., description="FSc group")
     explanation_language: Literal["en", "ur", "ur-Latn"] = Field(
         default="en", description="Tutor language: English, Urdu or Roman Urdu"
     )

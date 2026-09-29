@@ -38,6 +38,10 @@ The student chose **{{ language_name }}** for explanations.
 
 - Write maths in LaTeX between $...$ for inline and $$...$$ on their own lines for display, e.g. $R = \frac{v_i^2 \sin 2\theta}{g}$.
 - Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+{%- if subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+- When teaching code, explain it line by line and show the output it prints.
+{%- endif %}
 - Write chemical formulas and equations with mhchem, e.g. $\ce{2H2 + O2 -> 2H2O}$.
 - Use short paragraphs, bullet points and bold key terms. Keep answers focused; do not pad.
 

@@ -1,5 +1,6 @@
 import {
   AtomIcon,
+  CodeIcon,
   DnaIcon,
   FlaskConicalIcon,
   FolderIcon,
@@ -23,6 +24,10 @@ const subjects = {
   MATH: {
     icon: SigmaIcon,
     className: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+  },
+  CS: {
+    icon: CodeIcon,
+    className: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
   },
 } as const
 
@@ -58,6 +63,11 @@ export const groups = [
     code: 'PRE_ENG',
     name: 'Pre-Engineering',
     subjects: 'Physics, Chemistry, Mathematics',
+  },
+  {
+    code: 'ICS',
+    name: 'ICS (Computer Science)',
+    subjects: 'Physics, Mathematics, Computer Science',
   },
 ] as const
 

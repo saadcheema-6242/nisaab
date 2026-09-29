@@ -6,7 +6,7 @@
   "grade": 11,
   "scheme": "ISS-2024",
   "curriculum": "NCP 2022-23",
-  "source_url": "https://www.fbise.edu.pk/curriculum_model_paper.php",
+  "source_url": "https://www.fbise.edu.pk/ModelPaper/50_percent/Chemistry_HSSC_I_model_paper_50_percent.pdf",
   "domains": [
     {
       "code": "A",
@@ -343,6 +343,17 @@
       "assessment_form": "summative",
       "cognitive_levels": [
         "A"
+      ],
+      "periods": null
+    },
+    {
+      "domain": "B",
+      "content_area": "Atomic Structure",
+      "code": "C-11-B-28",
+      "description": "Explain the concept of emission spectra. Use the concept of emission spectra to deduce the electronic configuration of elements.",
+      "assessment_form": "formative",
+      "cognitive_levels": [
+        "U"
       ],
       "periods": null
     },
@@ -3343,7 +3354,7 @@
       "domain": "G",
       "content_area": "Acid Base Titration",
       "description": "Describe an acid–base titration to include the use of a: a. burette b. volumetric pipette c. suitable indicator",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "U"
       ],
@@ -3354,7 +3365,7 @@
       "domain": "G",
       "content_area": "Acid Base Titration",
       "description": "Describe how to identify the endpoint of a titration using an indicator",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "U"
       ],
@@ -3376,7 +3387,7 @@
       "domain": "G",
       "content_area": "Acid Base Titration",
       "description": "Describe tests using aqueous sodium hydroxide and aqueous ammonia to identify the aqueous cations: a) aluminum, Al3+ 1+ b) ammonium, NH4 c) calcium, Ca2+ d) chromium(III), Cr3+ e) copper(II), Cu2+ f) iron(II), Fe2+ g) iron(III), Fe3+ h) zinc, Zn2+",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "U"
       ],
@@ -3387,7 +3398,7 @@
       "domain": "G",
       "content_area": "Acid Base Titration",
       "description": "Present numerical data, values or observations in a singletable of results with headings and units that conform to accepted scientific conventions.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3398,7 +3409,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Record raw readings of a quantity to the same degree of precision and observations to the same level of detail.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3409,7 +3420,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Show working in calculations and key steps in reasoning.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3431,7 +3442,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Draw an appropriate table in advance of taking readings or making observations and record all data in the table.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3442,7 +3453,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Use the appropriate presentation method to produce a clear presentation of the data.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3453,7 +3464,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Plot appropriate variables on appropriate, clearly labelled x - and y-axes with carefully chosen scales.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3464,7 +3475,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Draw straight lines or smooth curves of best fit to show the trend of a graph.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3475,7 +3486,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Describe the patterns and trends shown by data in tables and graphs.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3486,7 +3497,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Describe and summarize the key points of a set of observations.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],
@@ -3497,7 +3508,7 @@
       "domain": "G",
       "content_area": "Data representation and analysis",
       "description": "Determine the gradient of a straight-line graph and extrapolate the line of a graph.",
-      "assessment_form": "summative",
+      "assessment_form": "practical",
       "cognitive_levels": [
         "A"
       ],

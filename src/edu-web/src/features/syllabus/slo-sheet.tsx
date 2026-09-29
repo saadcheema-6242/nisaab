@@ -121,6 +121,9 @@ export const SloSheet = ({ projectId, slo, onClose }: SloSheetProps) => {
 
   const level = masteryLevel(slo?.mastery)
   const form = slo ? assessmentForms[slo.assessment_form] : null
+  // Some subjects (e.g. Computer Science) follow the SLO with what students must
+  // understand, know and be able to do, one line each
+  const [headline = '', ...details] = slo ? slo.description.split('\n') : []
 
   return (
     <Sheet open={slo !== null} onOpenChange={(open) => !open && onClose()}>
@@ -134,14 +137,16 @@ export const SloSheet = ({ projectId, slo, onClose }: SloSheetProps) => {
                 </Badge>
                 <Badge
                   variant={
-                    slo.assessment_form === 'summative' ? 'default' : 'secondary'
+                    slo.assessment_form === 'summative'
+                      ? 'default'
+                      : 'secondary'
                   }
                 >
                   {form.label}
                 </Badge>
               </div>
               <SheetTitle className="text-left text-base leading-snug">
-                {slo.description}
+                {headline}
               </SheetTitle>
               <SheetDescription className="text-left">
                 {slo.domain_code} · {slo.domain_name}
@@ -152,6 +157,25 @@ export const SloSheet = ({ projectId, slo, onClose }: SloSheetProps) => {
             </SheetHeader>
 
             <div className="space-y-5 px-4 text-sm">
+              {details.length > 0 && (
+                <div className="space-y-2">
+                  {details.map((line) => {
+                    const [lead, ...rest] = line.split(': ')
+                    return rest.length > 0 ? (
+                      <p key={line} className="text-muted-foreground">
+                        <span className="font-medium text-foreground">
+                          {lead}:
+                        </span>{' '}
+                        {rest.join(': ')}
+                      </p>
+                    ) : (
+                      <p key={line} className="text-muted-foreground">
+                        {line}
+                      </p>
+                    )
+                  })}
+                </div>
+              )}
               <div>
                 <div className="font-medium">Assessment</div>
                 <p className="text-muted-foreground">{form.detail}</p>
@@ -183,7 +207,10 @@ export const SloSheet = ({ projectId, slo, onClose }: SloSheetProps) => {
                 <div className="font-medium">Your progress</div>
                 <div className="mt-1 flex items-center gap-2">
                   <span
-                    className={cn('size-2.5 rounded-full', masteryStyles[level].dot)}
+                    className={cn(
+                      'size-2.5 rounded-full',
+                      masteryStyles[level].dot,
+                    )}
                   />
                   <span className="text-muted-foreground">
                     {slo.mastery == null

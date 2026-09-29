@@ -59,6 +59,7 @@ from sqlalchemy import text
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_USER = "e2e-test-user"
+ICS_USER = "e2e-test-user-ics"
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -146,11 +147,12 @@ def sample_docx() -> bytes:
 
 def cleanup() -> None:
     with Session() as db:
-        project_ids = [p.id for p in db.query(Project).filter(Project.owner_id == TEST_USER)]
+        users = [TEST_USER, ICS_USER]
+        project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
             db.execute(text("DELETE FROM jobs WHERE payload->>'project_id' = :pid"), {"pid": pid})
-        db.query(User).filter(User.id == TEST_USER).delete()
+        db.query(User).filter(User.id.in_(users)).delete()
         db.commit()
     print(f"Cleaned up the test user, {len(project_ids)} project(s), their files and jobs")
 
@@ -276,6 +278,22 @@ async def run_fbise() -> None:
     slo_count = sum(d.slo_count for d in tree.domains)
     check("Physics XI SLOs", slo_count >= 190 and len(tree.domains) == 7, f"{slo_count} SLOs, {len(tree.domains)} domains")
 
+    print("6b. FSc Part 1: every group and subject")
+    UserService().get_or_create_user_from_token(user_id=ICS_USER, email="e2e-ics@local.test", name="E2E ICS")
+    ics = ProfileService().complete_onboarding(
+        user_id=ICS_USER, grade=11, group_code="ICS", explanation_language="en"
+    )
+    ics_names = [p.name for p in ics.projects]
+    check("ICS workspaces", ics_names == ["Physics XI", "Mathematics XI", "Computer Science XI"], ", ".join(ics_names))
+    expected = {"Chemistry XI": (329, 7), "Biology XI": (246, 9), "Mathematics XI": (79, 3), "Computer Science XI": (22, 8)}
+    for project in [*result.projects, *ics.projects]:
+        if project.name not in expected:
+            continue
+        want_slos, want_domains = expected.pop(project.name)
+        subject_tree = CurriculumService().get_tree(project.grade_subject_id, TEST_USER)
+        count = sum(d.slo_count for d in subject_tree.domains)
+        check(f"{project.name} syllabus map", count == want_slos and len(subject_tree.domains) == want_domains, f"{count} SLOs, {len(subject_tree.domains)} domains")
+
     print("7. FBISE tutor (Roman Urdu)")
     chat_svc = ChatService(search_service=search, queue_service=queue)
     chat = chat_svc.create_chat(project_id=physics.id, user_id=TEST_USER, title="E2E tutor")
@@ -293,6 +311,19 @@ async def run_fbise() -> None:
     check("tutor answered", bool(answer) and not answer.startswith("Error"), answer[:160].replace("\n", " "))
     check("tutor cited SLO P-11-B-05", "P-11-B-05" in answer)
     check("tutor wrote a formula", "$" in answer)
+
+    cs_project = next(p for p in ics.projects if p.name == "Computer Science XI")
+    cs_chat = chat_svc.create_chat(project_id=cs_project.id, user_id=ICS_USER, title="E2E CS tutor")
+    async for _ in chat_svc.stream_chat_events(
+        cs_chat.id, ICS_USER, [{"type": "text", "text": "How do I find the sum of all numbers in a list in Python? Show a short program."}]
+    ):
+        pass
+    cs_detail = chat_svc.get_chat(chat_id=cs_chat.id, user_id=ICS_USER, include_messages=True)
+    cs_answer = "".join(
+        getattr(p, "text_content", "") or "" for m in cs_detail.messages if m.role == "assistant" for p in m.parts
+    )
+    check("Computer Science tutor cites a CS SLO", "CS-11-" in cs_answer, cs_answer[:120].replace("\n", " "))
+    check("Computer Science tutor shows code in a code block", "```" in cs_answer)
 
     print("8. SLO practice and mastery")
     quizzes = QuizService(queue_service=queue)

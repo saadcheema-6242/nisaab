@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 from edu_core.schemas.projects import ProjectDto
 
-GroupCode = Literal["PRE_MED", "PRE_ENG"]
+GroupCode = Literal["PRE_MED", "PRE_ENG", "ICS"]
 ExplanationLanguage = Literal["en", "ur", "ur-Latn"]
 
 

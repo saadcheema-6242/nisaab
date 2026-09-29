@@ -13,6 +13,9 @@ REQUIREMENTS
 - Numerical questions: realistic values in SI units, options with sensible significant figures, and the full working in the explanation.
 - Write maths in LaTeX between $...$, for example $v = u + at$ or $R = \frac{v^2 \sin 2\theta}{g}$. Write chemical formulas with mhchem, for example $\ce{H2SO4}$.
 - Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+{%- if subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+{%- endif %}
 - Difficulty: {{ difficulty }}.{% if difficulty.startswith('mixed') %} Spread easy, medium and hard questions across the set.{% endif %}
 - Language: write questions and options in English, because the FSc paper is in English. Write each explanation in {{ language_name }}, keeping formulas, units and scientific terms in English.
 - Name the quiz "SLO {{ slo.code }}: " followed by a short topic (at most 6 words), and describe it in one sentence.

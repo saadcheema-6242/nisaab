@@ -27,4 +27,7 @@ REQUIREMENTS
 - The model answer is what a strong student would write for full marks: definition → formula → units → short justification, or given → formula → substitution → answer{% if long %}, with numbered derivation steps{% endif %}.
 - Write maths in LaTeX between $...$, e.g. $R = \frac{v_i^2 \sin 2\theta}{g}$. Chemical formulas with mhchem, e.g. $\ce{CO2}$.
 - Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+{%- if subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+{%- endif %}
 - Write the question, rubric and model answer in English, as in the FSc paper. ({{ language_name }} is only used later for feedback.)

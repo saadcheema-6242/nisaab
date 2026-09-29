@@ -16,6 +16,9 @@ Also give a title for the whole map (at most 6 words) and a one-sentence summary
 RULES
 - Stay within the FSc syllabus and exactly these SLOs; keep facts accurate.
 - Write maths in LaTeX between $...$. Put every formula and symbol with a subscript or superscript inside $...$, and write each LaTeX command with ONE backslash: \frac, \theta, \vec, never \\frac.
+{%- if subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+{%- endif %}
 - Write titles and labels in English. Write each detail in {{ language_name }}, keeping formulas, units and scientific terms in English.
 {% if include %}- The student asked the points to include: {{ include }}. Make sure each branch has these where the SLO allows.
 {% endif %}{% if notes %}- The student also said: {{ notes }}
