@@ -11,14 +11,18 @@ SLO {{ slo.code }} ({{ slo.domain }}{% if slo.content_area and slo.content_area 
 Cognitive level(s): {{ slo_levels }}
 
 REQUIREMENTS
-{% if long -%}
+{% if marks -%}
+- Worth exactly {{ marks }} marks, as in Section {% if long %}C{% else %}B{% endif %} of FBISE's new paper (50% MCQs, 50% descriptive), answerable in about {% if long %}15 to 25{% else %}8 to 10{% endif %} lines. {% if parts %}It may have parts (a) and (b) on the same concept, with whole-mark splits.{% else %}One straight question without parts (a) and (b).{% endif %}
+{%- elif long -%}
 - Worth exactly 6 marks, answerable in about 15 to 20 lines, as in Section C of the annual paper. Use two parts: (a) an explanation or derivation [3 or 4 marks] and (b) a short numerical or application [2 or 3 marks].
 {%- else -%}
 - Worth 3 or 4 marks, answerable in about 6 to 8 lines, as in the annual paper. It may have parts (a) and (b).
 {%- endif %}
 - Match the SLO's cognitive level: K = define/state, U = explain/compare/justify, A = calculate or apply to a situation. For A, include a short numerical with realistic SI values.
 - Stay within the FSc syllabus.
-{% if long -%}
+{% if marks -%}
+- The rubric has {{ marks }} points, each worth exactly 1 whole mark, in the order a student would write them. The rubric marks add up to {{ marks }}.
+{%- elif long -%}
 - The rubric has 6 points, each worth exactly 1 whole mark, in the order a student would write them: e.g. statement or diagram described, each key derivation step, the final result, formula, substitution, answer with unit. The rubric marks add up to 6.
 {%- else -%}
 - The rubric has 3 or 4 points, each worth exactly 1 whole mark, in the order a student would write them: e.g. correct definition, formula, substitution, final answer with unit, reason. The rubric marks add up to the total.

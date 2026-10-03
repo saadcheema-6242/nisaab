@@ -66,3 +66,40 @@ async def generate_mcqs(
         for q in result.questions
         if q.correct_option.strip().lower()[:1] in ("a", "b", "c", "d")
     ])
+
+
+class StimulusSet(BaseModel):
+    """A scenario with four MCQs that use it (FBISE's new Section A)."""
+
+    scenario: str = Field(..., description="The stimulus: scenario, data or code (Markdown with LaTeX)")
+    questions: list[QuizQuestionGenerationResult] = Field(..., description="Exactly 4 MCQs on the stimulus")
+
+
+async def generate_stimulus_set(
+    llm: BaseChatModel, slo: SloContext, language_code: str = "en"
+) -> dict:
+    """One stimulus-based MCQ set for an SLO: {"scenario", "questions": [4 MCQ payloads]}."""
+    prompt = render_prompt(
+        "stimulus_prompt", **slo.prompt_vars(), language_name=language_name(language_code)
+    )
+    result = await llm.with_structured_output(StimulusSet, method="function_calling").ainvoke(prompt)
+    if result is None or not result.scenario.strip() or len(result.questions) < 4:
+        raise ValueError(f"No stimulus set returned for {slo.code}")
+    questions = [
+        {
+            "question_text": q.question_text,
+            "option_a": q.option_a,
+            "option_b": q.option_b,
+            "option_c": q.option_c,
+            "option_d": q.option_d,
+            "correct_option": q.correct_option.strip().lower()[:1],
+            "explanation": q.explanation,
+            "difficulty_level": q.difficulty_level,
+            "cognitive_level": _cognitive_level(q.cognitive_level),
+        }
+        for q in result.questions[:4]
+        if q.correct_option.strip().lower()[:1] in ("a", "b", "c", "d")
+    ]
+    if len(questions) < 4:
+        raise ValueError(f"Stimulus set for {slo.code} has fewer than 4 usable MCQs")
+    return clean_latex_deep({"scenario": result.scenario, "questions": questions})

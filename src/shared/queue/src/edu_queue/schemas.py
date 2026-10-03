@@ -13,6 +13,7 @@ class TaskType(str, Enum):
     MIND_MAP_GENERATION = "mind_map_generation"
     DOCUMENT_PROCESSING = "document_processing"
     CHAT_TITLE_GENERATION = "chat_title_generation"
+    PAPER_GENERATION = "paper_generation"
 
 
 class FlashcardGenerationData(TypedDict):
@@ -80,6 +81,16 @@ class ChatTitleGenerationData(TypedDict):
     ai_response: str
 
 
+class PaperGenerationData(TypedDict):
+    """Data schema for building an FBISE new-pattern board paper."""
+
+    paper_id: str
+    project_id: str
+    user_id: str
+    length: str  # "board" or "half"
+    topic: NotRequired[str]
+
+
 TaskData = Union[
     FlashcardGenerationData,
     QuizGenerationData,
@@ -87,6 +98,7 @@ TaskData = Union[
     MindMapGenerationData,
     DocumentProcessingData,
     ChatTitleGenerationData,
+    PaperGenerationData,
 ]
 
 

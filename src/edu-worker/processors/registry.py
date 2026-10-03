@@ -11,6 +11,7 @@ from processors.flashcard import FlashcardProcessor
 from processors.mind_map import MindMapProcessor
 from processors.note import NoteProcessor
 from processors.quiz import QuizProcessor
+from processors.paper import PaperProcessor
 
 
 class ProcessorRegistry:
@@ -70,6 +71,7 @@ class ProcessorRegistry:
         )
         processors = {
             TaskType.CHAT_TITLE_GENERATION: lambda: ChatTitleProcessor(*llm_args),
+            TaskType.PAPER_GENERATION: lambda: PaperProcessor(),
             TaskType.FLASHCARD_GENERATION: lambda: FlashcardProcessor(
                 self.search_service, *llm_args, self.storage
             ),

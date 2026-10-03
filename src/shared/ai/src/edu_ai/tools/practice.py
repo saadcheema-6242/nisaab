@@ -316,10 +316,13 @@ async def practice_mind_map(
     return_direct=True,
     description=(
         "Make an FBISE-style practice paper the student attempts on an exam page: Section A MCQs, "
-        "Section B short questions answered by typing, and for 'standard' one long question, "
-        "all marked like an examiner. Use this when the student asks for a paper, test or mock "
-        "exam. topic: a domain (e.g. 'Mechanics') or topic, or empty for the whole syllabus. "
-        "length: 'mini' (about 20 minutes, default) or 'standard' (about 45 minutes)."
+        "Section B short questions answered by typing, Section C long questions, all marked like "
+        "an examiner. Use this when the student asks for a paper, test or mock exam. topic: a "
+        "domain (e.g. 'Mechanics') or topic, or empty for the whole syllabus. length: 'mini' "
+        "(about 20 minutes, default), 'standard' (about 45 minutes), 'half' (FBISE's new pattern "
+        "at half length, 90 minutes) or 'board' (the full FBISE new-pattern paper, 3 hours: "
+        "stimulus MCQs and questions with an internal choice). Board and half papers take a "
+        "minute or two to prepare."
     ),
 )
 async def practice_paper(
@@ -330,10 +333,10 @@ async def practice_paper(
     ctx = runtime.context
     if topic and topic.strip().lower() in (WHOLE_SYLLABUS.lower(), "all", "everything"):
         topic = None
-    paper = await PaperService().create(
+    paper = await PaperService(queue_service=ctx.queue).create(
         project_id=ctx.project_id,
         user_id=ctx.user_id,
-        length=length if length in ("mini", "standard") else "mini",
+        length=length if length in ("mini", "standard", "board", "half") else "mini",
         topic=topic,
     )
     if ctx.usage:
@@ -347,11 +350,13 @@ async def practice_paper(
             "questions": questions,
             "total_marks": paper.total_marks,
             "minutes": paper.time_limit_minutes,
+            "status": paper.status,
             "message": (
-                f"The student now sees a card to start the paper ({questions} questions, "
-                f"{paper.total_marks:g} marks, {paper.time_limit_minutes} minutes). Reply with one short, "
-                "encouraging sentence with a tip for the exam. Do not write out the questions, and "
-                "never mention any ID."
+                f"The student now sees a card for the paper ({paper.total_marks:g} marks, "
+                f"{paper.time_limit_minutes} minutes)"
+                + (", which is being prepared and opens in a minute or two" if paper.status == "preparing" else f" with {questions} questions")
+                + ". Reply with one short, encouraging sentence with a tip for the exam. Do not "
+                "write out the questions, and never mention any ID."
             ),
         },
         ensure_ascii=False,

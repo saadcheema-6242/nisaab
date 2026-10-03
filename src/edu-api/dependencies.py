@@ -101,9 +101,11 @@ def get_progress_service() -> ProgressService:
     return ProgressService()
 
 
-def get_paper_service() -> PaperService:
-    """Get PaperService instance."""
-    return PaperService()
+def get_paper_service(
+    queue_service: QueueService = Depends(get_queue_service),
+) -> PaperService:
+    """Get PaperService instance (board papers are built by the worker)."""
+    return PaperService(queue_service=queue_service)
 
 
 def get_srq_service() -> SrqService:

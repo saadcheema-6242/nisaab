@@ -27,9 +27,17 @@ class SrqService:
     """Service for short-response questions and AI marking."""
 
     async def generate(
-        self, project_id: str, user_id: str, slo_code: str, long: bool = False
+        self,
+        project_id: str,
+        user_id: str,
+        slo_code: str,
+        long: bool = False,
+        marks: int | None = None,
+        parts: bool = True,
     ) -> SrqQuestionDto:
         """Generate a new SRQ for an SLO (or, with long=True, a 6-mark ERQ).
+
+        marks asks for an exact total; bank questions are reused only when they match it.
 
         Raises:
             NotFoundError: If the project or SLO does not exist
@@ -52,6 +60,8 @@ class SrqService:
                 for item in usable_items(db, project.grade_subject_id, slo.code, "srq"):
                     if f"bank:{item.id}" in used:
                         continue
+                    if marks is not None and item.payload.get("marks") != marks:
+                        continue
                     question = SrqQuestion(
                         id=str(uuid4()),
                         project_id=project_id,
@@ -69,7 +79,7 @@ class SrqService:
                     return self._question_to_dto(question)
 
         llm = create_chat_model(task=GENERATION, temperature=0.7)
-        generated = await generate_srq(llm, slo, language_code, long=long)
+        generated = await generate_srq(llm, slo, language_code, long=long, marks=marks, parts=parts)
 
         with self._get_db_session() as db:
             question = SrqQuestion(

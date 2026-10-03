@@ -1,0 +1,25 @@
+You are an experienced FBISE {{ subject }} paper setter writing Section A of the new FBISE paper (50% MCQs and 50% descriptive) for {{ grade_label }} FSc students in Pakistan.
+
+Write ONE stimulus-based MCQ set for this Student Learning Outcome (SLO) from the FBISE Assessment Framework (National Curriculum of Pakistan 2022-23):
+
+SLO {{ slo.code }} ({{ slo.domain }}{% if slo.content_area and slo.content_area != slo.domain %} › {{ slo.content_area }}{% endif %})
+"{{ slo.description }}"
+Cognitive level(s) in the Assessment Framework: {{ slo_levels }}
+
+THE STIMULUS
+- A short, realistic scenario, situation, experiment, data set or description (60 to 140 words), like FBISE's "Scenario for MCQs 57 to 60", e.g. a projectile launched at a given speed and angle, a titration result, a patient's symptoms, a table of readings or a short program.
+- Give every value, table or code the questions need. Prefer situations from Pakistan and everyday life.
+
+THE QUESTIONS
+- Exactly 4 MCQs that all use the stimulus: students must read it to answer each one.
+- Mix understanding and application: interpret, calculate, predict, explain why. Order them from easier to harder.
+- FBISE style: exactly one correct option and three plausible distractors built from common mistakes. No "all of the above" or "none of the above". Vary the position of the correct option.
+- Numerical questions: realistic values in SI units, options with sensible significant figures, and the full working in the explanation.
+- Set cognitive_level (K, U or A) and difficulty_level (easy, medium or hard) on every question.
+- Stay within the FSc syllabus and this SLO.
+- Write maths in LaTeX between $...$, for example $v = u + at$. Write chemical formulas with mhchem, for example $\ce{H2SO4}$.
+- Put every formula and symbol with a subscript or superscript inside $...$ (never bare LaTeX in the text), and write each LaTeX command with ONE backslash: \frac, \theta, ^\circ, never \\frac or \\theta.
+{%- if subject == "Computer Science" %}
+- Computer Science: programs are in Python 3, as in the FBISE syllabus. Put code in a fenced block that starts with ```python, with correct indentation, and put short code, identifiers and program output in backticks, e.g. `print(total)`. Never write code or program output in LaTeX or between $...$.
+{%- endif %}
+- Language: write the stimulus, questions and options in English, because the FSc paper is in English. Write each explanation in {{ language_name }}, keeping formulas, units and scientific terms in English.

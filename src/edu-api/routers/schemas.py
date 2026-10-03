@@ -37,8 +37,12 @@ class FlashcardAttemptCreate(BaseModel):
 
 
 class PaperCreate(BaseModel):
-    length: Literal["mini", "standard"] = Field(
-        default="mini", description="mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ"
+    length: Literal["mini", "standard", "board", "half"] = Field(
+        default="mini",
+        description=(
+            "mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ; board / half: FBISE's "
+            "new pattern (stimulus MCQs, questions with internal choice), built in the background"
+        ),
     )
     topic: str | None = Field(
         None, max_length=200, description="A domain (e.g. Mechanics) or topic; empty for the whole syllabus"

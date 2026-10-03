@@ -38,24 +38,46 @@ class SrqMarking(BaseModel):
 
 
 async def generate_srq(
-    llm: BaseChatModel, slo: SloContext, language_code: str, long: bool = False
+    llm: BaseChatModel,
+    slo: SloContext,
+    language_code: str,
+    long: bool = False,
+    marks: int | None = None,
+    parts: bool = True,
 ) -> GeneratedSrq:
-    """A short question (SRQ, 3-4 marks) or, with long=True, an extended one (ERQ, 6 marks)."""
+    """A short question (SRQ, 3-4 marks) or, with long=True, an extended one (ERQ, 6 marks).
+
+    marks asks for an exact total (e.g. 4 for Section B of the new FBISE paper, 6 or 8
+    for Section C) and parts=False for one straight question without (a) and (b).
+    """
     prompt = render_prompt(
         "srq_generate_prompt",
         **slo.prompt_vars(),
         language_name=language_name(language_code),
         long=long,
+        marks=marks,
+        parts=parts,
     )
-    result = await llm.with_structured_output(GeneratedSrq, method="function_calling").ainvoke(prompt)
-    if result is None:
-        raise ValueError("The AI returned no question")
-    result = GeneratedSrq(**clean_latex_deep(result.model_dump()))
-    # Whole-mark points only, and a total that matches the rubric the examiner uses
-    result.rubric = [p for p in result.rubric if p.marks >= 1 and p.point.strip()]
-    if not result.rubric:
-        raise ValueError("The AI returned no usable marking rubric")
-    result.marks = sum(p.marks for p in result.rubric)
+    for attempt in range(2):
+        result = await llm.with_structured_output(GeneratedSrq, method="function_calling").ainvoke(prompt)
+        if result is None:
+            raise ValueError("The AI returned no question")
+        result = GeneratedSrq(**clean_latex_deep(result.model_dump()))
+        # Whole-mark points only, and a total that matches the rubric the examiner uses
+        result.rubric = [p for p in result.rubric if p.marks >= 1 and p.point.strip()]
+        if not result.rubric:
+            raise ValueError("The AI returned no usable marking rubric")
+        result.marks = sum(p.marks for p in result.rubric)
+        if marks is None or result.marks == marks or attempt == 1:
+            break
+    if marks is not None and result.marks > marks:
+        # Keep the first points that make up the asked total
+        kept, total = [], 0
+        for point in result.rubric:
+            if total + point.marks <= marks:
+                kept.append(point)
+                total += point.marks
+        result.rubric, result.marks = kept, total
     return result
 
 

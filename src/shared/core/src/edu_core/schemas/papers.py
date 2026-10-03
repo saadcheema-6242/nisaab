@@ -14,6 +14,12 @@ class PaperItemDto(BaseModel):
     cognitive_level: str | None = Field(None, description="K, U or A")
     question: str = Field(..., description="Question text (Markdown with LaTeX)")
     options: dict[str, str] | None = Field(None, description="MCQ options a-d")
+    stimulus: str | None = Field(None, description="Stimulus MCQ: the scenario it is based on")
+    group: str | None = Field(None, description="Stimulus MCQ: its set, e.g. s1")
+    choice_group: str | None = Field(
+        None, description="Internal choice: the question number, e.g. B1 (answer (a) OR (b))"
+    )
+    choice: str | None = Field(None, description="Internal choice: a or b")
 
 
 class PaperSectionDto(BaseModel):
@@ -58,10 +64,14 @@ class PaperDto(BaseModel):
     id: str = Field(..., description="Unique ID of the paper")
     project_id: str = Field(..., description="ID of the subject workspace")
     title: str = Field(..., description="Paper title")
-    length: Literal["mini", "standard"] = Field(..., description="Paper length")
+    length: Literal["mini", "standard", "board", "half"] = Field(
+        ..., description="mini, standard, or the FBISE new-pattern board / half paper"
+    )
     time_limit_minutes: int = Field(..., description="Time allowed")
     total_marks: float = Field(..., description="Total marks")
-    status: Literal["ready", "submitted"] = Field(..., description="ready or submitted")
+    status: Literal["preparing", "ready", "submitted", "failed"] = Field(
+        ..., description="preparing (board papers), ready, submitted or failed"
+    )
     sections: list[PaperSectionDto]
     answers: dict[str, str] = Field(default_factory=dict, description="Saved answers by item ID")
     result: PaperResultDto | None = Field(None, description="Marks, once submitted")
@@ -72,8 +82,8 @@ class PaperDto(BaseModel):
 class PaperSummaryDto(BaseModel):
     id: str
     title: str
-    length: Literal["mini", "standard"]
-    status: Literal["ready", "submitted"]
+    length: Literal["mini", "standard", "board", "half"]
+    status: Literal["preparing", "ready", "submitted", "failed"]
     total_marks: float
     score: float | None = None
     created_at: datetime

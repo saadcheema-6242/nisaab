@@ -1581,9 +1581,19 @@ export class SrqAnswer extends S.Class<SrqAnswer>('SrqAnswer')({
   answer: S.String.pipe(S.minLength(1), S.maxLength(5000)),
 }) {}
 
-export class PaperSummaryDtoLength extends S.Literal('mini', 'standard') {}
+export class PaperSummaryDtoLength extends S.Literal(
+  'mini',
+  'standard',
+  'board',
+  'half',
+) {}
 
-export class PaperSummaryDtoStatus extends S.Literal('ready', 'submitted') {}
+export class PaperSummaryDtoStatus extends S.Literal(
+  'preparing',
+  'ready',
+  'submitted',
+  'failed',
+) {}
 
 export class PaperSummaryDto extends S.Class<PaperSummaryDto>(
   'PaperSummaryDto',
@@ -1602,13 +1612,18 @@ export class ListPapersApiV1ProjectsProjectIdPapersGet200 extends S.Array(
 ) {}
 
 /**
- * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ
+ * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ; board / half: FBISE's new pattern (stimulus MCQs, questions with internal choice), built in the background
  */
-export class PaperCreateLength extends S.Literal('mini', 'standard') {}
+export class PaperCreateLength extends S.Literal(
+  'mini',
+  'standard',
+  'board',
+  'half',
+) {}
 
 export class PaperCreate extends S.Class<PaperCreate>('PaperCreate')({
   /**
-   * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ
+   * mini: 8 MCQs + 2 SRQs; standard: 12 MCQs + 4 SRQs + 1 ERQ; board / half: FBISE's new pattern (stimulus MCQs, questions with internal choice), built in the background
    */
   length: S.optionalWith(PaperCreateLength, {
     nullable: true,
@@ -1621,14 +1636,24 @@ export class PaperCreate extends S.Class<PaperCreate>('PaperCreate')({
 }) {}
 
 /**
- * Paper length
+ * mini, standard, or the FBISE new-pattern board / half paper
  */
-export class PaperDtoLength extends S.Literal('mini', 'standard') {}
+export class PaperDtoLength extends S.Literal(
+  'mini',
+  'standard',
+  'board',
+  'half',
+) {}
 
 /**
- * ready or submitted
+ * preparing (board papers), ready, submitted or failed
  */
-export class PaperDtoStatus extends S.Literal('ready', 'submitted') {}
+export class PaperDtoStatus extends S.Literal(
+  'preparing',
+  'ready',
+  'submitted',
+  'failed',
+) {}
 
 /**
  * MCQ, short or long question
@@ -1666,6 +1691,22 @@ export class PaperItemDto extends S.Class<PaperItemDto>('PaperItemDto')({
   options: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
     nullable: true,
   }),
+  /**
+   * Stimulus MCQ: the scenario it is based on
+   */
+  stimulus: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Stimulus MCQ: its set, e.g. s1
+   */
+  group: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Internal choice: the question number, e.g. B1 (answer (a) OR (b))
+   */
+  choice_group: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Internal choice: a or b
+   */
+  choice: S.optionalWith(S.String, { nullable: true }),
 }) {}
 
 export class PaperSectionDto extends S.Class<PaperSectionDto>(
@@ -1777,7 +1818,7 @@ export class PaperDto extends S.Class<PaperDto>('PaperDto')({
    */
   title: S.String,
   /**
-   * Paper length
+   * mini, standard, or the FBISE new-pattern board / half paper
    */
   length: PaperDtoLength,
   /**
@@ -1789,7 +1830,7 @@ export class PaperDto extends S.Class<PaperDto>('PaperDto')({
    */
   total_marks: S.Number,
   /**
-   * ready or submitted
+   * preparing (board papers), ready, submitted or failed
    */
   status: PaperDtoStatus,
   sections: S.Array(PaperSectionDto),
