@@ -28,10 +28,13 @@ LEVELS = {
     "challenging": ("hard: application, multi-step problems and tricky distractors", {"A"}),
 }
 
+# SI units with prefixes (kJ, mA, cm, µF), plus molar, ohms, degrees and percent
+UNITS = r"(?:[kMGmcnpµμ]?(?:m|s|g|N|J|W|Pa|Hz|V|A|C|F|T|L|eV|Ω)|K|M|mol|rad|atm|dm|ohms?|°C?|m/s)"
 NUMBER_WITH_UNIT = re.compile(
-    r"\d(?:[\d.,]*)\s*(?:\\,|~|\s)*(?:\\(?:text|mathrm)\{\s*)?"
-    r"(?:m|s|kg|g|N|J|W|Pa|Hz|K|V|A|C|mol|cm|km|mm|nm|L|eV|rad|m/s|ms)\b"
+    r"\d(?:[\d.,]*)\s*(?:×\s*10\s*[-−]?\d*\s*)?(?:\\,|~|\s)*(?:\\(?:text|mathrm)\{\s*)?"
+    r"(?:%|" + UNITS + r"(?![A-Za-z]))"
 )
+MONEY = re.compile(r"\bRs\.?\s*\d|\d\s*(?:rupees|Rs)\b", re.IGNORECASE)
 CALCULATE = re.compile(
     r"\b(calculate|compute|evaluate|solve|find|determine|work out|how (much|many|far|long|fast)"
     r"|what (is|will be) the (value|magnitude|angle|resultant|area|volume|work|torque))\b",
@@ -97,10 +100,23 @@ def card_instructions(focus: str | None = None, notes: str | None = None) -> str
 STYLE_NAMES = {"theory": "theory", "numerical": "numericals", "derivation": "derivations", "mixed": "practice"}
 
 
+def _plain(text: str) -> str:
+    r"""LaTeX as plain text for the checks: \text{mol dm}^{-3} -> mol dm, \Omega -> Ω."""
+    t = re.sub(r"\\(?:text|mathrm|operatorname)\s*\{([^{}]*)\}", r" \1", text)
+    for latex, plain in (("\\Omega", "Ω"), ("\\%", "%"), ("\\mu", "µ"), ("\\times", "×"), ("^\\circ", "°"), ("\\circ", "°")):
+        t = t.replace(latex, plain)
+    t = re.sub(r"\^\{[^{}]*\}|\^[-−]?\d+", "", t)  # exponents: dm^{-3}, 10^{-5}
+    return re.sub(r"\\[,;:! ]|~|\$|[{}]", " ", t)
+
+
 def is_numerical(text: str) -> bool:
-    if NUMBER_WITH_UNIT.search(text):
-        return True
-    return bool(re.search(r"\d", text) and (CALCULATE.search(text) or GIVEN_VALUES.search(text)))
+    """Whether an MCQ is a numerical: values with units, money, or values to calculate with."""
+    for t in (text, _plain(text)):
+        if NUMBER_WITH_UNIT.search(t) or MONEY.search(t):
+            return True
+        if re.search(r"\d", t) and (CALCULATE.search(t) or GIVEN_VALUES.search(t)):
+            return True
+    return False
 
 
 def numerical_slo(subject_code: str, description: str, cognitive_levels: list[str] | None) -> bool:
