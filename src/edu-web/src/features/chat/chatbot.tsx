@@ -5,7 +5,9 @@ import { ChatAskCard, parseSetup } from './components/chat-ask-card'
 import { ChatFlashcardsCard } from './components/chat-flashcards-card'
 import { ChatMindMapCard } from './components/chat-mind-map-card'
 import { ChatQuizCard } from './components/chat-quiz-card'
-import { ToolStatus, toolOutputId } from './components/tool-status'
+import { ToolStatus, toolOutputId, toolRunning } from './components/tool-status'
+import { ThinkingIndicator } from './components/thinking-indicator'
+import { chatLang, stageLabel } from './chat-labels'
 import { ChatPaperCard } from './components/chat-paper-card'
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 import type {
@@ -19,7 +21,6 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation'
-import { Loader } from '@/components/ai-elements/loader'
 import { Message, MessageContent } from '@/components/ai-elements/message'
 import {
   PromptInput,
@@ -40,6 +41,7 @@ import {
   chatStreamStatusAtom,
   streamMessageAtom,
 } from '@/data-acess/chat'
+import { projectAtom } from '@/data-acess/project'
 // Simple ID generator
 const generateId = () =>
   `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -71,6 +73,24 @@ export const Chatbot: React.FC<ChatbotProps> = ({
     ? (chatResult.value.messages ?? [])
     : []
   const isStreaming = streamStatus !== null
+
+  // What to say while the student waits, in the language they chose
+  const projectResult = useAtomValue(projectAtom(projectId))
+  const lang = chatLang(
+    Result.isSuccess(projectResult) ? projectResult.value.language_code : 'en',
+  )
+  const lastMessage = messages.at(-1)
+  const streamingParts =
+    isStreaming && lastMessage?.role === 'assistant'
+      ? (lastMessage.parts ?? [])
+      : []
+  // A running tool says what it is doing on its own line, so show one indicator
+  const toolSpeaking = streamingParts.some(
+    (part) => part.type === 'tool_call' && toolRunning(part),
+  )
+  const writingText = streamingParts.some(
+    (part) => part.type === 'text' && part.text_content.trim() !== '',
+  )
 
   // Convert blob URL to data URL
   const blobToDataUrl = useCallback(
@@ -278,10 +298,13 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                 })()}
 
               {/* Render all parts except source-document (handled above) */}
-              {message.parts &&
-                message.parts
-                  .filter((part) => part.type !== 'source-document')
-                  .map((part, i: number) => {
+              {(() => {
+                const visibleParts = (message.parts ?? []).filter(
+                  (part) => part.type !== 'source-document',
+                )
+                const isLastMessage = message.id === lastMessage?.id
+                return visibleParts.map((part, i: number) => {
+                  const isLastPart = i === visibleParts.length - 1
                     switch (part.type) {
                       case 'text':
                         return (
@@ -293,11 +316,23 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           >
                             <MessageContent>
                               <div id={`chat-text-${message.id}-${i}`}>
-                                <Response>{part.text_content}</Response>
+                                <Response
+                                  className={
+                                    isStreaming &&
+                                    isLastMessage &&
+                                    isLastPart &&
+                                    message.role === 'assistant'
+                                      ? 'is-typing'
+                                      : undefined
+                                  }
+                                >
+                                  {part.text_content}
+                                </Response>
                               </div>
                             </MessageContent>
                             {message.role === 'assistant' &&
-                              i === (message.parts?.length || 0) - 1 && (
+                              isLastPart &&
+                              !(isStreaming && isLastMessage) && (
                                 <div className="flex gap-2 mt-2">
                                   <button
                                     onClick={() =>
@@ -379,6 +414,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                             <ToolStatus
                               toolCall={part}
                               projectId={projectId}
+                              lang={lang}
                               showOpen={
                                 !quizId &&
                                 !groupId &&
@@ -452,10 +488,19 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                       default:
                         return null
                     }
-                  })}
+                })
+              })()}
             </div>
           ))}
-          {isStreaming && <Loader />}
+          {isStreaming && !toolSpeaking && !writingText && (
+            <ThinkingIndicator
+              lang={lang}
+              label={stageLabel(
+                streamStatus === 'generating' ? 'writing' : 'thinking',
+                lang,
+              )}
+            />
+          )}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>

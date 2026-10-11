@@ -47,6 +47,7 @@ import {
   savePaperAnswersAtom,
   submitPaperAtom,
 } from '@/data-acess/paper'
+import { ThinkingDots } from '@/components/ui/thinking-dots'
 import { usePollWhile } from '@/hooks/use-poll-while'
 import { cn } from '@/lib/utils'
 
@@ -123,9 +124,9 @@ const PreparingView = ({
     <h1 className="text-2xl font-bold">{paper.title}</h1>
     <PaperBadges paper={paper} />
     <div className="flex gap-3 rounded-lg bg-muted/60 p-4 text-sm">
-      <Loader2Icon className="mt-0.5 size-4 shrink-0 animate-spin" />
+      <ThinkingDots className="mt-1.5 shrink-0" label="Setting your paper" />
       <div className="space-y-1">
-        <div className="font-medium">Setting your paper…</div>
+        <div className="thinking-text font-medium">Setting your paper…</div>
         <div className="text-muted-foreground">
           Choosing MCQs, writing stimulus sets and questions with an internal
           choice across the syllabus, like an FBISE paper setter. This usually

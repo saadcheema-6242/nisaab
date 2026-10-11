@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { paperAtom } from '@/data-acess/paper'
 import { countQuestions, formatMarks } from '@/features/paper/paper-utils'
+import { ThinkingDots } from '@/components/ui/thinking-dots'
 import { usePollWhile } from '@/hooks/use-poll-while'
 
 /** A practice paper started from the chat: opens the exam page, then shows the result. */
@@ -42,8 +43,10 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
       </div>
       {paper.status === 'preparing' ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2Icon className="size-4 animate-spin" />
-          Setting your paper, usually one to three minutes…
+          <ThinkingDots label="Setting your paper" />
+          <span className="thinking-text">
+            Setting your paper, usually one to three minutes…
+          </span>
         </div>
       ) : paper.status === 'failed' ? (
         <div className="flex items-center gap-2 text-sm text-destructive">

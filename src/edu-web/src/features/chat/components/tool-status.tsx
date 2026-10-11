@@ -1,71 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import {
-  AlertCircleIcon,
-  CheckCircle2Icon,
-  ChevronRightIcon,
-  Loader2Icon,
-} from 'lucide-react'
+import { AlertCircleIcon, CheckCircle2Icon, ChevronRightIcon } from 'lucide-react'
+import { errorLabel, openLabel, stageLabel, toolLabels } from '../chat-labels'
+import type { ChatLang } from '../chat-labels'
 import type { ToolCallPartDto } from '@/integrations/api/client'
-
-type Labels = { running: string; done: string }
-
-const ITEMS = {
-  quiz: 'quiz',
-  flashcards: 'flashcards',
-  note: 'note',
-  mindmap: 'mind map',
-} as const
-
-// Friendly text for the tutor's tools; the raw tool names mean nothing to students
-const labelsFor = (name: string): Labels => {
-  if (name === 'search_project_documents')
-    return {
-      running: 'Searching your documents…',
-      done: 'Searched your documents',
-    }
-  if (name === 'ask_practice_questions')
-    return {
-      running: 'Thinking about your practice…',
-      done: 'A few quick questions first',
-    }
-  if (name === 'practice_paper')
-    return {
-      running: 'Setting your practice paper…',
-      done: 'Your practice paper is set',
-    }
-  if (name === 'practice_mind_map')
-    return { running: 'Drawing your mind map…', done: 'Your mind map is ready' }
-  if (name === 'practice_flashcards')
-    return {
-      running: 'Preparing your flashcards…',
-      done: 'Your flashcards are ready',
-    }
-  if (name === 'practice_quiz')
-    return { running: 'Preparing your quiz…', done: 'Your quiz is ready' }
-  if (name === 'find_syllabus_slos')
-    return {
-      running: 'Checking the FBISE syllabus…',
-      done: 'Checked the FBISE syllabus',
-    }
-
-  const [area, action = ''] = name.split(/_(.+)/)
-  const item: string =
-    (ITEMS as Record<string, string | undefined>)[area] ?? 'content'
-  const plural = item.endsWith('s') ? item : `${item}s`
-  if (action.startsWith('create'))
-    return {
-      running: `Making your ${item}…`,
-      done: `${item.charAt(0).toUpperCase()}${item.slice(1)} ready`,
-    }
-  if (action.startsWith('delete'))
-    return { running: `Deleting ${item}…`, done: `Deleted ${item}` }
-  if (action.startsWith('update'))
-    return { running: `Updating ${item}…`, done: `Updated ${item}` }
-  return {
-    running: `Looking at your ${plural}…`,
-    done: `Checked your ${plural}`,
-  }
-}
+import { ThinkingDots } from '@/components/ui/thinking-dots'
+import { useSlowAfter } from '@/hooks/use-slow-after'
 
 type OpenTarget =
   | {
@@ -139,47 +78,67 @@ export const toolOutputId = (toolCall: ToolCallPartDto, key: string) => {
   return typeof value === 'string' ? value : null
 }
 
+/** Whether a tool is still running, so the chat can show one indicator and not two. */
+export const toolRunning = (toolCall: ToolCallPartDto) =>
+  toolCall.tool_state !== 'output-available' &&
+  toolCall.tool_state !== 'output-error'
+
 export const ToolStatus = ({
   toolCall,
   projectId,
+  lang = 'en',
   showOpen = true,
 }: {
   toolCall: ToolCallPartDto
   projectId: string
+  lang?: ChatLang
   showOpen?: boolean
 }) => {
-  const labels = labelsFor(toolCall.tool_name)
+  const labels = toolLabels(toolCall.tool_name, lang)
   const failed = toolCall.tool_state === 'output-error'
   const done = toolCall.tool_state === 'output-available'
+  const slow = useSlowAfter()
   const target =
     done && showOpen
       ? openTarget(projectId, parseOutput(toolCall.tool_output))
       : null
 
   return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      {failed ? (
-        <AlertCircleIcon className="size-4 text-destructive" />
-      ) : done ? (
-        <CheckCircle2Icon className="size-4 text-emerald-600" />
-      ) : (
-        <Loader2Icon className="size-4 animate-spin" />
-      )}
-      <span className={failed ? 'text-destructive' : undefined}>
-        {failed
-          ? 'Something went wrong, please try again'
-          : done
-            ? labels.done
-            : labels.running}
-      </span>
-      {target && (
-        <Link
-          {...target}
-          className="ml-1 inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium text-foreground hover:bg-accent"
+    <div className="space-y-1">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {failed ? (
+          <AlertCircleIcon className="size-4 text-destructive" />
+        ) : done ? (
+          <CheckCircle2Icon className="size-4 text-emerald-600" />
+        ) : (
+          <ThinkingDots className="px-0.5" label={labels.running} />
+        )}
+        <span
+          dir="auto"
+          className={
+            failed
+              ? 'text-destructive'
+              : done
+                ? undefined
+                : 'thinking-text'
+          }
         >
-          Open
-          <ChevronRightIcon className="size-3" />
-        </Link>
+          {failed ? errorLabel(lang) : done ? labels.done : labels.running}
+        </span>
+        {target && (
+          <Link
+            {...target}
+            className="ml-1 inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium text-foreground hover:bg-accent"
+          >
+            {openLabel(lang)}
+            <ChevronRightIcon className="size-3" />
+          </Link>
+        )}
+      </div>
+      {!done && !failed && slow && (
+        <p dir="auto" className="text-xs text-muted-foreground/80">
+          {stageLabel('slow', lang)}
+        </p>
       )}
     </div>
   )

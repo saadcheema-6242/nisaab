@@ -1,4 +1,4 @@
-import { Loader2Icon } from 'lucide-react'
+import { ThinkingDots } from '@/components/ui/thinking-dots'
 
 export const GeneratingPlaceholder = ({
   what,
@@ -12,8 +12,8 @@ export const GeneratingPlaceholder = ({
       <span>No {what} yet. Refresh the page in a minute.</span>
     ) : (
       <>
-        <Loader2Icon className="size-5 animate-spin" />
-        <span className="font-medium text-foreground">
+        <ThinkingDots className="mb-1" label={`Preparing your ${what}`} />
+        <span className="thinking-text font-medium text-foreground">
           Preparing your {what}…
         </span>
         <span className="text-sm">This usually takes under a minute.</span>
