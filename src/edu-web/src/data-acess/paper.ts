@@ -21,7 +21,7 @@ export const paperAtom = Atom.family((input: string) => {
 export const createPaperAtom = runtime.fn(
   Effect.fn(function* (input: {
     projectId: string
-    length: 'mini' | 'standard'
+    length: 'mini' | 'standard' | 'half' | 'board'
     topic?: string
   }) {
     const { apiClient } = yield* ApiClientService

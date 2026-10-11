@@ -30,8 +30,8 @@ const labelsFor = (name: string): Labels => {
     }
   if (name === 'practice_paper')
     return {
-      running: 'Preparing your practice paper…',
-      done: 'Your paper is ready',
+      running: 'Setting your practice paper…',
+      done: 'Your practice paper is set',
     }
   if (name === 'practice_mind_map')
     return { running: 'Drawing your mind map…', done: 'Your mind map is ready' }

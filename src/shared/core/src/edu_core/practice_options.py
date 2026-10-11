@@ -33,9 +33,18 @@ NUMBER_WITH_UNIT = re.compile(
     r"(?:m|s|kg|g|N|J|W|Pa|Hz|K|V|A|C|mol|cm|km|mm|nm|L|eV|rad|m/s|ms)\b"
 )
 CALCULATE = re.compile(
-    r"\b(calculate|find the|determine|how (much|many|far|long|fast)|what is the (value|magnitude))\b",
+    r"\b(calculate|compute|evaluate|solve|find|determine|work out|how (much|many|far|long|fast)"
+    r"|what (is|will be) the (value|magnitude|angle|resultant|area|volume|work|torque))\b",
     re.IGNORECASE,
 )
+# Given values without units: A = 2i + 3j, x = -4, (2, 5)
+GIVEN_VALUES = re.compile(r"=\s*[-−+]?\s*\(?\d|\d\s*\\?(?:hat\{)?[ijk]\b|\(\s*-?\d+\s*,\s*-?\d+")
+# SLOs examined with numericals in Physics and Chemistry (all of Mathematics)
+NUMERICAL_SLO = re.compile(
+    r"\b(calculat|solv|comput|determin|numerical|quantitativ|evaluat|find|equation|formula|problems?)\w*",
+    re.IGNORECASE,
+)
+NUMERICAL_SUBJECTS = ("PHY", "CHEM", "MATH")
 
 
 def normalize_style(style: str | None) -> str:
@@ -89,7 +98,21 @@ STYLE_NAMES = {"theory": "theory", "numerical": "numericals", "derivation": "der
 
 
 def is_numerical(text: str) -> bool:
-    return bool(NUMBER_WITH_UNIT.search(text) or (CALCULATE.search(text) and re.search(r"\d", text)))
+    if NUMBER_WITH_UNIT.search(text):
+        return True
+    return bool(re.search(r"\d", text) and (CALCULATE.search(text) or GIVEN_VALUES.search(text)))
+
+
+def numerical_slo(subject_code: str, description: str, cognitive_levels: list[str] | None) -> bool:
+    """Whether an SLO gets numerical questions: all of Mathematics, and in Physics and
+    Chemistry the SLOs at the Apply level or about calculations."""
+    if subject_code not in NUMERICAL_SUBJECTS:
+        return False
+    return (
+        subject_code == "MATH"
+        or "A" in (cognitive_levels or [])
+        or bool(NUMERICAL_SLO.search(description))
+    )
 
 
 def bank_fits(payload: dict, style: str, level: str) -> bool:

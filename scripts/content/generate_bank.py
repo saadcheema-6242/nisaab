@@ -7,6 +7,9 @@ Usage (from the repository root, with DATABASE_URL and an AI provider configured
     uv run --package edu-worker python scripts/content/generate_bank.py --subject PHY --grade 11 --domains B
 On Google Cloud it runs as the edu-content Cloud Run job:
     deploy/gcp/deploy.sh content --subject PHY --grade 11 --domains B
+With --style numerical it writes numerical MCQs instead (Physics, Chemistry and
+Mathematics SLOs that are examined with numericals), so numerical practice starts instantly:
+    deploy/gcp/deploy.sh content --subject PHY --grade 11 --style numerical
 """
 
 import argparse
@@ -15,6 +18,7 @@ import os
 import sys
 import time
 
+from edu_core import practice_options as options
 from edu_ai.agents.bank_agent import generate_explainer, generate_mcqs
 from edu_ai.agents.slo_context import load_slo
 from edu_ai.agents.srq_agent import generate_srq
@@ -34,16 +38,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mcq-count", type=int, default=5, help="MCQs per SLO")
     parser.add_argument("--limit", type=int, default=0, help="Only the first N SLOs (for a trial run)")
     parser.add_argument("--concurrency", type=int, default=4, help="Parallel AI requests")
+    parser.add_argument(
+        "--style", choices=["", "numerical"], default="",
+        help="numerical: numerical MCQs for the SLOs examined with numericals",
+    )
     return parser.parse_args()
 
 
-def existing_counts(db, grade_subject_id: str) -> dict[tuple[str, str], int]:
+def existing_counts(db, grade_subject_id: str, numerical: bool = False) -> dict[tuple[str, str], int]:
+    """Non-rejected items per (SLO, kind); with numerical=True, only numerical MCQs."""
     counts: dict[tuple[str, str], int] = {}
-    rows = db.query(ContentItem.slo_code, ContentItem.kind).filter(
+    rows = db.query(ContentItem.slo_code, ContentItem.kind, ContentItem.payload).filter(
         ContentItem.grade_subject_id == grade_subject_id,
         ContentItem.review_status != "rejected",
     )
-    for code, kind in rows:
+    for code, kind, payload in rows:
+        if numerical and not (
+            kind == "mcq" and options.is_numerical((payload or {}).get("question_text") or "")
+        ):
+            continue
         counts[(code, kind)] = counts.get((code, kind), 0) + 1
     return counts
 
@@ -53,6 +66,9 @@ async def main() -> None:
     kinds = [k for k in args.kinds.split("+") if k]
     if unknown := set(kinds) - set(KINDS):
         sys.exit(f"Unknown kinds: {', '.join(sorted(unknown))}")
+    numerical = args.style == "numerical"
+    if numerical:
+        kinds = ["mcq"]
 
     init_db(os.environ["DATABASE_URL"])
     Session = get_session_factory()
@@ -71,11 +87,16 @@ async def main() -> None:
         )
         if args.domains:
             query = query.filter(CurriculumDomain.code.in_(list(args.domains.upper())))
-        codes = [slo.code for slo in query]
+        codes = [
+            slo.code
+            for slo in query
+            if not numerical
+            or options.numerical_slo(args.subject.upper(), slo.description, slo.cognitive_levels)
+        ]
         if args.limit:
             codes = codes[: args.limit]
         slos = {code: load_slo(db, code, grade_subject_id=grade_subject.id) for code in codes}
-        have = existing_counts(db, grade_subject.id)
+        have = existing_counts(db, grade_subject.id, numerical=numerical)
         grade_subject_id = grade_subject.id
 
     needed = {"explainer": 1, "mcq": args.mcq_count, "srq": 1}
@@ -85,7 +106,8 @@ async def main() -> None:
         for kind in kinds
         if have.get((code, kind), 0) < needed[kind]
     ]
-    print(f"{len(codes)} examined SLOs, {len(tasks)} items to generate ({', '.join(kinds)})")
+    label = "numerical MCQ" if numerical else ", ".join(kinds)
+    print(f"{len(codes)} examined SLOs, {len(tasks)} items to generate ({label})")
 
     llm = create_chat_model(task=GENERATION, temperature=0.5)
     semaphore = asyncio.Semaphore(args.concurrency)
@@ -98,6 +120,33 @@ async def main() -> None:
                 if kind == "explainer":
                     explainer = await generate_explainer(llm, slo)
                     payloads = [explainer.model_dump()]
+                elif kind == "mcq" and numerical:
+                    # Small batches in parallel (one call for many worked numericals is slow);
+                    # only questions that really are numericals are kept
+                    missing = needed["mcq"] - have.get((code, "mcq"), 0)
+                    batches = options.split(missing, -(-missing // options.BATCH))
+                    results = await asyncio.gather(
+                        *(
+                            generate_mcqs(
+                                llm, slo, size,
+                                difficulty=options.difficulty("board"),
+                                instructions=options.instructions("numerical")
+                                + options.batch_note(number, len(batches)),
+                            )
+                            for number, size in enumerate(batches, start=1)
+                        ),
+                        return_exceptions=True,
+                    )
+                    payloads = [
+                        q
+                        for batch in results
+                        if isinstance(batch, list)
+                        for q in batch
+                        if options.is_numerical(q.get("question_text") or "")
+                    ][:missing]
+                    if not payloads:
+                        failure = next((r for r in results if isinstance(r, Exception)), None)
+                        raise ValueError("no numerical MCQs returned") from failure
                 elif kind == "mcq":
                     missing = needed["mcq"] - have.get((code, "mcq"), 0)
                     payloads = (await generate_mcqs(llm, slo, missing))[:missing]

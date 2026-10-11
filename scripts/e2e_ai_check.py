@@ -565,6 +565,41 @@ async def run_fbise() -> None:
         f"{result.score:g}/{result.max_score:g} ({result.grade}) in {time.time() - start:.0f}s" if result else "no result",
     )
 
+    # FBISE's new pattern at half length, built here (no queue) as the worker builds it
+    start = time.time()
+    half = await papers.create(physics.id, TEST_USER, length="half")
+    by_section = {s.id: list(s.items) for s in half.sections}
+    a, b, c = by_section.get("A", []), by_section.get("B", []), by_section.get("C", [])
+    sets = {i.group for i in a if i.group}
+    pairs_b = {i.choice_group for i in b}
+    check(
+        "half board paper set (stimulus sets, (a) OR (b) choices)",
+        half.status == "ready" and len(a) == 40 and len(sets) == 3
+        and all(i.stimulus for i in a if i.group) and len(b) == 8 and len(pairs_b) == 4
+        and len(c) == 2 and 38 <= half.total_marks <= 42,
+        f"{half.status}: A {len(a)} MCQs ({len(sets)} stimulus sets), B {len(b)} in {len(pairs_b)} pairs, "
+        f"C {len(c)}, {half.total_marks:g} marks in {time.time() - start:.0f}s",
+    )
+    if half.status == "ready" and b:
+        stored = db_get(lambda db: db.get(PracticePaper, half.id).sections)
+        answers = {i["id"]: i["correct_option"] for s in stored for i in s["items"] if i["type"] == "mcq"}
+        # Both questions of pair B1 answered: only one may count
+        first_pair = [i for i in b if i.choice_group == b[0].choice_group]
+        for item in first_pair:
+            answers[item.id] = "Using the relevant formula with the given values: substitution and the answer with SI units."
+        start = time.time()
+        marked = await papers.submit(half.id, TEST_USER, answers)
+        result = marked.result
+        section_b = next((s for s in result.sections if s.id == "B"), None) if result else None
+        check(
+            "half paper marked, a choice pair counted once",
+            result is not None and result.sections[0].score == result.sections[0].max_score
+            and section_b is not None and section_b.score <= max(i.marks for i in first_pair)
+            and result.max_score == half.total_marks,
+            f"{result.score:g}/{result.max_score:g}, Section B {section_b.score:g}/{section_b.max_score:g} in "
+            f"{time.time() - start:.0f}s" if result and section_b else "no result",
+        )
+
     print("10. Progress and predicted grade")
     progress = ProgressService().get_progress(TEST_USER)
     physics_progress = next((s for s in progress.subjects if s.project_id == physics.id), None)

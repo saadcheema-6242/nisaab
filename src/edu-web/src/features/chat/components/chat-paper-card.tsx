@@ -1,13 +1,21 @@
-import { Result, useAtomValue } from '@effect-atom/atom-react'
+import { Result, useAtomRefresh, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
-import { ChevronRightIcon, FileTextIcon, Loader2Icon } from 'lucide-react'
+import { AlertCircleIcon, ChevronRightIcon, FileTextIcon, Loader2Icon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { paperAtom } from '@/data-acess/paper'
+import { countQuestions, formatMarks } from '@/features/paper/paper-utils'
+import { usePollWhile } from '@/hooks/use-poll-while'
 
 /** A practice paper started from the chat: opens the exam page, then shows the result. */
 export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paperId: string }) => {
-  const result = useAtomValue(paperAtom(`${projectId}:${paperId}`))
+  const atom = paperAtom(`${projectId}:${paperId}`)
+  const result = useAtomValue(atom)
+  const refresh = useAtomRefresh(atom)
+
+  // Board papers are set by the worker; keep checking until they are ready
+  const preparing = Result.isSuccess(result) && result.value.status === 'preparing'
+  usePollWhile(preparing, refresh, { intervalMs: 5000, maxMs: 6 * 60_000 })
 
   if (!Result.isSuccess(result)) {
     return (
@@ -18,7 +26,6 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
     )
   }
   const paper = result.value
-  const questions = paper.sections.reduce((n, s) => n + s.items.length, 0)
 
   return (
     <div className="w-full max-w-2xl space-y-3 rounded-xl border bg-card p-4">
@@ -27,14 +34,26 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
         <span className="font-semibold">{paper.title}</span>
       </div>
       <div className="flex flex-wrap gap-2 text-xs">
-        <Badge variant="secondary">{questions} questions</Badge>
-        <Badge variant="secondary">{paper.total_marks} marks</Badge>
+        {paper.status !== 'preparing' && paper.status !== 'failed' && (
+          <Badge variant="secondary">{countQuestions(paper)} questions</Badge>
+        )}
+        <Badge variant="secondary">{formatMarks(paper.total_marks)} marks</Badge>
         <Badge variant="secondary">{paper.time_limit_minutes} minutes</Badge>
       </div>
-      {paper.status === 'submitted' && paper.result ? (
+      {paper.status === 'preparing' ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2Icon className="size-4 animate-spin" />
+          Setting your paper, usually one to three minutes…
+        </div>
+      ) : paper.status === 'failed' ? (
+        <div className="flex items-center gap-2 text-sm text-destructive">
+          <AlertCircleIcon className="size-4" />
+          This paper could not be set. Ask me for another one.
+        </div>
+      ) : paper.status === 'submitted' && paper.result ? (
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-2xl font-bold">
-            {paper.result.score}/{paper.result.max_score}
+            {formatMarks(paper.result.score)}/{formatMarks(paper.result.max_score)}
           </span>
           <Badge>{paper.result.grade}</Badge>
           <Button size="sm" variant="outline" asChild>

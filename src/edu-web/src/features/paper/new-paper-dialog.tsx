@@ -28,7 +28,19 @@ const WHOLE = 'all'
 const lengths = [
   { value: 'mini', label: 'Mini', detail: '8 MCQs + 2 short questions · 20 min' },
   { value: 'standard', label: 'Standard', detail: '12 MCQs + 4 short + 1 long question · 45 min' },
+  {
+    value: 'half',
+    label: 'Half board paper (new pattern)',
+    detail: 'Stimulus MCQs + short and long questions with (a) OR (b) · 90 min',
+  },
+  {
+    value: 'board',
+    label: 'Full board paper (new pattern)',
+    detail: 'The complete FBISE paper: Sections A, B and C · 3 hours',
+  },
 ] as const
+
+type Length = (typeof lengths)[number]['value']
 
 /** Choose length and scope, then open a new practice paper. */
 export const NewPaperDialog = ({
@@ -41,7 +53,7 @@ export const NewPaperDialog = ({
   const navigate = useNavigate()
   const createPaper = useAtomSet(createPaperAtom, { mode: 'promise' })
   const [open, setOpen] = useState(false)
-  const [length, setLength] = useState<'mini' | 'standard'>('mini')
+  const [length, setLength] = useState<Length>('mini')
   const [scope, setScope] = useState(WHOLE)
   const [busy, setBusy] = useState(false)
 
@@ -80,6 +92,8 @@ export const NewPaperDialog = ({
           <DialogTitle>New practice paper</DialogTitle>
           <DialogDescription>
             FBISE-style questions from the examined SLOs, marked like an examiner.
+            Board papers follow FBISE's new pattern (50% MCQs) and take a minute or
+            two to set.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
