@@ -7,7 +7,11 @@ English (the language of the FSc paper) so one reviewed copy serves everyone.
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, Field
 
-from edu_ai.agents.quiz_agent import QuizGenerationResult, _cognitive_level
+from edu_ai.agents.quiz_agent import (
+    QuizGenerationResult,
+    QuizQuestionGenerationResult,
+    _cognitive_level,
+)
 from edu_ai.agents.slo_context import SloContext, language_name
 from edu_ai.latex import clean_latex_deep
 from edu_ai.prompts.prompts_utils import render_prompt
