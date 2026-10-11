@@ -10,13 +10,20 @@ from fastapi import APIRouter, Depends, HTTPException
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 
+def _only_self(user_id: str, current_user: UserDto) -> None:
+    """Students may only see or delete their own account."""
+    if user_id != current_user.id:
+        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
+
+
 @router.get("/{user_id}", response_model=UserDto)
 async def get_user(
     user_id: str,
     current_user: UserDto = Depends(get_current_user),
     service: UserService = Depends(get_user_service),
 ):
-    """Get a user by ID."""
+    """Get a user by ID (only your own)."""
+    _only_self(user_id, current_user)
     try:
         return service.get_user(user_id=user_id)
     except NotFoundError as e:
@@ -30,9 +37,9 @@ async def list_users(
     current_user: UserDto = Depends(get_current_user),
     service: UserService = Depends(get_user_service),
 ):
-    """List all users."""
+    """List users: only your own account, so no one can see other students' emails."""
     try:
-        return service.list_users()
+        return [service.get_user(user_id=current_user.id)]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -43,7 +50,8 @@ async def delete_user(
     current_user: UserDto = Depends(get_current_user),
     service: UserService = Depends(get_user_service),
 ):
-    """Delete a user."""
+    """Delete a user (only your own)."""
+    _only_self(user_id, current_user)
     try:
         service.delete_user(user_id=user_id)
         return None
