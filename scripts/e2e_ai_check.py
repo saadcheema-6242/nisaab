@@ -60,6 +60,8 @@ from sqlalchemy import text
 ROOT = Path(__file__).resolve().parents[1]
 TEST_USER = "e2e-test-user"
 ICS_USER = "e2e-test-user-ics"
+# A login deleted in Identity Platform, then the same email signing up again
+OLD_LOGIN, NEW_LOGIN = "e2e-test-user-deleted", "e2e-test-user-resignup"
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -147,7 +149,7 @@ def sample_docx() -> bytes:
 
 def cleanup() -> None:
     with Session() as db:
-        users = [TEST_USER, ICS_USER]
+        users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN]
         project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
@@ -272,6 +274,18 @@ async def run_fbise() -> None:
     names = [p.name for p in result.projects]
     check("subject workspaces", names == ["Physics XI", "Chemistry XI", "Biology XI"], ", ".join(names))
     physics = result.projects[0]
+
+    UserService().get_or_create_user_from_token(user_id=OLD_LOGIN, email="e2e-resignup@local.test")
+    try:
+        again = UserService().get_or_create_user_from_token(user_id=NEW_LOGIN, email="e2e-resignup@local.test")
+        old_email = db_get(lambda db: db.get(User, OLD_LOGIN).email)
+        check(
+            "same email signs up again after its login was deleted",
+            again.id == NEW_LOGIN and again.email == "e2e-resignup@local.test" and old_email is None,
+            f"new account {again.id}, old account email now {old_email}",
+        )
+    except Exception as e:
+        check("same email signs up again after its login was deleted", False, f"{type(e).__name__}: {e}"[:200])
 
     print("6. Syllabus map")
     tree = CurriculumService().get_tree(physics.grade_subject_id, TEST_USER)

@@ -114,8 +114,19 @@ class UserService:
 
                     return self._model_to_dto(user)
                 else:
-                    # User should be synced from auth.users via database trigger
-                    # But create it here as fallback if trigger hasn't run yet
+                    # A login deleted in Identity Platform keeps its row here. When the
+                    # same email signs up again (a new login ID), the old row gives up
+                    # the email, so the new account starts fresh and never sees old data.
+                    if email:
+                        stale = (
+                            db.query(User)
+                            .filter(User.email == email, User.id != user_id)
+                            .first()
+                        )
+                        if stale is not None:
+                            stale.email = None
+                            db.commit()
+
                     new_user = User(
                         id=user_id,
                         email=email,
