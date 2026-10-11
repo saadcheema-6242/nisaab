@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -11,5 +11,10 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
     },
+  },
+  test: {
+    // streamdown pulls in KaTeX's stylesheet; let Vite transform it so tests
+    // can render the chat's markdown the way the app does
+    server: { deps: { inline: ['streamdown'] } },
   },
 })

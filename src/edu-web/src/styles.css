@@ -272,7 +272,10 @@ code {
   animation: thinking-fade 1.8s ease-in-out infinite;
 }
 
-.is-typing > *:last-child::after,
+/* Only running text carries the cursor: a paragraph, a heading, or the last
+   item of a list. Code blocks, tables and quotes render as their own wrappers
+   (see typing-cursor.test.tsx) and would leave it dangling on an empty line. */
+.is-typing > :is(p, h1, h2, h3, h4, h5, h6):last-child::after,
 .is-typing > :is(ul, ol):last-child > li:last-child::after {
   content: '';
   display: inline-block;
@@ -284,13 +287,6 @@ code {
   animation: thinking-fade 1s ease-in-out infinite;
 }
 
-/* Blocks that are not running text would leave the cursor dangling on its own
-   line; a list carries it on its last item instead (rule above). */
-.is-typing
-  > :is(ul, ol, pre, table, blockquote, hr, img, figure):last-child::after {
-  content: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .thinking-dot {
     animation: thinking-fade 1.8s ease-in-out infinite;
@@ -300,7 +296,7 @@ code {
     animation: none;
   }
 
-  .is-typing > *:last-child::after,
+  .is-typing > :is(p, h1, h2, h3, h4, h5, h6):last-child::after,
   .is-typing > :is(ul, ol):last-child > li:last-child::after {
     animation: none;
     opacity: 0.6;
