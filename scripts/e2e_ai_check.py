@@ -342,6 +342,40 @@ async def run_fbise() -> None:
         f"web search configured: {bool(tavily_key())}; called {len(searched)} time(s)",
     )
 
+    # ... and it does step in for a board question the syllabus cannot answer
+    if tavily_key():
+        web_chat = chat_svc.create_chat(
+            project_id=physics.id, user_id=TEST_USER, title="E2E web search"
+        )
+        start = time.time()
+        async for _ in chat_svc.stream_chat_events(
+            web_chat.id,
+            TEST_USER,
+            [{"type": "text", "text": "FBISE ka HSSC-I date sheet kab aata hai? website par dekho"}],
+        ):
+            pass
+        web_detail = chat_svc.get_chat(
+            chat_id=web_chat.id, user_id=TEST_USER, include_messages=True
+        )
+        calls = [
+            part
+            for m in web_detail.messages
+            for part in (m.parts or [])
+            if getattr(part, "tool_name", None) == "search_web"
+        ]
+        web_answer = "".join(
+            getattr(part, "text_content", "") or ""
+            for m in web_detail.messages
+            if m.role == "assistant"
+            for part in (m.parts or [])
+        )
+        check(
+            "web search used for a board question, and the source named",
+            len(calls) == 1 and "fbise.edu.pk" in web_answer.lower(),
+            f"{len(calls)} call(s) in {time.time() - start:.0f}s: "
+            + " ".join(web_answer[:150].split()),
+        )
+
     cs_project = next(p for p in ics.projects if p.name == "Computer Science XI")
     cs_chat = chat_svc.create_chat(project_id=cs_project.id, user_id=ICS_USER, title="E2E CS tutor")
     async for _ in chat_svc.stream_chat_events(
