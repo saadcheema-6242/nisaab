@@ -89,6 +89,17 @@ identity_api() { # method path [json-body]; fails (with the error body) on HTTP 
   curl "${args[@]}"
 }
 
+# Optional secrets are attached only when they already exist, so a deploy works
+# without them. Create one by hand, for example:
+#   printf '%s' "$KEY" | gcloud secrets create edu-tavily-api-key #     --replication-policy=automatic --data-file=- --project <project>
+optional_secrets() { # prints ",NAME=secret:latest" for each optional secret present
+  local out=""
+  if gc secrets describe edu-tavily-api-key >/dev/null 2>&1; then
+    out+=",TAVILY_API_KEY=edu-tavily-api-key:latest"
+  fi
+  printf '%s' "$out"
+}
+
 put_secret() { # name value: create the secret, add a version only when the value changed
   local name=$1 value=$2
   if ! gc secrets describe "$name" >/dev/null 2>&1; then
@@ -261,7 +272,7 @@ deploy() {
     --add-cloudsql-instances "$connection" \
     --cpu 1 --memory 1Gi --cpu-boost --min-instances "${API_MIN_INSTANCES:-0}" --max-instances 2 \
     --timeout 3600 \
-    --set-env-vars "^@^$(common_env)" --set-secrets DATABASE_URL=edu-database-url:latest
+    --set-env-vars "^@^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)"
   API_URL="$(service_url "$API_SERVICE")"
 
   step "Deploying $WORKER_SERVICE"
@@ -279,7 +290,7 @@ deploy() {
     --add-cloudsql-instances "$connection" \
     --cpu 1 --memory 1Gi --cpu-boost "${worker_scaling[@]}" --timeout 1800 \
     --set-env-vars "^@^$(common_env)@WORKER_POLL=$worker_poll@WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-3}" \
-    --set-secrets DATABASE_URL=edu-database-url:latest
+    --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)"
   local worker_url
   worker_url="$(service_url "$WORKER_SERVICE")"
   gc run services add-iam-policy-binding "$WORKER_SERVICE" --region "$REGION" \

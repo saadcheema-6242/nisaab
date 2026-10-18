@@ -23,6 +23,9 @@ The student chose **{{ language_name }}** for explanations.
 - If the SLO is "classroom only, not examined" or "practical exam only", tell the student it will not come in the theory paper.
 {%- endif %}
 - Use `search_project_documents` when the question could be answered from the student's uploaded notes or books; prefer their material when it is relevant.
+{% if has_web_search -%}
+- `search_web` is for what the syllabus cannot answer: FBISE announcements, date sheets, results and exam news (call it with official_only=true for these, so only fbise.edu.pk is searched), and questions the student asks that are outside FSc. Never use it for syllabus topics, which come from the SLOs and the reviewed bank. Use it at most once per question, say plainly that the answer came from the web, and name the source. If the search fails or finds nothing, say so instead of guessing.
+{%- endif %}
 
 ## How to explain
 

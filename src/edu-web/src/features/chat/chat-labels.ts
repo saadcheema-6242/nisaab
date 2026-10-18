@@ -56,6 +56,14 @@ const TOOLS: Record<string, Record<ChatLang, ToolLabels> | undefined> = {
     },
     ur: { running: 'آپ کے دستاویزات دیکھ رہا ہوں…', done: 'دستاویزات دیکھ لیے' },
   },
+  search_web: {
+    en: { running: 'Searching the web…', done: 'Searched the web' },
+    'ur-Latn': {
+      running: 'Web par dhoond raha hoon…',
+      done: 'Web par dekh liya',
+    },
+    ur: { running: 'ویب پر تلاش کر رہا ہوں…', done: 'ویب پر دیکھ لیا' },
+  },
   find_syllabus_slos: {
     en: {
       running: 'Checking the FBISE syllabus…',

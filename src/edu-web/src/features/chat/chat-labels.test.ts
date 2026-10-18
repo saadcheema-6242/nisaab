@@ -23,6 +23,7 @@ describe('toolLabels', () => {
   it('has every language for every known tool, and never an empty string', () => {
     const tools = [
       'search_project_documents',
+      'search_web',
       'find_syllabus_slos',
       'ask_practice_questions',
       'practice_quiz',

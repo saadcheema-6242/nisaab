@@ -12,6 +12,7 @@ from edu_ai.tools.practice import tools as practice_tools
 from edu_ai.tools.quiz import tools as quiz_tools
 from edu_ai.tools.rag import tools as rag_tools
 from edu_ai.tools.syllabus import tools as syllabus_tools
+from edu_ai.tools.web import tools as web_tools
 from langchain.agents import create_agent
 from langchain.agents.middleware import (
     ModelRequest,
@@ -78,6 +79,7 @@ def get_fbise_instructions(ctx: ChatbotContext) -> str:
         grade_label=fbise.grade_label,
         curriculum=fbise.curriculum,
         has_slos=fbise.has_slos,
+        has_web_search=bool(web_tools),
         language_code=ctx.language,
         language_name=language_name(ctx.language),
     )
@@ -117,6 +119,7 @@ def make_chatbot(llm: BaseChatModel):
     tools = [
         *rag_tools,
         *syllabus_tools,
+        *web_tools,
         *practice_tools,
         *flashcard_tools,
         *quiz_tools,

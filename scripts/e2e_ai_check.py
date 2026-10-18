@@ -326,6 +326,22 @@ async def run_fbise() -> None:
     check("tutor cited SLO P-11-B-05", "P-11-B-05" in answer)
     check("tutor wrote a formula", "$" in answer)
 
+    # Web search must never stand in for the syllabus: a syllabus question is
+    # answered from the SLOs and the bank, not from whatever the web says.
+    from edu_ai.tools.web import api_key as tavily_key
+
+    searched = [
+        part
+        for m in detail.messages
+        for part in (m.parts or [])
+        if getattr(part, "tool_name", None) == "search_web"
+    ]
+    check(
+        "web search stays out of syllabus answers",
+        not searched,
+        f"web search configured: {bool(tavily_key())}; called {len(searched)} time(s)",
+    )
+
     cs_project = next(p for p in ics.projects if p.name == "Computer Science XI")
     cs_chat = chat_svc.create_chat(project_id=cs_project.id, user_id=ICS_USER, title="E2E CS tutor")
     async for _ in chat_svc.stream_chat_events(
