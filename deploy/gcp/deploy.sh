@@ -235,7 +235,7 @@ deploy_job() { # name image command args...
     --service-account "$SA_EMAIL" --set-cloudsql-instances "$(sql_connection)" \
     --command "$command" "--args=$args" \
     --cpu 1 --memory 1Gi --max-retries 0 --task-timeout 3600 \
-    --set-env-vars "^@^$(common_env)" --set-secrets DATABASE_URL=edu-database-url:latest >/dev/null
+    --set-env-vars "^@^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)" >/dev/null
 }
 
 migrate() {
