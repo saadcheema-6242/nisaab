@@ -1,4 +1,5 @@
-import { BrainIcon, ClipboardCheckIcon, LayoutDashboardIcon, Settings2 } from 'lucide-react'
+import { ClipboardCheckIcon, LayoutDashboardIcon, Settings2 } from 'lucide-react'
+import { NisaabMark } from '@/components/nisaab-mark'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { NavMain } from './nav-main'
@@ -34,7 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link to="/dashboard">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <BrainIcon className="size-4" />
+                  <NisaabMark className="size-5" />
                 </div>
                 <span className="text-lg font-bold">{brand.name}</span>
               </Link>
