@@ -117,8 +117,15 @@ def _gemini_image(payload: dict) -> bytes:
     )
 
 
-def generate(prompt: str, aspect_ratio: str = "4:3") -> bytes:
+def generate(prompt: str, aspect_ratio: str = "4:3", style: bool = True) -> bytes:
     """Return one PNG for ``prompt``.
+
+    Args:
+        prompt: What the picture should show.
+        aspect_ratio: Only honoured by the Imagen models.
+        style: Append the house style, which forbids text. Pass False to send a
+            prompt exactly as written - the way to find out what a model can
+            really do with labels, rather than assuming.
 
     Raises:
         ImageGenerationError: If Vertex refuses, times out, or filters the
@@ -135,7 +142,8 @@ def generate(prompt: str, aspect_ratio: str = "4:3") -> bytes:
         f"https://{location}-aiplatform.googleapis.com/v1/projects/{project}"
         f"/locations/{location}/publishers/google/models/{model}:{verb}"
     )
-    described = f"{described}. {STYLE}"
+    if style:
+        described = f"{described}. {STYLE}"
     body = _imagen_body(described, aspect_ratio) if predict else _gemini_body(described)
 
     try:
