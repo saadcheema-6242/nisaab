@@ -52,6 +52,10 @@ const isWeak = (word: string) =>
 // Markdown list, quote and heading markers stay outside the formula
 const LINE_MARKER = /^(\s*(?:[-*+>]|#{1,6}|\d+[.)])\s+)/
 
+// How far a word opens or closes LaTeX braces, ignoring escaped ones
+const braceDepth = (word: string) =>
+  (word.match(/(?<!\\)\{/g)?.length ?? 0) - (word.match(/(?<!\\)\}/g)?.length ?? 0)
+
 const wrapLine = (line: string): string => {
   if (!/\\[A-Za-z]|[\^_]/.test(line)) return line
   const marker = LINE_MARKER.exec(line)?.[1] ?? ''
@@ -68,12 +72,21 @@ const wrapLine = (line: string): string => {
     }
     let end = i
     let strong = false
+    // A space inside braces must not end the formula: "\text{ m}" is one unit,
+    // and splitting it leaves "\text{" unclosed, which KaTeX cannot render.
+    let depth = 0
+    let balanced = -1
     for (let j = i; j < tokens.length; j += 2) {
       const next = tokens[j]
-      if (!next || !(isStrong(next) || isWeak(next))) break
+      if (depth <= 0 && (!next || !(isStrong(next) || isWeak(next)))) break
       strong ||= isStrong(next)
+      depth += braceDepth(next)
       end = j
+      if (depth <= 0) balanced = j
     }
+    // A brace that never closes: keep only the part that does, rather than
+    // swallowing the rest of the sentence into the formula.
+    if (depth > 0) end = balanced >= 0 ? balanced : i
     const run = tokens.slice(i, end + 1).join('')
     result += strong ? `$$${run}$$` : run
     i = end + 1

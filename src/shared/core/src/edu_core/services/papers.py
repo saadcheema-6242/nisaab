@@ -59,28 +59,55 @@ LENGTHS = {
 # 56 MCQs + 6 stimulus sets of 4 at 0.5 marks, 7 SRQs x 4, 2 ERQs x 6 = 80 marks.
 # Mathematics: 40 MCQs + 6 sets of 4 at 0.75 marks, 7 SRQs x 4, 3 ERQs x 8 = 100 marks
 # (two ERQs without parts, one with parts). Section A takes 1 h 40 min, B and C 1 h 20 min.
+# What one question is worth, per subject. A shorter paper asks FEWER questions;
+# it never changes what a question is worth, so a student practising on a mini
+# paper learns the same weights they will meet in the exam hall.
+QUESTION_MARKS = {
+    "default": {"mcq": 0.5, "srq": 4, "erq": 6},
+    "MATH": {"mcq": 0.75, "srq": 4, "erq": 8},
+}
+
+# How many questions each paper length asks for. Marks come from QUESTION_MARKS.
 BOARD = {
     "board": {
-        "default": {"mcq": 56, "stimulus": 6, "mcq_marks": 0.5, "srq": 7, "srq_marks": 4,
-                    "erq": 2, "erq_marks": 6, "erq_parts": [True, True], "minutes": 180},
-        "MATH": {"mcq": 40, "stimulus": 6, "mcq_marks": 0.75, "srq": 7, "srq_marks": 4,
-                 "erq": 3, "erq_marks": 8, "erq_parts": [False, False, True], "minutes": 180},
+        "default": {"mcq": 56, "stimulus": 6, "srq": 7,
+                    "erq": 2, "erq_parts": [True, True], "minutes": 180},
+        "MATH": {"mcq": 40, "stimulus": 6, "srq": 7,
+                 "erq": 3, "erq_parts": [False, False, True], "minutes": 180},
     },
     "half": {
-        "default": {"mcq": 28, "stimulus": 3, "mcq_marks": 0.5, "srq": 4, "srq_marks": 4,
-                    "erq": 1, "erq_marks": 6, "erq_parts": [True], "minutes": 90},
-        "MATH": {"mcq": 20, "stimulus": 3, "mcq_marks": 0.75, "srq": 4, "srq_marks": 4,
-                 "erq": 2, "erq_marks": 8, "erq_parts": [False, True], "minutes": 90},
+        "default": {"mcq": 28, "stimulus": 3, "srq": 4,
+                    "erq": 1, "erq_parts": [True], "minutes": 90},
+        "MATH": {"mcq": 20, "stimulus": 3, "srq": 4,
+                 "erq": 2, "erq_parts": [False, True], "minutes": 90},
     },
 }
+
+
+def question_marks(subject_code: str) -> dict:
+    """What one MCQ, SRQ and ERQ is worth in this subject, at any paper length."""
+    return QUESTION_MARKS.get(subject_code, QUESTION_MARKS["default"])
 STIMULUS_SIZE = 4
-AI_CONCURRENCY = 8
+# Eight at once was enough to rate-limit ourselves at Vertex, and every 429 is
+# paid for twice: once in the backoff, once in the retry.
+AI_CONCURRENCY = 5
+# A board paper is the longest thing the worker builds. Past this it is stuck,
+# not slow: fail it so the student is offered another go instead of a spinner
+# that never ends.
+BUILD_TIMEOUT_SECONDS = 9 * 60
 GRADE_NAMES = {11: "XI", 12: "XII"}
 
 
 def board_plan(length: str, subject_code: str) -> dict:
     plans = BOARD[length]
-    return plans.get(subject_code, plans["default"])
+    plan = dict(plans.get(subject_code, plans["default"]))
+    marks = question_marks(subject_code)
+    plan["mcq_marks"], plan["srq_marks"], plan["erq_marks"] = (
+        marks["mcq"],
+        marks["srq"],
+        marks["erq"],
+    )
+    return plan
 
 
 def board_total(plan: dict) -> float:
@@ -143,9 +170,18 @@ class PaperService:
         srq_codes = written_pool[: plan["srq"]]
         erq_codes = [c for c in written_pool if c not in srq_codes][: plan["erq"]] or written_pool[: plan["erq"]]
         srq_service = SrqService()
+        marks = question_marks(scope_info["subject_code"])
         written = await asyncio.gather(
-            *(srq_service.generate(project_id, user_id, code) for code in srq_codes),
-            *(srq_service.generate(project_id, user_id, code, long=True) for code in erq_codes),
+            *(
+                srq_service.generate(project_id, user_id, code, marks=marks["srq"])
+                for code in srq_codes
+            ),
+            *(
+                srq_service.generate(
+                    project_id, user_id, code, long=True, marks=marks["erq"]
+                )
+                for code in erq_codes
+            ),
         )
         srqs, erqs = written[: len(srq_codes)], written[len(srq_codes) :]
 
@@ -153,7 +189,10 @@ class PaperService:
             {
                 "id": "A",
                 "title": "Section A: Multiple choice questions",
-                "items": [self._mcq_item(f"m{index + 1}", m, 1) for index, m in enumerate(mcqs)],
+                "items": [
+                    self._mcq_item(f"m{index + 1}", m, marks["mcq"])
+                    for index, m in enumerate(mcqs)
+                ],
             },
             {
                 "id": "B",
@@ -236,7 +275,10 @@ class PaperService:
     ) -> None:
         """Build a queued board paper (run by the worker). Marks it failed on errors."""
         try:
-            await self._build_board(paper_id, project_id, user_id, length, topic)
+            await asyncio.wait_for(
+                self._build_board(paper_id, project_id, user_id, length, topic),
+                timeout=BUILD_TIMEOUT_SECONDS,
+            )
         except Exception:
             with self._get_db_session() as db:
                 paper = db.get(PracticePaper, paper_id)

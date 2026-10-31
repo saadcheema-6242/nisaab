@@ -8,6 +8,14 @@ import { brand } from '@/lib/brand'
  * The heavy libraries are loaded only when someone downloads something.
  */
 
+// The logo's colours, for exports that go out carrying the NISAAB name.
+// Kept as hex rather than theme tokens because exports are always light.
+export const BRAND = {
+  green: '#1F6B4A',
+  soft: '#2E8B6F',
+  tint: '#E7F1EB',
+} as const
+
 // Light colours regardless of the app theme, since exports are printed or shared
 export const PAGE_STYLE: React.CSSProperties = {
   background: '#ffffff',
@@ -103,12 +111,17 @@ export async function blocksToPdf(
 
   const blocks = Array.from(root.querySelectorAll<HTMLElement>('[data-block]'))
   const fontCss = await fontsFor(root)
+  // Every block is rasterised separately, and a full board paper is about ninety
+  // of them. At 2x that took most of a minute and ran phones out of memory, so
+  // long documents are drawn at a lower resolution: still sharp in print, and
+  // the difference is what makes the download finish at all.
+  const scale = blocks.length > 60 ? 1.25 : blocks.length > 25 ? 1.5 : 2
   for (const block of blocks) {
     if (block.dataset.pageBreak !== undefined && y > margin) {
       pdf.addPage()
       y = margin
     }
-    const canvas = await toCanvas(block, 2, fontCss)
+    const canvas = await toCanvas(block, scale, fontCss)
     let height = (canvas.height * contentWidth) / canvas.width
     let width = contentWidth
     if (height > bottom - margin) {
@@ -122,6 +135,11 @@ export async function blocksToPdf(
     }
     pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, y, width, height)
     y += height + gap
+    // Drop the bitmap rather than holding ninety of them, and hand the browser
+    // a turn so the tab does not freeze while a long paper is drawn.
+    canvas.width = 0
+    canvas.height = 0
+    await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
   const pages = pdf.getNumberOfPages()
@@ -139,8 +157,10 @@ export async function blocksToPdf(
 
 /** The header block at the top of printed exports. */
 export const ExportHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => (
-  <div data-block style={{ padding: '4px 0 12px', borderBottom: '2px solid #111827' }}>
-    <div style={{ fontSize: 12, color: '#6b7280' }}>{brand.name}</div>
+  <div data-block style={{ padding: '4px 0 12px', borderBottom: `2px solid ${BRAND.green}` }}>
+    <div style={{ fontSize: 12, color: BRAND.green, fontWeight: 700, letterSpacing: 1 }}>
+      {brand.name}
+    </div>
     <div style={{ fontSize: 22, fontWeight: 700 }}>{title}</div>
     {subtitle && <div style={{ fontSize: 13, color: '#374151' }}>{subtitle}</div>}
     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { ChatToolsMenu } from './chat-tools-menu'
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 import {
   PromptInput,
@@ -11,43 +12,19 @@ import {
   PromptInputBody,
   PromptInputFooter,
   PromptInputHeader,
-  PromptInputSelect,
-  PromptInputSelectContent,
-  PromptInputSelectItem,
-  PromptInputSelectTrigger,
-  PromptInputSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input'
 
-const models = [
-  {
-    id: 'gpt-4o',
-    name: 'GPT-4o',
-    provider: 'openai',
-  },
-  {
-    id: 'gpt-4o-mini',
-    name: 'GPT-4o Mini',
-    provider: 'openai',
-  },
-  {
-    id: 'claude-opus-4-20250514',
-    name: 'Claude 4 Opus',
-    provider: 'anthropic',
-  },
-  {
-    id: 'claude-sonnet-4-20250514',
-    name: 'Claude 4 Sonnet',
-    provider: 'anthropic',
-  },
-  {
-    id: 'gemini-2.0-flash-exp',
-    name: 'Gemini 2.0 Flash',
-    provider: 'google',
-  },
-]
+// What the + menu will take: a student's own notes, a past paper, a photo of
+// a page. Anything else is refused before it is uploaded.
+const UPLOAD_TYPES = [
+  'image/*',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.docx',
+].join(',')
 
 type Props = {
   value: string
@@ -55,6 +32,10 @@ type Props = {
   status: 'streaming' | 'error' | 'ready' | 'submitted'
   onSubmit: (message: PromptInputMessage) => void
   textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  tools: ReadonlyArray<string>
+  onToolsChange: (tools: ReadonlyArray<string>) => void
+  webSearch: boolean
+  onWebSearchChange: (on: boolean) => void
 }
 
 export const ChatInput: React.FC<Props> = ({
@@ -63,11 +44,18 @@ export const ChatInput: React.FC<Props> = ({
   status,
   onSubmit,
   textareaRef,
+  tools,
+  onToolsChange,
+  webSearch,
+  onWebSearchChange,
 }) => {
-  const [selectedModel, setSelectedModel] = useState(models[0].id)
-
   return (
-    <PromptInput globalDrop multiple onSubmit={onSubmit}>
+    <PromptInput
+      globalDrop
+      multiple
+      accept={UPLOAD_TYPES}
+      onSubmit={onSubmit}
+    >
       <PromptInputHeader>
         <PromptInputAttachments>
           {(attachment) => <PromptInputAttachment data={attachment} />}
@@ -88,21 +76,12 @@ export const ChatInput: React.FC<Props> = ({
               <PromptInputActionAddAttachments />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
-          <PromptInputSelect
-            value={selectedModel}
-            onValueChange={setSelectedModel}
-          >
-            <PromptInputSelectTrigger>
-              <PromptInputSelectValue placeholder="Select model" />
-            </PromptInputSelectTrigger>
-            <PromptInputSelectContent>
-              {models.map((model) => (
-                <PromptInputSelectItem key={model.id} value={model.id}>
-                  {model.name}
-                </PromptInputSelectItem>
-              ))}
-            </PromptInputSelectContent>
-          </PromptInputSelect>
+          <ChatToolsMenu
+            tools={tools}
+            onToolsChange={onToolsChange}
+            webSearch={webSearch}
+            onWebSearchChange={onWebSearchChange}
+          />
         </PromptInputTools>
         <PromptInputSubmit status={status} />
       </PromptInputFooter>

@@ -354,6 +354,14 @@ class QuizQuestion(Base):
     option_d: Mapped[str] = mapped_column(Text)
     correct_option: Mapped[str] = mapped_column(String)  # a, b, c, d
     explanation: Mapped[str] = mapped_column(Text, nullable=True)
+    # A diagram some questions need, drawn from a spec and kept in object
+    # storage. The path, not a URL: the URL is signed when it is needed.
+    image_path: Mapped[str] = mapped_column(String, nullable=True)
+    image_alt: Mapped[str] = mapped_column(Text, nullable=True)
+    # Pictures for the options themselves - "which of these is benzene?" - as
+    # {"a": {"path": ..., "alt": ...}}. A dict rather than four columns so an
+    # option without a picture simply is not there.
+    option_images: Mapped[dict] = mapped_column(JSON, nullable=True)
     difficulty_level: Mapped[str] = mapped_column(
         String, default="medium"
     )  # easy, medium, hard

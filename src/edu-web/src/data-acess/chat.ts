@@ -370,6 +370,9 @@ export const streamMessageAtom = runtime
         message: ChatMessageDto
         projectId: string
         chatId: string
+        /** What the student ticked beside the box; undefined means no limit. */
+        tools?: ReadonlyArray<string>
+        webSearch?: boolean
       },
       get: Atom.FnContext,
     ) {
@@ -409,7 +412,13 @@ export const streamMessageAtom = runtime
         return part
       })
 
-      const body = HttpBody.unsafeJson({ parts: apiParts })
+      // Only sent when the student actually chose something, so a plain
+      // message behaves exactly as it did before.
+      const body = HttpBody.unsafeJson({
+        parts: apiParts,
+        ...(input.tools?.length ? { tools: input.tools } : {}),
+        ...(input.webSearch === false ? { web_search: false } : {}),
+      })
       const resp = yield* httpClient
         .post(
           `/api/v1/projects/${input.projectId}/chats/${input.chatId}/messages/stream`,

@@ -75,6 +75,7 @@ class ChatService:
         azure_openai_api_version: str | None = None,
         usage_service=None,
         queue_service=None,
+        storage_service=None,
     ) -> None:
         """Initialize the chat service.
 
@@ -85,8 +86,10 @@ class ChatService:
             azure_openai_api_version: Azure OpenAI API version
             usage_service: Optional usage tracking service
             queue_service: Optional QueueService for async task processing
+            storage_service: Optional storage client, used to keep drawn diagrams
         """
         self.search_service = search_service
+        self.storage_service = storage_service
         self.usage_service = usage_service
         self._queue_service = queue_service
 
@@ -1064,6 +1067,9 @@ class ChatService:
             language=language_code,
             fbise=fbise,
             llm=self.llm_non_streaming,  # Use non-streaming LLM for tools
+            storage=self.storage_service,
+            allowed_tools=allowed_tools,
+            web_search=web_search,
         )
 
         # Send initial "thinking" status with start message
@@ -1403,7 +1409,12 @@ Only respond with the title, nothing else. Do not use quotes."""
             db.close()
 
     async def stream_chat_events(
-        self, chat_id: str, user_id: str, parts: list[dict[str, Any]]
+        self,
+        chat_id: str,
+        user_id: str,
+        parts: list[dict[str, Any]],
+        allowed_tools: list[str] | None = None,
+        web_search: bool | None = None,
     ) -> AsyncGenerator[StreamEventDto]:
         """Stream chat events for SSE.
 

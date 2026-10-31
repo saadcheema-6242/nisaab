@@ -50,6 +50,13 @@ class Settings(BaseSettings):
     # Comma-separated emails of subject teachers who review the shared content
     reviewer_emails: str = ""
 
+    # Google Forms publishing. A service account cannot own a Form, so these are
+    # one real Google account's OAuth client and refresh token; set them with
+    # scripts/admin/authorise_google_forms.py.
+    google_oauth_client_id: str = ""
+    google_oauth_client_secret: str = ""
+    google_oauth_refresh_token: str = ""
+
     @property
     def reviewers(self) -> set[str]:
         return {e.strip().lower() for e in self.reviewer_emails.split(",") if e.strip()}

@@ -1,4 +1,4 @@
-import { fileSlug, renderOffscreen, saveBlob, toCanvas } from './core'
+import { BRAND, fileSlug, renderOffscreen, saveBlob, toCanvas } from './core'
 import type { MindMapNodeData } from '@/features/mind-map/components/mind-map-view'
 import { MathText } from '@/components/math-text'
 import { convertToTree } from '@/features/mind-map/components/mind-map-view'
@@ -12,7 +12,7 @@ const borderFor = (node: MindMapNodeData) =>
     : node.form === 'practical'
       ? '1px solid #f59e0b'
       : node.sloCode
-        ? '1px solid #6366f1'
+        ? `1px solid ${BRAND.green}`
         : '1px solid #d1d5db'
 
 // The whole tree, fully open, for printing and sharing
@@ -23,7 +23,7 @@ const StaticNode = ({ node, depth }: { node: MindMapNodeData; depth: number }) =
         border: borderFor(node),
         borderRadius: 12,
         padding: depth === 0 ? '12px 18px' : '6px 12px',
-        background: depth === 0 ? '#eef2ff' : '#ffffff',
+        background: depth === 0 ? BRAND.tint : '#ffffff',
         maxWidth: 300,
         fontSize: depth === 0 ? 18 : 13,
         fontWeight: depth <= 1 ? 600 : 500,

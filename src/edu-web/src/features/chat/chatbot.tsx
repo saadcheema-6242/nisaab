@@ -9,6 +9,7 @@ import { ToolStatus, toolOutputId, toolRunning } from './components/tool-status'
 import { ThinkingIndicator } from './components/thinking-indicator'
 import { chatLang, stageLabel } from './chat-labels'
 import { ChatPaperCard } from './components/chat-paper-card'
+import { ChatInput } from './components/chat-input'
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 import type {
   ChatMessageDto,
@@ -22,13 +23,6 @@ import {
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation'
 import { Message, MessageContent } from '@/components/ai-elements/message'
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputFooter,
-  PromptInputSubmit,
-  PromptInputTextarea,
-} from '@/components/ai-elements/prompt-input'
 import { Response } from '@/components/ai-elements/response'
 import {
   Source,
@@ -61,6 +55,11 @@ export const Chatbot: React.FC<ChatbotProps> = ({
   onInitialPromptSent,
 }) => {
   const [input, setInput] = useState('')
+  // Ticked beside the message box. Empty means the tutor chooses, which is
+  // how the chat behaved before there was a choice at all.
+  const [tools, setTools] = useState<ReadonlyArray<string>>([])
+  const [webSearch, setWebSearch] = useState(true)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const chatKey = `${projectId}:${chatId}`
   const chatResult = useAtomValue(chatAtom(chatKey))
@@ -181,6 +180,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
       message: userMessage,
       projectId: projectId,
       chatId: chatId,
+      tools,
+      webSearch,
     })
 
     setInput('')
@@ -406,6 +407,12 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           part.tool_name === 'ask_practice_questions'
                             ? parseSetup(part)
                             : null
+                        // A diagram the tutor drew on request. The link is
+                        // signed and lasts a week, so an old chat may lose it.
+                        const diagramUrl =
+                          part.tool_name === 'draw_diagram'
+                            ? toolOutputId(part, 'image_url')
+                            : null
                         return (
                           <div
                             key={`${message.id}-part-${i}`}
@@ -420,7 +427,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 !groupId &&
                                 !mindMapId &&
                                 !paperId &&
-                                !setup
+                                !setup &&
+                                !diagramUrl
                               }
                             />
                             {setup && (
@@ -451,6 +459,16 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                               <ChatPaperCard
                                 projectId={projectId}
                                 paperId={paperId}
+                              />
+                            )}
+                            {diagramUrl && (
+                              <img
+                                src={diagramUrl}
+                                alt={
+                                  toolOutputId(part, 'alt') ?? 'Diagram'
+                                }
+                                className="w-full max-w-lg rounded-lg border bg-white"
+                                loading="lazy"
                               />
                             )}
                             {mindMapId && (
@@ -504,21 +522,17 @@ export const Chatbot: React.FC<ChatbotProps> = ({
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <PromptInput onSubmit={handleSubmit} className="mt-2 mb-3 shrink-0">
-        <PromptInputBody>
-          <PromptInputTextarea
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-          />
-        </PromptInputBody>
-        <PromptInputFooter>
-          <div />
-          <PromptInputSubmit
-            disabled={!input && !isStreaming}
-            status={isStreaming ? 'streaming' : 'ready'}
-          />
-        </PromptInputFooter>
-      </PromptInput>
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        status={isStreaming ? 'streaming' : 'ready'}
+        onSubmit={handleSubmit}
+        textareaRef={textareaRef}
+        tools={tools}
+        onToolsChange={setTools}
+        webSearch={webSearch}
+        onWebSearchChange={setWebSearch}
+      />
     </div>
   )
 }

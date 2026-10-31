@@ -18,6 +18,23 @@ describe('normalizeMath', () => {
     )
   })
 
+  it('keeps a unit written with a space inside braces (MCQ option screenshot)', () => {
+    // "9.5\text{ m}" used to be split at the space, leaving "\text{" unclosed
+    expect(normalizeMath(raw`9.5\text{ m}`)).toBe(raw`$$9.5\text{ m}$$`)
+  })
+
+  it('keeps braced units together among other options', () => {
+    expect(normalizeMath(raw`The answer is 24.5\text{ m s}^{-1} exactly.`)).toBe(
+      raw`The answer is $$24.5\text{ m s}^{-1}$$ exactly.`,
+    )
+  })
+
+  it('does not swallow the sentence when a brace never closes', () => {
+    const out = normalizeMath(raw`Use \frac{1}{2 and then stop here`)
+    expect(out).toContain('and then stop here')
+    expect(out.endsWith('and then stop here')).toBe(true)
+  })
+
   it('wraps a formula inside Roman Urdu text', () => {
     expect(normalizeMath(raw`Roman Urdu: 45^\\circ par range 4 guna hoti hai.`)).toBe(
       raw`Roman Urdu: $$45^\circ$$ par range 4 guna hoti hai.`,

@@ -31,6 +31,8 @@ import type {
   PaperItemResultDto,
 } from '@/integrations/api/client'
 import { useConfirmationDialog } from '@/components/confirmation-dialog'
+import { PaperDownload } from '@/components/downloads'
+import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 import { MathText } from '@/components/math-text'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -233,6 +235,7 @@ const McqQuestion = ({
     <div className="flex gap-2">
       <span className="font-semibold">{number}.</span>
       <MathText className="flex-1 font-medium">{item.question}</MathText>
+      <CognitiveBadge level={item.cognitive_level} className="mt-1 h-fit shrink-0" />
     </div>
     <div className="grid gap-2 sm:grid-cols-2">
       {OPTIONS.map((option) => (
@@ -268,6 +271,7 @@ const WrittenQuestion = ({
     <div className="flex gap-2">
       <span className="font-semibold">{number}.</span>
       <MathText className="flex-1 font-medium">{item.question}</MathText>
+      <CognitiveBadge level={item.cognitive_level} className="mt-1 h-fit shrink-0" />
       <Badge variant="outline" className="h-fit shrink-0">
         {formatMarks(item.marks)} marks
       </Badge>
@@ -783,6 +787,9 @@ export const PaperPage = ({ projectId, paperId }: { projectId: string; paperId: 
           </Button>
           <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
           <span className="font-medium">Practice paper</span>
+        </div>
+        <div className="flex items-center gap-2 px-3">
+          <PaperDownload projectId={projectId} paperId={paperId} />
         </div>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto">

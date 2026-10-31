@@ -65,8 +65,17 @@ export const QuizQuestionCard = ({
     const isSelected = selected === option
     const isCorrect = currentQuestion.correct_option === option
     if (isCorrect) return 'bg-green-50 border-green-500 text-green-900'
-    if (isSelected && !isCorrect) return 'bg-red-50 border-red-500 text-red-900'
+    // isCorrect is already false here, so selected means selected-and-wrong
+    if (isSelected) return 'bg-red-50 border-red-500 text-red-900'
     return 'bg-muted/50 border-border'
+  }
+
+  // The links come back keyed by lower-case letter; the buttons use A-D
+  const optionImage = (option: string) => {
+    const links = currentQuestion.option_image_urls
+    if (!links) return null
+    const url = links[option.toLowerCase()]
+    return typeof url === 'string' && url ? url : null
   }
 
   const getOptionText = (option: string) => {
@@ -85,6 +94,16 @@ export const QuizQuestionCard = ({
               <MathText className="text-lg font-medium leading-relaxed mb-6">
                 {currentQuestion.question_text}
               </MathText>
+              {/* Some questions cannot be asked in words: a circuit, a graph,
+                  the forces on a body. The link is signed and short-lived. */}
+              {currentQuestion.image_url && (
+                <img
+                  src={currentQuestion.image_url}
+                  alt={currentQuestion.image_alt ?? 'Diagram for this question'}
+                  className="mb-6 w-full max-w-xl mx-auto rounded-lg border bg-white"
+                  loading="lazy"
+                />
+              )}
               {showResults && (
                 <div className="flex items-center gap-2 mb-4">
                   {selected === currentQuestion.correct_option ? (
@@ -120,7 +139,21 @@ export const QuizQuestionCard = ({
                 >
                   <div className="flex gap-3">
                     <span className="font-semibold shrink-0">{opt.key}.</span>
-                    <MathText className="leading-relaxed">{opt.label}</MathText>
+                    <div className="min-w-0">
+                      <MathText className="leading-relaxed">
+                        {opt.label}
+                      </MathText>
+                      {/* Questions answered by choosing between pictures:
+                          "which of these is benzene?" */}
+                      {optionImage(opt.key) && (
+                        <img
+                          src={optionImage(opt.key)!}
+                          alt={opt.label}
+                          className="mt-2 w-full max-w-[14rem] rounded border bg-white"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
                   </div>
                 </button>
               ))}

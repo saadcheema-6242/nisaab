@@ -68,6 +68,7 @@ export const OnboardingPage = () => {
   const [grade, setGrade] = useState<Grade | null>(null)
   const [group, setGroup] = useState<Group | null>(null)
   const [language, setLanguage] = useState<ExplanationLanguage>('en')
+  const [finished, setFinished] = useState(false)
 
   // Start from the saved answers when changing an existing profile
   useEffect(() => {
@@ -92,8 +93,18 @@ export const OnboardingPage = () => {
       explanation_language: language,
       exam_year: defaultExamYear(),
     })
-    navigate({ to: '/dashboard' })
+    setFinished(true)
   }
+
+  // completeOnboarding refreshes the profile but does not wait for it, and the
+  // profile atom keeps serving the old value meanwhile. Navigating straight away
+  // therefore raced the refetch: the dashboard guard still read onboarded: false
+  // and sent the student back here. Leave only once that guard would let us in.
+  useEffect(() => {
+    if (!finished) return
+    if (Result.isSuccess(profileResult) && !profileResult.value.onboarded) return
+    navigate({ to: '/dashboard', replace: true })
+  }, [finished, profileResult, navigate])
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,7 +198,7 @@ export const OnboardingPage = () => {
             <Button
               variant="outline"
               onClick={() => setStep(step - 1)}
-              disabled={result.waiting}
+              disabled={result.waiting || finished}
             >
               Back
             </Button>
@@ -203,10 +214,12 @@ export const OnboardingPage = () => {
           ) : (
             <Button
               className="flex-1"
-              disabled={result.waiting || grade === null || group === null}
+              disabled={
+                result.waiting || finished || grade === null || group === null
+              }
               onClick={handleFinish}
             >
-              {result.waiting && (
+              {(result.waiting || finished) && (
                 <Loader2Icon className="size-4 animate-spin" />
               )}
               Create my subjects

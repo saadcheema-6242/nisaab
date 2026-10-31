@@ -3,6 +3,8 @@
 from collections.abc import AsyncGenerator
 
 from auth import get_current_user
+from config import get_settings
+from dependencies import get_storage
 from dependencies import (
     get_attempt_service,
     get_quiz_service,
@@ -222,11 +224,107 @@ async def list_quiz_questions(
 ):
     """List all questions in a quiz."""
     try:
-        return service.list_quiz_questions(quiz_id=quiz_id, project_id=project_id)
+        return _with_image_urls(
+            service.list_quiz_questions(quiz_id=quiz_id, project_id=project_id)
+        )
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _with_image_urls(questions: list[QuizQuestionDto]) -> list[QuizQuestionDto]:
+    """Sign a temporary link for each question that carries a diagram.
+
+    Signing costs a call to the IAM API, so it is only done for questions that
+    actually have an image - which is most of them not at all. A diagram that
+    cannot be signed is dropped rather than failing the whole request: the
+    question still reads.
+    """
+    if not any(q.image_path or q.option_images for q in questions):
+        return questions
+
+    storage = get_storage()
+
+    def sign(path: str) -> str | None:
+        try:
+            return storage.signed_url(path, expires_in=3600)
+        except Exception:  # noqa: BLE001 - a missing picture must not break the quiz
+            return None
+
+    for question in questions:
+        if question.image_path:
+            question.image_url = sign(question.image_path)
+        if question.option_images:
+            links = {
+                letter: url
+                for letter, item in question.option_images.items()
+                if isinstance(item, dict) and item.get("path")
+                and (url := sign(item["path"]))
+            }
+            question.option_image_urls = links or None
+    return questions
+
+
+class GoogleFormDto(BaseModel):
+    """Where a quiz published as a Google Form can be opened."""
+
+    form_id: str = Field(..., description="Google's ID for the form")
+    responder_url: str = Field(..., description="The link to share; anyone may attempt it")
+    edit_url: str = Field(..., description="Where the form can be edited or deleted")
+
+
+@router.post("/{quiz_id}/google-form", response_model=GoogleFormDto)
+async def publish_quiz_as_google_form(
+    project_id: str,
+    quiz_id: str,
+    current_user: UserDto = Depends(get_current_user),
+    service: QuizService = Depends(get_quiz_service),
+):
+    """Publish this quiz as a shareable Google Form quiz.
+
+    The form carries the answer key and the explanations, so whoever attempts it
+    sees their score and what they got wrong on the form itself. Nothing comes
+    back here.
+    """
+    from edu_core.services.google_forms import (
+        FormsNotConfiguredError,
+        GoogleFormsService,
+    )
+
+    try:
+        quiz = service.get_quiz(quiz_id=quiz_id, project_id=project_id)
+        questions = service.list_quiz_questions(quiz_id=quiz_id, project_id=project_id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    if not questions:
+        raise HTTPException(status_code=400, detail="This quiz has no questions yet")
+
+    questions = _with_image_urls(questions)
+
+    settings = get_settings()
+    try:
+        form = GoogleFormsService(
+            client_id=settings.google_oauth_client_id,
+            client_secret=settings.google_oauth_client_secret,
+            refresh_token=settings.google_oauth_refresh_token,
+        ).publish_quiz(
+            title=quiz.name,
+            questions=[q.model_dump() for q in questions],
+            description=f"A NISAAB practice quiz{f' · SLO {quiz.slo_code}' if quiz.slo_code else ''}.",
+        )
+    except FormsNotConfiguredError as e:
+        # Not the student's fault and not Google's, so say which it is
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=502, detail=f"Google would not create the form: {e}"
+        )
+    return GoogleFormDto(
+        form_id=form.form_id,
+        responder_url=form.responder_url,
+        edit_url=form.edit_url,
+    )
 
 
 @router.post("/{quiz_id}/questions", response_model=QuizQuestionDto, status_code=201)

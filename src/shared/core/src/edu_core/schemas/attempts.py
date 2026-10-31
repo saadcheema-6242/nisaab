@@ -65,13 +65,28 @@ class FlashcardAttemptStateDto(BaseModel):
 
 
 class PracticeHistoryItemDto(BaseModel):
-    """One finished attempt in the student's practice history."""
+    """One row in the student's history.
 
-    id: str = Field(..., description="Unique ID of the attempt")
-    kind: str = Field(..., description="quiz, flashcards or paper")
-    ref_id: str = Field(..., description="ID of the quiz, flashcard set or paper")
-    title: str = Field(..., description="Name of the quiz, flashcard set or paper")
-    number: int = Field(..., description="Attempt number at this item: 1 for the first try")
-    score: float = Field(..., description="Marks, correct answers or cards known")
-    max_score: float = Field(..., description="Marks, questions or cards")
-    created_at: datetime = Field(..., description="When the attempt was submitted")
+    Either a finished attempt (with a score), or something the tutor made that
+    has not been attempted — a mind map, a note, a study plan, or a quiz the
+    student has not sat yet. Those carry no score, so the marks are optional.
+    """
+
+    id: str = Field(..., description="Unique ID of the attempt, or of the item itself")
+    kind: str = Field(
+        ..., description="quiz, flashcards, paper, mind_map, note or study_plan"
+    )
+    ref_id: str = Field(..., description="ID of the quiz, flashcard set, paper, map, note or plan")
+    title: str = Field(..., description="Name of the item")
+    number: int | None = Field(
+        None, description="Attempt number at this item, or null if it was never attempted"
+    )
+    score: float | None = Field(
+        None, description="Marks, correct answers or cards known; null if never attempted"
+    )
+    max_score: float | None = Field(
+        None, description="Marks, questions or cards; null if never attempted"
+    )
+    created_at: datetime = Field(
+        ..., description="When the attempt was submitted, or the item was made"
+    )

@@ -1,4 +1,11 @@
-import { fileSlug, fontsFor, renderOffscreen, saveBlob, toCanvas } from './core'
+import {
+  BRAND,
+  fileSlug,
+  fontsFor,
+  renderOffscreen,
+  saveBlob,
+  toCanvas,
+} from './core'
 import type { FlashcardDto } from '@/integrations/api/client'
 import { MathText } from '@/components/math-text'
 import { brand } from '@/lib/brand'
@@ -127,7 +134,7 @@ const ShareCard = ({
   >
     <div
       style={{
-        background: 'linear-gradient(135deg, #0ea5e9, #6366f1)',
+        background: `linear-gradient(135deg, ${BRAND.green}, ${BRAND.soft})`,
         color: '#ffffff',
         padding: '44px 64px',
         display: 'flex',
@@ -148,14 +155,14 @@ const ShareCard = ({
     </div>
     <div style={{ flex: 1, padding: '48px 64px', display: 'flex', flexDirection: 'column', gap: 36 }}>
       <div>
-        <div style={{ fontSize: 24, color: '#6366f1', fontWeight: 700, marginBottom: 12 }}>QUESTION</div>
+        <div style={{ fontSize: 24, color: BRAND.green, fontWeight: 700, marginBottom: 12 }}>QUESTION</div>
         <div style={{ fontSize: 40, fontWeight: 600, lineHeight: 1.35 }}>
           <MathText>{card.question}</MathText>
         </div>
       </div>
       <div style={{ height: 3, background: '#e5e7eb' }} />
       <div>
-        <div style={{ fontSize: 24, color: '#0ea5e9', fontWeight: 700, marginBottom: 12 }}>ANSWER</div>
+        <div style={{ fontSize: 24, color: BRAND.soft, fontWeight: 700, marginBottom: 12 }}>ANSWER</div>
         <div style={{ fontSize: 34, lineHeight: 1.4, color: '#1f2937' }}>
           <MathText>{card.answer}</MathText>
         </div>

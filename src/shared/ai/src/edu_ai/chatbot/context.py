@@ -35,6 +35,13 @@ class ChatbotContext(BaseModel):
     llm: "BaseChatModel | None" = (
         None  # Optional LLM instance for content generation tools
     )
+    # Object storage, so a generated image has somewhere to live. Without it
+    # the image tool says so rather than failing.
+    storage: object = None
+    # What the student ticked beside the message box. None means no restriction,
+    # which is what every request that does not mention tools gets.
+    allowed_tools: list[str] | None = None
+    web_search: bool | None = None
 
 
 class ChatbotState(AgentState):

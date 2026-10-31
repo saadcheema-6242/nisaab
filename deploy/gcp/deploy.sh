@@ -9,6 +9,7 @@
 #   deploy/gcp/deploy.sh setup           create/update infrastructure only
 #   deploy/gcp/deploy.sh deploy          build images, migrate the database, deploy services
 #   deploy/gcp/deploy.sh deploy --skip-build   redeploy the latest images (settings changes)
+#   deploy/gcp/deploy.sh web             rebuild and deploy the web app only (front-end fixes)
 #   deploy/gcp/deploy.sh migrate         run database migrations
 #   deploy/gcp/deploy.sh seed            load the FBISE curriculum (scripts/seed/data)
 #   deploy/gcp/deploy.sh content --subject PHY --grade 11 --domains B
@@ -49,6 +50,13 @@ for var in PROJECT_ID REGION; do
   fi
 done
 
+# On Git Bash, plain `gcloud` is a .cmd that breaks on the spaces and brackets
+# in "Program Files (x86)". The wrapper beside this script runs the SDK's own
+# Python instead, so use it automatically on Windows rather than relying on
+# everyone remembering to set GCLOUD.
+if [[ -z "${GCLOUD:-}" && "$(uname -s)" == *NT* && -f "$SCRIPT_DIR/gcloud-win" ]]; then
+  GCLOUD="$SCRIPT_DIR/gcloud-win"
+fi
 GCLOUD="${GCLOUD:-gcloud}"
 VERTEX_LOCATION="${VERTEX_LOCATION:-global}"
 SCHEDULER_REGION="${SCHEDULER_REGION:-$REGION}"
@@ -97,6 +105,13 @@ optional_secrets() { # prints ",NAME=secret:latest" for each optional secret pre
   if gc secrets describe edu-tavily-api-key >/dev/null 2>&1; then
     out+=",TAVILY_API_KEY=edu-tavily-api-key:latest"
   fi
+  # Google Forms publishing. All three go together, so the refresh token - the
+  # one that expires - decides whether the set is wired in at all.
+  if gc secrets describe edu-google-oauth-refresh-token >/dev/null 2>&1; then
+    out+=",GOOGLE_OAUTH_CLIENT_ID=edu-google-oauth-client-id:latest"
+    out+=",GOOGLE_OAUTH_CLIENT_SECRET=edu-google-oauth-client-secret:latest"
+    out+=",GOOGLE_OAUTH_REFRESH_TOKEN=edu-google-oauth-refresh-token:latest"
+  fi
   printf '%s' "$out"
 }
 
@@ -120,7 +135,8 @@ common_env() {
   for var in LLM_TUTOR_MODEL LLM_GENERATION_MODEL LLM_MARKING_MODEL LLM_OCR_MODEL \
              LLM_FALLBACK_MODELS LLM_EMBEDDING_MODEL REVIEWER_EMAILS \
              MAX_CHAT_MESSAGES_PER_DAY MAX_QUIZ_GENERATIONS_PER_DAY \
-             MAX_FLASHCARD_GENERATIONS_PER_DAY MAX_DOCUMENT_UPLOADS_PER_DAY; do
+             MAX_FLASHCARD_GENERATIONS_PER_DAY MAX_DOCUMENT_UPLOADS_PER_DAY \
+             IMAGE_MODEL IMAGE_LOCATION; do
     if [[ -n "${!var:-}" ]]; then
       env="$env@$var=${!var}"
     fi
@@ -134,7 +150,8 @@ setup() {
     run.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com \
     secretmanager.googleapis.com aiplatform.googleapis.com cloudscheduler.googleapis.com \
     sqladmin.googleapis.com storage.googleapis.com iam.googleapis.com iamcredentials.googleapis.com \
-    identitytoolkit.googleapis.com securetoken.googleapis.com apikeys.googleapis.com
+    identitytoolkit.googleapis.com securetoken.googleapis.com apikeys.googleapis.com \
+    forms.googleapis.com drive.googleapis.com
 
   step "Artifact Registry repository $REPO"
   if ! gc artifacts repositories describe "$REPO" --location "$REGION" >/dev/null 2>&1; then
@@ -250,6 +267,29 @@ seed() {
   gc run jobs execute "$SEED_JOB" --region "$REGION" --wait
 }
 
+# Front-end only: rebuild the web image against the API already running and
+# redeploy it. Skips the backend build, the migrations and the seed, so a UI
+# fix ships in a couple of minutes without touching the database.
+web() {
+  IMAGE_TAG="$TAG"
+  $SKIP_BUILD && IMAGE_TAG=latest
+  local api_url
+  api_url="$(service_url "$API_SERVICE")"
+
+  if ! $SKIP_BUILD; then
+    step "Building web image (API $api_url)"
+    gc builds submit "$SOURCE_DIR" --config "$BUILD_DIR/cloudbuild-web.yaml" \
+      --substitutions "_REGISTRY=$REGISTRY,_TAG=$TAG,_VITE_SERVER_URL=$api_url,_VITE_FIREBASE_API_KEY=$(firebase_api_key),_VITE_FIREBASE_PROJECT_ID=$PROJECT_ID"
+  fi
+
+  step "Deploying $WEB_SERVICE"
+  gc run deploy "$WEB_SERVICE" \
+    --image "$REGISTRY/edu-web:$IMAGE_TAG" --region "$REGION" \
+    --allow-unauthenticated --port 80 \
+    --cpu 1 --memory 256Mi --min-instances 0 --max-instances 3
+  echo "   $(service_url "$WEB_SERVICE")"
+}
+
 deploy() {
   IMAGE_TAG="$TAG"
   $SKIP_BUILD && IMAGE_TAG=latest
@@ -363,10 +403,11 @@ case "$COMMAND" in
   all) setup; deploy ;;
   setup) setup ;;
   deploy) deploy ;;
+  web) web ;;
   migrate) migrate ;;
   seed) seed ;;
   content) shift; content "$@" ;;
   script) shift; run_script "$@" ;;
   e2e) e2e ;;
-  *) echo "Unknown command: $COMMAND (use setup, deploy, migrate, seed, content, script, e2e)" >&2; exit 1 ;;
+  *) echo "Unknown command: $COMMAND (use setup, deploy, web, migrate, seed, content, script, e2e)" >&2; exit 1 ;;
 esac

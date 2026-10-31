@@ -16,6 +16,7 @@ from typing import Literal
 from edu_ai.chatbot.context import ChatbotContext
 from edu_ai.tools.syllabus import slo_choices
 from edu_core.mastery import slo_mastery
+from edu_core.services.quizzes import DEFAULT_QUESTIONS
 from edu_core.services.flashcard_groups import FlashcardGroupService
 from edu_core.services.mind_maps import MindMapService
 from edu_core.services.papers import PaperService
@@ -27,6 +28,38 @@ from langgraph.prebuilt import ToolRuntime
 from pydantic import BaseModel, Field
 
 KINDS = ("quiz", "flashcards", "mind_map", "paper")
+# Used only if nothing else is left to ask, so the card is never shown empty.
+FALLBACK_QUESTION = {
+    "paper": {
+        "question": "How long should the paper be?",
+        "options": [
+            "Full board paper (3 hours)",
+            "Half paper (90 minutes)",
+            "Standard (45 minutes)",
+            "Mini (20 minutes)",
+        ],
+        "multiple": False,
+        "recommended": ["Full board paper (3 hours)"],
+    },
+    "quiz": {
+        "question": "How many questions?",
+        "options": ["5", "10", "15"],
+        "multiple": False,
+        "recommended": ["10"],
+    },
+    "flashcards": {
+        "question": "What should the cards focus on?",
+        "options": ["Definitions", "Formulas and units", "Key facts", "A mix"],
+        "multiple": False,
+        "recommended": ["A mix"],
+    },
+    "mind_map": {
+        "question": "How detailed?",
+        "options": ["Quick revision", "Detailed"],
+        "multiple": False,
+        "recommended": ["Quick revision"],
+    },
+}
 WEAK = 0.6  # SLO mastery below this is pre-selected as "needs practice"
 WHOLE_SYLLABUS = "Whole syllabus"
 
@@ -44,6 +77,17 @@ class SetupQuestion(BaseModel):
 def _short(text: str, limit: int = 60) -> str:
     text = " ".join(text.split())
     return text if len(text) <= limit else text[: limit - 1].rsplit(" ", 1)[0] + "…"
+
+
+# Ways a model has been seen to ask "which part of the syllabus?" without using
+# the word chapter.
+SCOPE_WORDS = ("chapter", "topic", "focus", "cover", "syllabus", "area", "which part")
+
+
+def _asks_about_scope(question: str) -> bool:
+    """Whether a question the model wrote is really asking which part to cover."""
+    text = question.lower()
+    return any(word in text for word in SCOPE_WORDS)
 
 
 def _part_question(ctx: ChatbotContext, kind: str, topic: str) -> dict | None:
@@ -69,11 +113,20 @@ def _part_question(ctx: ChatbotContext, kind: str, topic: str) -> dict | None:
                 return None
             wanted = topic.strip().lower()
             match = next((n for n in names if wanted and (wanted in n.lower() or n.lower() in wanted)), None)
+            # The student has already said what they want, so asking again just
+            # makes them repeat themselves. They rarely name a chapter the way
+            # the syllabus does: "complex numbers" sits inside "Numbers and
+            # Algebra". So when the chapter name does not match, fall back to the
+            # same syllabus search the paper itself uses to pick its questions —
+            # if that finds the topic, there is nothing left to ask.
+            named = wanted not in ("", WHOLE_SYLLABUS.lower(), "all", "everything")
+            if match or (named and slo_choices(grade_subject_id, topic, limit=3)):
+                return None
             return {
                 "question": "Which chapters should the paper cover?",
                 "options": [WHOLE_SYLLABUS, *names][:6],
                 "multiple": False,
-                "recommended": [match or WHOLE_SYLLABUS],
+                "recommended": [WHOLE_SYLLABUS],
             }
         slos = slo_choices(grade_subject_id, topic, limit=5)
         if not slos:
@@ -101,14 +154,21 @@ def _part_question(ctx: ChatbotContext, kind: str, topic: str) -> dict | None:
     description=(
         "Before making a quiz, flashcards, mind map or practice paper whose important choices "
         "are still open, show the student a card of 2-4 short questions with tappable answers. "
+        "Ask ONLY about what the student has not already said. If their message already covers "
+        "what to make, what it is about and how long or how many, do not use this tool at all: "
+        "make the thing straight away. Never ask a question the student has already answered. "
         "Write questions that fit this topic and conversation, e.g. for Physics 'What kind of "
         "questions?' (Theory and concepts / Numericals / Derivations / Mixed like the board "
         "paper), 'How hard?' (Easy / Board level / Challenging), 'How many?' (5 / 10 / 15), "
         "'Why are you practising?' (First time learning / Test revision / Final exam); for "
         "flashcards what to focus on (Definitions / Formulas and units / Key facts); for a mind "
         "map how detailed (Quick revision / Detailed) and what to include (Formulas / "
-        "Derivations / Examples / Exam tips); for a paper Mini or Standard. Do not ask which "
-        "SLOs or chapters: the card adds that question from the syllabus. Pre-select in "
+        "Derivations / Examples / Exam tips); for a paper how long it should be (Mini 20 min / "
+        "Standard 45 min / Half paper 90 min / Full board paper 3 hours), pre-selecting the full "
+        "board paper whenever the student mentioned the board or its pattern. Never ask which "
+        "part of the syllabus to use - not chapters, not topics, not what to focus on, not "
+        "which areas to cover: the card adds that question itself from the real syllabus, and "
+        "leaves it out when the student has already named the part. Pre-select in "
         "'recommended' what the conversation already shows. kind: quiz, flashcards, mind_map "
         "or paper. topic: English keywords."
     ),
@@ -137,7 +197,17 @@ async def ask_practice_questions(
         )
     with suppress(Exception):
         if part := _part_question(ctx, kind, topic):
+            # This card already asks which part of the syllabus to cover, built
+            # from the real chapter list. Anything the model wrote that asks the
+            # same thing in other words has to go: the two are written
+            # independently, so they can offer choices that contradict each
+            # other (chapters from one chapter, sub-topics from another).
+            cleaned = [q for q in cleaned if not _asks_about_scope(q["question"])]
             cleaned = [part, *cleaned[:4]]
+    # The card is the whole turn, so it must never come back blank: if nothing
+    # survived, ask the one thing that always changes the outcome.
+    if not cleaned:
+        cleaned = [dict(FALLBACK_QUESTION[kind])]
     cleaned = cleaned[:5]
     for number, item in enumerate(cleaned, start=1):
         item["id"] = f"q{number}"
@@ -163,7 +233,7 @@ async def ask_practice_questions(
         "Start an interactive MCQ quiz that the student answers right here in the chat "
         "(tap an option, instant feedback, score at the end; answers update their SLO mastery). "
         "Use this whenever the student wants to take, attempt or practise a quiz or MCQs. "
-        "topic: the topic in English keywords, e.g. 'vector product'. count: 3-20, default 5. "
+        "topic: the topic in English keywords, e.g. 'vector product'. count: 1-100, default 10. "
         "slo_codes: the SLO codes the student chose or named, e.g. ['P-11-B-02']. "
         "style: theory, numerical, derivation or mixed (default). "
         "level: easy, board (default) or challenging. "
@@ -173,7 +243,7 @@ async def ask_practice_questions(
 async def practice_quiz(
     topic: str,
     runtime: ToolRuntime[ChatbotContext],
-    count: int = 5,
+    count: int = DEFAULT_QUESTIONS,
     slo_codes: list[str] | None = None,
     style: str = "mixed",
     level: str = "board",
@@ -216,7 +286,7 @@ async def practice_quiz(
         "Start interactive flashcards that the student flips and studies right here in the chat "
         "(tap to flip, 'Knew it' / 'Still learning'; results update their SLO mastery). "
         "Use this whenever the student wants flashcards to study or revise. "
-        "topic: the topic in English keywords, e.g. 'dot product'. count: 3-20, default 8. "
+        "topic: the topic in English keywords, e.g. 'dot product'. count: 1-100, default 10. "
         "slo_codes: the SLO codes the student chose or named. focus: what the cards should "
         "cover, e.g. 'formulas and units'. level: easy, board (default) or challenging. "
         "notes: anything else they asked for."
@@ -225,7 +295,7 @@ async def practice_quiz(
 async def practice_flashcards(
     topic: str,
     runtime: ToolRuntime[ChatbotContext],
-    count: int = 8,
+    count: int = DEFAULT_QUESTIONS,
     slo_codes: list[str] | None = None,
     focus: str | None = None,
     level: str = "board",
@@ -318,11 +388,16 @@ async def practice_mind_map(
         "Make an FBISE-style practice paper the student attempts on an exam page: Section A MCQs, "
         "Section B short questions answered by typing, Section C long questions, all marked like "
         "an examiner. Use this when the student asks for a paper, test or mock exam. topic: a "
-        "domain (e.g. 'Mechanics') or topic, or empty for the whole syllabus. length: 'mini' "
-        "(about 20 minutes, default), 'standard' (about 45 minutes), 'half' (FBISE's new pattern "
-        "at half length, 90 minutes) or 'board' (the full FBISE new-pattern paper, 3 hours: "
-        "stimulus MCQs and questions with an internal choice). Board and half papers take a "
-        "minute or two to prepare."
+        "domain (e.g. 'Mechanics') or topic, or empty for the whole syllabus. "
+        "length is how LONG the paper is, never how hard it is: 'mini' (about 20 minutes), "
+        "'standard' (about 45 minutes), 'half' (FBISE's new pattern at half length, 90 minutes) "
+        "or 'board' (the full FBISE new-pattern paper, 3 hours, 80 marks, 100 for Mathematics: "
+        "stimulus MCQs and questions with an internal choice). "
+        "Use 'board' whenever the student mentions the board, the board pattern, 'board level', "
+        "a full paper, a real paper, a proper paper, a mock exam, or 'our pattern': all of those "
+        "ask for the full paper, not for a short one made harder. Only use 'mini' when they want "
+        "something quick and say nothing about the board. Board and half papers take a minute or "
+        "two to prepare."
     ),
 )
 async def practice_paper(

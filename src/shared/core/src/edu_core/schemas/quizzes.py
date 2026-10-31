@@ -35,6 +35,31 @@ class QuizQuestionDto(BaseModel):
     difficulty_level: str = Field(
         ..., description="Difficulty level: easy, medium, or hard"
     )
+    image_path: str | None = Field(
+        None, description="Where the diagram lives in the bucket; signed before use"
+    )
+    image_alt: str | None = Field(
+        None, description="What the question's diagram shows, if it has one"
+    )
+    image_url: str | None = Field(
+        None,
+        description=(
+            "A temporary link to the question's diagram. Signed when the "
+            "question is read, so it is absent on a question without one."
+        ),
+    )
+    option_images: dict | None = Field(
+        None,
+        description='Stored pictures for the options, as {"a": {path, alt}}',
+    )
+    option_image_urls: dict | None = Field(
+        None,
+        description=(
+            "Temporary links to the pictures on the options, as {a: url}. "
+            "Present only on a question whose options are pictures to choose "
+            "between."
+        ),
+    )
     position: int = Field(..., description="Position for ordering within quiz")
     slo_code: str | None = Field(None, description="FBISE SLO code, e.g. P-11-B-05")
     cognitive_level: str | None = Field(

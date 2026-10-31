@@ -137,6 +137,7 @@ def get_chat_service(
         azure_openai_api_version=settings.azure_openai_api_version,
         usage_service=usage_service,
         queue_service=queue_service,
+        storage_service=get_storage(),
     )
 
 
@@ -194,6 +195,7 @@ def get_chat_service_with_streaming(
         azure_openai_api_version=settings.azure_openai_api_version,
         usage_service=usage_service,
         queue_service=queue_service,
+        storage_service=get_storage(),
     )
 
 

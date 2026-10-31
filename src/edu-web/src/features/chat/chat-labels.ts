@@ -111,6 +111,17 @@ const TOOLS: Record<string, Record<ChatLang, ToolLabels> | undefined> = {
       done: 'آپ کے فلیش کارڈز تیار ہیں',
     },
   },
+  draw_diagram: {
+    en: { running: 'Drawing your diagram…', done: 'Your diagram is ready' },
+    'ur-Latn': {
+      running: 'Diagram bana raha hoon…',
+      done: 'Aap ka diagram tayyar hai',
+    },
+    ur: {
+      running: 'ڈائیگرام بنا رہا ہوں…',
+      done: 'آپ کا ڈائیگرام تیار ہے',
+    },
+  },
   practice_mind_map: {
     en: { running: 'Drawing your mind map…', done: 'Your mind map is ready' },
     'ur-Latn': {

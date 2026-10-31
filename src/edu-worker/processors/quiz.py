@@ -64,6 +64,7 @@ class QuizProcessor(BaseProcessor[QuizGenerationData]):
             search_service=self.search_service,
             llm=llm,
             topic_graph_agent=topic_graph_agent,
+            storage=self.storage,
         )
 
         await quiz_agent.generate_and_save(

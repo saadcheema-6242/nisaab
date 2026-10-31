@@ -106,8 +106,15 @@ class LLMSettings(BaseSettings):
     llm_fallback_models: str = ""
     llm_embedding_model: str = ""
     llm_embedding_dimensions: int | None = None
-    # Retries (with backoff) on rate limits and transient errors
-    llm_max_retries: int = 8
+    # Retries (with backoff) on rate limits and transient errors. Kept low
+    # because each model in the fallback chain retries in turn, so the attempts
+    # multiply: three models at eight retries each is well over a hundred.
+    llm_max_retries: int = 3
+    # Seconds to wait for one response before giving up on it and letting the
+    # retry or the fallback take over. Without a timeout a stalled connection
+    # waits for ever, and a paper gathers every question before it finishes, so
+    # one stuck call leaves the whole paper preparing indefinitely.
+    llm_request_timeout: float = 90.0
 
     # Vertex AI
     google_cloud_project: str = ""
@@ -469,6 +476,7 @@ def _create_google_chat_chain(
             base_url=settings.base_url,
             temperature=temperature,
             streaming=streaming,
+            timeout=settings.llm_request_timeout,
             max_retries=settings.llm_max_retries
             if is_last
             else min(RETRIES_BEFORE_FALLBACK, settings.llm_max_retries),
@@ -507,6 +515,7 @@ def create_chat_model(
             base_url=settings.base_url,
             temperature=temperature,
             streaming=streaming,
+            timeout=settings.llm_request_timeout,
             max_retries=settings.llm_max_retries,
         )
 
@@ -516,6 +525,8 @@ def create_chat_model(
         "azure_endpoint": azure_endpoint or settings.azure_openai_endpoint,
         "temperature": temperature,
         "streaming": streaming,
+        "timeout": settings.llm_request_timeout,
+        "max_retries": settings.llm_max_retries,
         **_azure_auth_kwargs(settings),
     }
     api_version = azure_api_version or settings.azure_openai_api_version

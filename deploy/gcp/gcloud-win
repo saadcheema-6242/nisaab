@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# gcloud for Git Bash on Windows.
+#
+# deploy.sh sets MSYS_NO_PATHCONV=1 so that paths like /app/... reach gcloud
+# unchanged. That also stops Git Bash rewriting this script's own paths, so the
+# SDK is given in Windows form (C:/...), not /c/....
+#
+# Calling gcloud's bundled Python directly avoids gcloud.cmd, which fails on
+# "Program Files (x86)" because of the spaces and brackets.
+#
+# Use it with:
+#   GCLOUD=deploy/gcp/gcloud-win bash deploy/gcp/deploy.sh deploy
+SDK="${CLOUDSDK_ROOT:-C:/Program Files (x86)/Google/Cloud SDK/google-cloud-sdk}"
+
+if [[ ! -f "$SDK/lib/gcloud.py" ]]; then
+  echo "gcloud SDK not found at: $SDK" >&2
+  echo "Install the Google Cloud CLI, or set CLOUDSDK_ROOT to where it lives." >&2
+  exit 1
+fi
+
+exec "$SDK/platform/bundledpython/python.exe" "$SDK/lib/gcloud.py" "$@"

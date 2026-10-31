@@ -6,12 +6,15 @@ from uuid import uuid4
 from edu_db.models import (
     Flashcard,
     FlashcardGroup,
+    MindMap,
+    Note,
     PracticeAttempt,
     PracticePaper,
     PracticeRecord,
     Project,
     Quiz,
     QuizQuestion,
+    StudyPlan,
 )
 from edu_db.session import get_session_factory
 
@@ -111,9 +114,18 @@ class AttemptService:
     def history(
         self, user_id: str, project_id: str, limit: int = 100
     ) -> list[PracticeHistoryItemDto]:
-        """Every finished quiz, flashcard run and paper in the workspace, newest first.
+        """Everything in the workspace, newest first.
 
-        Each is numbered per item ("Attempt 2"); attempts at deleted items are left out.
+        Two kinds of row, in one list:
+
+        - a finished attempt at a quiz, flashcard set or paper, numbered per item
+          ("Attempt 2") and carrying its score;
+        - anything the tutor made that was never attempted - a mind map, a note,
+          a study plan, or a quiz still waiting to be sat. These have no score,
+          so a student can find everything they have been given, not only the
+          things they have already done.
+
+        Attempts at deleted items are left out.
 
         Raises:
             NotFoundError: If the project does not exist
@@ -150,12 +162,14 @@ class AttemptService:
             }
             counts: dict[tuple[str, str], int] = {}
             items = []
+            attempted: set[tuple[str, str]] = set()
             for attempt in attempts:
                 key = (attempt.kind, attempt.ref_id)
                 counts[key] = counts.get(key, 0) + 1
                 title = titles.get(attempt.kind, {}).get(attempt.ref_id)
                 if title is None:
                     continue
+                attempted.add(key)
                 items.append(
                     PracticeHistoryItemDto(
                         id=attempt.id,
@@ -168,7 +182,62 @@ class AttemptService:
                         created_at=attempt.created_at,
                     )
                 )
-            return items[::-1][:limit]
+
+            # Everything the tutor made, so nothing is hidden just because the
+            # student has not sat it yet. A mind map records generated_at rather
+            # than created_at, and a study plan has no title of its own.
+            made = [
+                ("quiz", Quiz, Quiz.name, Quiz.created_at),
+                ("flashcards", FlashcardGroup, FlashcardGroup.name, FlashcardGroup.created_at),
+                ("paper", PracticePaper, PracticePaper.title, PracticePaper.created_at),
+                ("mind_map", MindMap, MindMap.title, MindMap.generated_at),
+                ("note", Note, Note.title, Note.created_at),
+            ]
+            for kind, model, name, made_at in made:
+                rows = (
+                    db.query(model.id, name, made_at)
+                    .filter(model.project_id == project_id)
+                    .all()
+                )
+                for ref_id, title, created_at in rows:
+                    if (kind, ref_id) in attempted:
+                        continue
+                    items.append(
+                        PracticeHistoryItemDto(
+                            id=f"{kind}:{ref_id}",
+                            kind=kind,
+                            ref_id=ref_id,
+                            title=title or "Untitled",
+                            number=None,
+                            score=None,
+                            max_score=None,
+                            created_at=created_at,
+                        )
+                    )
+
+            # A study plan has no title column, so it is named here rather than
+            # selected.
+            plans = (
+                db.query(StudyPlan.id, StudyPlan.created_at)
+                .filter(StudyPlan.project_id == project_id)
+                .all()
+            )
+            for plan_id, created_at in plans:
+                items.append(
+                    PracticeHistoryItemDto(
+                        id=f"study_plan:{plan_id}",
+                        kind="study_plan",
+                        ref_id=plan_id,
+                        title="Study plan",
+                        number=None,
+                        score=None,
+                        max_score=None,
+                        created_at=created_at,
+                    )
+                )
+
+            items.sort(key=lambda item: item.created_at, reverse=True)
+            return items[:limit]
 
     @staticmethod
     def _attempts(db, user_id: str, kind: str, ref_id: str) -> list[PracticeAttempt]:

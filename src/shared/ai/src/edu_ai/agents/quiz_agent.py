@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
+from edu_core.diagrams import DiagramSpec, store as store_diagram
+from edu_core.services.quizzes import clamp_count
 from edu_core.exceptions import NotFoundError
 from edu_db.models import Project, Quiz, QuizQuestion
 from langchain_openai import AzureChatOpenAI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, TypeAdapter
 
 from edu_ai.agents.slo_context import language_name, load_slo
 from edu_ai.agents.topic_graph_agent import TopicGraphAgent
@@ -28,6 +30,44 @@ class QuizQuestionGenerationResult(BaseModel):
     cognitive_level: str | None = Field(
         None, description="Cognitive level: K (knowledge), U (understanding) or A (application)"
     )
+    option_diagrams: dict | None = Field(
+        None,
+        description=(
+            "Only when the options themselves are pictures to choose between - "
+            '"which of these is benzene?". An object keyed by option letter, '
+            'each value a diagram spec of the same shape as diagram: '
+            '{"a":{"kind":"structure","ring_size":6,"aromatic":true},'
+            '"b":{"kind":"structure","ring_size":5,"aromatic":true}}. '
+            "If the picture belongs to the question rather than the choice, put "
+            "it in diagram instead - that is the usual case. Never put the same "
+            "picture on every option."
+        ),
+    )
+    # Deliberately a plain dict, not DiagramSpec. It is validated on its own
+    # further down, so a diagram the model gets wrong costs that one picture
+    # instead of failing the whole structured output and losing the quiz.
+    diagram: dict | None = Field(
+        None,
+        description=(
+            "Only when the question cannot be asked in words alone. An object "
+            'with "kind" and that kind\'s values. '
+            'circuit: {"kind":"circuit","arrangement":"series" or "parallel",'
+            '"source_label":"12 V","components":[{"label":"R1 = 4 Ohm"}]}. '
+            'free_body: {"kind":"free_body","body_label":"m","forces":'
+            '[{"label":"W = mg","direction_degrees":270}]}. '
+            'graph: {"kind":"graph","x_label":"t / s","y_label":"v / m/s",'
+            '"series":[{"label":"A","points":[{"x":0,"y":0},{"x":4,"y":8}]}]}. '
+            'vectors: {"kind":"vectors","show_resultant":true,"vectors":'
+            '[{"label":"F1 = 6 N","magnitude":6,"angle_degrees":0}]}. '
+            "Angles are degrees anticlockwise from the positive x-axis. "
+            'For a scene rather than a measurement: {"kind":"illustration",'
+            '"caption":"A block on a ramp","prompt":"a wooden block resting on '
+            'a wooden ramp, side view"} - generated, so it carries no labels, '
+            "arrows or values, and must never replace the four exact kinds. "
+            "Leave diagram out otherwise, and never describe a picture the "
+            "reader cannot see."
+        ),
+    )
 
 
 class QuizGenerationResult(BaseModel):
@@ -49,10 +89,13 @@ class QuizAgent:
         search_service: Any,
         llm: AzureChatOpenAI,
         topic_graph_agent: TopicGraphAgent | None = None,
+        storage: Any = None,
     ):
         self.search_service = search_service
         self.llm = llm
         self.topic_graph_agent = topic_graph_agent
+        # Without it a question keeps its text and simply loses its diagram
+        self.storage = storage
 
     async def generate_and_save(
         self,
@@ -114,7 +157,7 @@ class QuizAgent:
                     "language_name": language_name(language_code),
                     "difficulty": "mixed",
                 }
-                count = count or 10
+                count = clamp_count(count)
 
             generation_topic = slo.description if slo else topic
             if self.topic_graph_agent and not slo:
@@ -161,8 +204,14 @@ class QuizAgent:
 
             # Save quiz questions
             for position, question_item in enumerate(result.questions):
+                question_id = str(uuid4())
+                image_path, image_alt = self._diagram(project_id, question_id,
+                                                      question_item.diagram)
+                option_images = self._option_diagrams(
+                    project_id, question_id, question_item.option_diagrams
+                )
                 quiz_question = QuizQuestion(
-                    id=str(uuid4()),
+                    id=question_id,
                     quiz_id=quiz_id,
                     project_id=project_id,
                     question_text=question_item.question_text,
@@ -175,6 +224,9 @@ class QuizAgent:
                     difficulty_level=question_item.difficulty_level,
                     slo_code=slo.code if slo else None,
                     cognitive_level=_cognitive_level(question_item.cognitive_level),
+                    image_path=image_path,
+                    image_alt=image_alt,
+                    option_images=option_images,
                     position=position,
                     created_at=datetime.now(),
                 )
@@ -182,6 +234,46 @@ class QuizAgent:
 
             db.flush()
             return quiz
+
+
+    def _option_diagrams(
+        self, project_id: str, question_id: str, specs: dict | None
+    ) -> dict | None:
+        """Draw a picture for each option that has one.
+
+        Keyed by option letter, so an option without a picture is simply absent
+        and the student sees its text as before.
+        """
+        if not specs or self.storage is None:
+            return None
+        drawn: dict[str, dict[str, str]] = {}
+        for letter in ("a", "b", "c", "d"):
+            spec = specs.get(letter)
+            if not spec:
+                continue
+            path, alt = self._diagram(project_id, f"{question_id}-{letter}", spec)
+            if path:
+                drawn[letter] = {"path": path, "alt": alt or ""}
+        return drawn or None
+
+
+    def _diagram(
+        self, project_id: str, question_id: str, spec: dict | None
+    ) -> tuple[str | None, str | None]:
+        """Draw and store the question's diagram, or carry on without one.
+
+        A diagram is the least important part of a question: if drawing or
+        uploading fails, the question is still worth having, so the failure is
+        logged and the question keeps its text.
+        """
+        if not spec or self.storage is None:
+            return None, None
+        try:
+            checked = TypeAdapter(DiagramSpec).validate_python(spec)
+            return store_diagram(self.storage, project_id, question_id, checked)
+        except Exception as error:  # noqa: BLE001 - never lose a question over a picture
+            print(f"diagram for question {question_id} not drawn: {error}")
+            return None, None
 
 
 def _cognitive_level(value: str | None) -> str | None:

@@ -5,6 +5,7 @@ from typing import Any
 from edu_ai.agents.slo_context import language_name
 from edu_ai.chatbot.context import ChatbotContext, ChatbotState
 from edu_ai.prompts.prompts_utils import render_prompt
+from edu_ai.tools.diagram import tools as diagram_tools
 from edu_ai.tools.flashcard import tools as flashcard_tools
 from edu_ai.tools.mind_map import tools as mind_map_tools
 from edu_ai.tools.note import tools as note_tools
@@ -23,6 +24,44 @@ from langchain.agents.middleware import (
 from langchain_core.messages import ToolMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.runtime import Runtime
+
+
+@wrap_tool_call
+async def respect_the_students_choice(request, handler):
+    """Refuse a tool the student did not tick beside the message box.
+
+    The system prompt is told about the choice too, but a prompt is a request,
+    not a guarantee - so the refusal lives here, where the call actually
+    happens. An unrestricted turn (nothing ticked) passes straight through,
+    which is how every existing client behaves.
+    """
+    ctx = request.runtime.context
+    name = request.tool.name
+
+    if name == "search_web" and ctx.web_search is False:
+        return ToolMessage(
+            content=(
+                "The student has turned web search off for this message. "
+                "Answer from the syllabus and your own knowledge, and say so "
+                "if that is not enough."
+            ),
+            tool_call_id=request.tool_call_id,
+            name=name,
+        )
+
+    allowed = ctx.allowed_tools
+    if allowed and name not in allowed:
+        return ToolMessage(
+            content=(
+                f"The student chose which tools to use this message, and "
+                f"{name} is not one of them. They picked: "
+                f"{', '.join(allowed)}. Use one of those, or answer in words."
+            ),
+            tool_call_id=request.tool_call_id,
+            name=name,
+        )
+
+    return await handler(request)
 
 
 @wrap_tool_call
@@ -93,17 +132,34 @@ async def dynamic_system_prompt(request: ModelRequest) -> str:
     key = (language, ctx.fbise.model_dump_json() if ctx.fbise else None)
 
     # Return cached prompt if available
-    if key in _prompt_cache:
-        return _prompt_cache[key]
+    if key not in _prompt_cache:
+        if ctx.fbise:
+            _prompt_cache[key] = get_fbise_instructions(ctx)
+        else:
+            _prompt_cache[key] = get_instructions(language_name(language))
 
-    # Generate and cache the prompt
-    if ctx.fbise:
-        prompt = get_fbise_instructions(ctx)
-    else:
-        prompt = get_instructions(language_name(language))
+    # The student's choice changes per message, so it is appended rather than
+    # cached - the cache is keyed on language and subject only.
+    return _prompt_cache[key] + _choice_note(ctx)
 
-    _prompt_cache[key] = prompt
-    return prompt
+
+def _choice_note(ctx: ChatbotContext) -> str:
+    """What the student ticked beside the message box, if anything."""
+    notes = []
+    if ctx.allowed_tools:
+        notes.append(
+            "For this message the student chose which tools you may use: "
+            f"{', '.join(ctx.allowed_tools)}. Use only those. If what they ask "
+            "for needs a different one, say so plainly instead of using it."
+        )
+    if ctx.web_search is False:
+        notes.append(
+            "The student has turned web search off for this message. Do not "
+            "search the web; answer from the syllabus and what you know."
+        )
+    if not notes:
+        return ""
+    return "\n\n" + "\n".join(notes)
 
 
 @after_model(state_schema=ChatbotState)
@@ -121,6 +177,7 @@ def make_chatbot(llm: BaseChatModel):
         *syllabus_tools,
         *web_tools,
         *practice_tools,
+        *diagram_tools,
         *flashcard_tools,
         *quiz_tools,
         *note_tools,
@@ -131,6 +188,7 @@ def make_chatbot(llm: BaseChatModel):
         model=llm,
         tools=tools,
         middleware=[
+            respect_the_students_choice,
             capture_sources_from_rag,
             dynamic_system_prompt,
             ensure_sources_in_stream,

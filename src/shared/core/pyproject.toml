@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "edu-db",
     "google-cloud-storage>=3.0",
+    "pillow>=11.0",
     "httpx>=0.28",
     "pydantic>=2.12.5",
     "rich>=14.2.0",

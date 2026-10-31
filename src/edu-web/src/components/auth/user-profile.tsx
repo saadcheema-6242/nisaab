@@ -18,7 +18,7 @@ export const UserProfile = () => {
         </Avatar>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{name}</p>
-          <p className="text-xs text-gray-500 truncate">{email}</p>
+          <p className="text-xs text-muted-foreground truncate">{email}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -35,7 +35,7 @@ export const UserProfile = () => {
       <div className="flex items-center gap-3 p-3 border rounded-lg">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">User</p>
-          <p className="text-xs text-gray-500 truncate">Not signed in</p>
+          <p className="text-xs text-muted-foreground truncate">Not signed in</p>
         </div>
         <div className="flex items-center gap-2">
           <Link

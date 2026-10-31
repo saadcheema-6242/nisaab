@@ -27,6 +27,7 @@ Cloud Run jobs: edu-migrate (database migrations), edu-e2e (end-to-end check)
 deploy/gcp/deploy.sh                       # first time: setup + deploy
 deploy/gcp/deploy.sh setup                 # create or update infrastructure
 deploy/gcp/deploy.sh deploy                # build images, migrate the database, deploy services
+deploy/gcp/deploy.sh web                   # rebuild and deploy the web app only (front-end changes)
 deploy/gcp/deploy.sh deploy --skip-build   # redeploy the latest images after changing deploy.env
 deploy/gcp/deploy.sh migrate               # database migrations only
 deploy/gcp/deploy.sh e2e                   # end-to-end check (upload, search, chat, generation) in the cloud
@@ -34,8 +35,12 @@ deploy/gcp/deploy.sh e2e                   # end-to-end check (upload, search, c
 
 Settings live in `deploy/gcp/deploy.env` (copy `deploy.example.env`; it holds no secrets). Needs the
 [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), signed in (`gcloud auth login`) as a project owner.
-Works in Cloud Shell, macOS, Linux and Git Bash on Windows (on Windows, point `GCLOUD` at a wrapper that runs
-gcloud's bundled Python if `gcloud.cmd` fails on paths with spaces).
+Works in Cloud Shell, macOS, Linux and Git Bash on Windows. On Windows `gcloud.cmd` fails on the spaces and
+brackets in "Program Files (x86)", so use the wrapper kept next to this file:
+
+```bash
+GCLOUD=deploy/gcp/gcloud-win PYTHONUTF8=1 bash deploy/gcp/deploy.sh deploy
+```
 
 ## Demo days
 

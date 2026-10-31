@@ -1206,6 +1206,31 @@ export class QuizQuestionDto extends S.Class<QuizQuestionDto>(
    */
   difficulty_level: S.String,
   /**
+   * Where the diagram lives in the bucket; signed before use
+   */
+  image_path: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * What the question's diagram shows, if it has one
+   */
+  image_alt: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * A temporary link to the question's diagram, signed when the question is read
+   */
+  image_url: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * Stored pictures for the options, as {"a": {path, alt}}
+   */
+  option_images: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
+    nullable: true,
+  }),
+  /**
+   * Temporary links to the pictures on the options, as {a: url}
+   */
+  option_image_urls: S.optionalWith(
+    S.Record({ key: S.String, value: S.Unknown }),
+    { nullable: true },
+  ),
+  /**
    * Position for ordering within quiz
    */
   position: S.Int,
@@ -1221,6 +1246,21 @@ export class QuizQuestionDto extends S.Class<QuizQuestionDto>(
    * Date and time the question was created
    */
   created_at: S.String,
+}) {}
+
+export class GoogleFormDto extends S.Class<GoogleFormDto>('GoogleFormDto')({
+  /**
+   * Google's ID for the form
+   */
+  form_id: S.String,
+  /**
+   * The link to share; anyone may attempt it
+   */
+  responder_url: S.String,
+  /**
+   * Where the form can be edited or deleted
+   */
+  edit_url: S.String,
 }) {}
 
 export class ListQuizQuestionsApiV1ProjectsProjectIdQuizzesQuizIdQuestionsGet200 extends S.Array(
@@ -1864,35 +1904,35 @@ export class PracticeHistoryItemDto extends S.Class<PracticeHistoryItemDto>(
   'PracticeHistoryItemDto',
 )({
   /**
-   * Unique ID of the attempt
+   * Unique ID of the attempt, or of the item itself
    */
   id: S.String,
   /**
-   * quiz, flashcards or paper
+   * quiz, flashcards, paper, mind_map, note or study_plan
    */
   kind: S.String,
   /**
-   * ID of the quiz, flashcard set or paper
+   * ID of the quiz, flashcard set, paper, map, note or plan
    */
   ref_id: S.String,
   /**
-   * Name of the quiz, flashcard set or paper
+   * Name of the item
    */
   title: S.String,
   /**
-   * Attempt number at this item: 1 for the first try
+   * Attempt number at this item, or null if it was never attempted
    */
-  number: S.Int,
+  number: S.optionalWith(S.Int, { nullable: true }),
   /**
-   * Marks, correct answers or cards known
+   * Marks, correct answers or cards known; null if never attempted
    */
-  score: S.Number,
+  score: S.optionalWith(S.Number, { nullable: true }),
   /**
-   * Marks, questions or cards
+   * Marks, questions or cards; null if never attempted
    */
-  max_score: S.Number,
+  max_score: S.optionalWith(S.Number, { nullable: true }),
   /**
-   * When the attempt was submitted
+   * When the attempt was submitted, or the item was made
    */
   created_at: S.String,
 }) {}
@@ -3171,6 +3211,21 @@ export const make = (
           }),
         ),
       ),
+    publishQuizAsGoogleFormApiV1ProjectsProjectIdQuizzesQuizIdGoogleFormPost: (
+      projectId,
+      quizId,
+    ) =>
+      HttpClientRequest.post(
+        `/api/v1/projects/${projectId}/quizzes/${quizId}/google-form`,
+      ).pipe(
+        withResponse(
+          HttpClientResponse.matchStatus({
+            '2xx': decodeSuccess(GoogleFormDto),
+            '422': decodeError('HTTPValidationError', HTTPValidationError),
+            orElse: unexpectedStatus,
+          }),
+        ),
+      ),
     generateQuizApiV1ProjectsProjectIdQuizzesQuizIdGeneratePost: (
       projectId,
       quizId,
@@ -4382,6 +4437,18 @@ export interface Client {
   /**
    * Queue quiz generation request to be processed by a worker.
    */
+  /**
+   * Publish this quiz as a shareable Google Form quiz.
+   */
+  readonly publishQuizAsGoogleFormApiV1ProjectsProjectIdQuizzesQuizIdGoogleFormPost: (
+    projectId: string,
+    quizId: string,
+  ) => Effect.Effect<
+    typeof GoogleFormDto.Type,
+    | HttpClientError.HttpClientError
+    | ParseError
+    | ClientError<'HTTPValidationError', typeof HTTPValidationError.Type>
+  >
   readonly generateQuizApiV1ProjectsProjectIdQuizzesQuizIdGeneratePost: (
     projectId: string,
     quizId: string,

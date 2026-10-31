@@ -14,6 +14,20 @@ from edu_core.exceptions import NotFoundError
 from edu_core.services.content import usable_items
 from edu_core.schemas.quizzes import QuizDto, QuizQuestionDto
 
+# How many questions a quiz may hold. One place, so the tools, the agent and
+# this service cannot drift apart the way the paper marks once did.
+MIN_QUESTIONS = 1
+MAX_QUESTIONS = 100
+DEFAULT_QUESTIONS = 10
+
+
+def clamp_count(count: int | None) -> int:
+    """Keep a requested number of questions inside what the system will make."""
+    if not count:
+        return DEFAULT_QUESTIONS
+    return max(MIN_QUESTIONS, min(int(count), MAX_QUESTIONS))
+
+
 if TYPE_CHECKING:
     from edu_queue.service import QueueService
 
@@ -587,7 +601,7 @@ class QuizService:
             task_data["slo_code"] = slo_code
             quiz = self._set_slo_code(quiz_id, slo_code)
             # Reviewed questions from the shared bank are ready instantly
-            if self._fill_from_bank(quiz_id, project_id, slo_code, count or 10):
+            if self._fill_from_bank(quiz_id, project_id, slo_code, clamp_count(count)):
                 return self.get_quiz(quiz_id=quiz_id, project_id=project_id)
 
         # Send message to queue
@@ -644,7 +658,7 @@ class QuizService:
         self,
         project_id: str,
         topic: str,
-        count: int = 5,
+        count: int = DEFAULT_QUESTIONS,
         slo_code: str | None = None,
         search_service=None,
         slo_codes: list[str] | None = None,
@@ -666,7 +680,7 @@ class QuizService:
         from edu_ai.llm import GENERATION, create_chat_model
         from edu_ai.tools.syllabus import resolve_slos
 
-        count = max(3, min(count, 20))
+        count = clamp_count(count)
         style, level = options.normalize_style(style), options.normalize_level(level)
         extra = options.instructions(style, notes)
         with self._get_db_session() as db:

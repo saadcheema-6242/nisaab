@@ -19,6 +19,21 @@ const ProjectDetailRoute = lazy(() =>
 const HomePage = lazy(() =>
   import('@/features/home/home-page').then((m) => ({ default: m.HomePage })),
 )
+const FeaturesPage = lazy(() =>
+  import('@/features/marketing/features-page').then((m) => ({
+    default: m.FeaturesPage,
+  })),
+)
+const AboutPage = lazy(() =>
+  import('@/features/marketing/about-page').then((m) => ({
+    default: m.AboutPage,
+  })),
+)
+const ContactPage = lazy(() =>
+  import('@/features/marketing/contact-page').then((m) => ({
+    default: m.ContactPage,
+  })),
+)
 const SignInPage = lazy(() =>
   import('@/features/auth/sign-in-page').then((m) => ({
     default: m.SignInPage,
@@ -145,6 +160,37 @@ export const indexRoute = createRoute({
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <HomePage />
+    </Suspense>
+  ),
+})
+
+// The public site. Open to everyone; a signed-in student is sent to /dashboard.
+export const featuresRoute = createRoute({
+  path: '/features',
+  getParentRoute: () => rootRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <FeaturesPage />
+    </Suspense>
+  ),
+})
+
+export const aboutRoute = createRoute({
+  path: '/about',
+  getParentRoute: () => rootRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <AboutPage />
+    </Suspense>
+  ),
+})
+
+export const contactRoute = createRoute({
+  path: '/contact',
+  getParentRoute: () => rootRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <ContactPage />
     </Suspense>
   ),
 })
@@ -356,6 +402,9 @@ export const routeTree = rootRoute.addChildren([
     settingsRoute,
   ]),
   indexRoute,
+  featuresRoute,
+  aboutRoute,
+  contactRoute,
   onboardingRoute,
   signInRoute,
   signUpRoute,

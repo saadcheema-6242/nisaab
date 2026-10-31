@@ -172,6 +172,22 @@ class FilePart(BaseModel):
 
 class ChatCompletionRequest(BaseModel):
     parts: List[Union[TextPart, FilePart]]
+    # What the student has ticked for this message. None means "no restriction",
+    # which is how every existing client behaves.
+    tools: List[str] | None = Field(
+        None,
+        description=(
+            "Names of the tools the tutor may use this turn, e.g. "
+            '["practice_quiz"]. Omit for no restriction.'
+        ),
+    )
+    web_search: bool | None = Field(
+        None,
+        description=(
+            "Whether the tutor may search the web this turn. Omit to leave it "
+            "to the tutor, false to forbid it."
+        ),
+    )
 
 
 class FlashcardCreate(BaseModel):
