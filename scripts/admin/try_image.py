@@ -34,6 +34,34 @@ LOCATIONS = ["us-central1", "global", "us-east4"]
 PROMPT = "a wooden block resting on a wooden ramp, side view"
 
 
+SAMPLE_PATH = "samples/image-probe.png"
+
+
+def _keep(png: bytes) -> None:
+    """Put the picture in the bucket so a person can look at it.
+
+    A size in a log says the call worked; it says nothing about whether the
+    picture is any good, which for an image model is the only question that
+    matters.
+    """
+    import os
+
+    from edu_core.storage import create_storage
+
+    bucket = os.getenv("STORAGE_BUCKET", "")
+    if not bucket:
+        print("  (STORAGE_BUCKET is not set, so the sample was not kept)")
+        return
+    try:
+        storage = create_storage(
+            backend=os.getenv("STORAGE_BACKEND", "gcs"), bucket=bucket
+        )
+        storage.upload(SAMPLE_PATH, png, content_type="image/png")
+        print(f"  sample kept at gs://{bucket}/{SAMPLE_PATH}")
+    except Exception as error:  # noqa: BLE001 - the probe's answer still stands
+        print(f"  (could not keep the sample: {error})")
+
+
 def main() -> int:
     from edu_core.image_gen import (
         DEFAULT_LOCATION,
@@ -70,6 +98,7 @@ def main() -> int:
                 continue
             print(f"  YES  {model:42s} {call:15s} {len(png) / 1024:.0f} KB")
             winners.append((model, place))
+            _keep(png)
             break
         if winners:
             break
