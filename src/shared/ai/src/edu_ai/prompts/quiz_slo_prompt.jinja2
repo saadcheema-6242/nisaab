@@ -8,7 +8,18 @@ Cognitive level(s) in the Assessment Framework: {{ slo_levels }}
 
 REQUIREMENTS
 - Every question must assess this SLO and stay within the FSc syllabus. Do not test content beyond it.
+- Assess only as far as the SLO's own wording goes. The verbs in it set the limit: "describe qualitatively" or "explain" means no calculation is in scope, "state" or "define" means recall, and only "calculate", "determine", "solve" or "apply" put a numerical question in scope. A question that is correct physics but asks for more than this SLO assesses is out of scope and must not be written.
+{% if level_mix -%}
+- Cognitive levels, exactly as given: {% for lvl, n in level_mix.items() %}{{ n }} at level {{ lvl }}{% if not loop.last %}, {% endif %}{% endfor %}. These add up to {{ count }}. Set cognitive_level on each question to the level it was written for, and do not change the counts.
+  K = recall of a fact, definition, unit, symbol, stated law or standard classification. No multi-step reasoning, no calculation.
+  U = explain, compare, classify, interpret a graph or result, or say why something happens. Reasoning about the concept, not a numerical problem.
+  A = apply the idea to a situation or work through a calculation, with a result the student must reach rather than recall.
+- Every question must ask something different. Do not reword one question, reorder its options or change its numbers to make another.
+{%- elif level -%}
+- Cognitive level: write EVERY question at level {{ level }}{% if level == "K" %} - recall of a fact, a definition, a unit, a symbol, a law as stated, or a standard classification. No multi-step reasoning and no calculation beyond reading off a given value{% elif level == "U" %} - explain, compare, classify, interpret a graph or result, or identify why something happens. The student reasons about the concept but does not work through a numerical problem{% else %} - apply the idea to a situation or work through a calculation, with a result the student must reach rather than recall{% endif %}. Set cognitive_level to "{{ level }}" on every question. This is the level the paper needs; do not substitute another because it would make a more interesting question.
+{%- else -%}
 - Match the cognitive levels: K = recall of facts and definitions, U = explain, compare or interpret, A = apply in calculations or new situations. Weight the set towards the listed level(s) and set cognitive_level (K, U or A) on every question.
+{%- endif %}
 - FBISE style: exactly one correct option and three plausible distractors built from common student mistakes. No "all of the above" or "none of the above". Vary the position of the correct option.
 - Numerical questions: realistic values in SI units, options with sensible significant figures, and the full working in the explanation.
 - Write maths in LaTeX between $...$, for example $v = u + at$ or $R = \frac{v^2 \sin 2\theta}{g}$. Write chemical formulas with mhchem, for example $\ce{H2SO4}$.
@@ -19,6 +30,10 @@ REQUIREMENTS
 - Difficulty: {{ difficulty }}.{% if difficulty.startswith('mixed') %} Spread easy, medium and hard questions across the set.{% endif %}
 - Language: write questions and options in English, because the FSc paper is in English. Write each explanation in {{ language_name }}, keeping formulas, units and scientific terms in English.
 - Name the quiz "SLO {{ slo.code }}: " followed by a short topic (at most 6 words), and describe it in one sentence.
+{% if avoid %}
+ALREADY ASKED on this SLO - every question below is taken. Write questions that test something different, not these reworded, reordered or with the options shuffled:
+{% for asked in avoid %}- {{ asked }}
+{% endfor %}{% endif %}
 {% if custom_instructions and custom_instructions != "No specific instructions." %}
 ADDITIONAL INSTRUCTIONS FROM THE STUDENT (follow them, e.g. the question type they chose, even where they narrow the mix above): {{ custom_instructions }}
 {% endif %}

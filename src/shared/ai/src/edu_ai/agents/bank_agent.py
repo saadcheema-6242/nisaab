@@ -37,9 +37,24 @@ async def generate_mcqs(
     difficulty: str = "mixed",
     language_code: str = "en",
     instructions: str = "",
+    level: str | None = None,
+    level_mix: dict[str, int] | None = None,
+    avoid: list[str] | None = None,
 ) -> list[dict]:
     """MCQs for one SLO (not saved). The bank uses English explanations; practice passes
-    the student's language, level and question type."""
+    the student's language, level and question type.
+
+    level (K, U or A) asks for one cognitive level, so a paper can hit the
+    framework's weighting instead of getting whatever the model preferred.
+    level_mix asks for several at once, e.g. {"K": 3, "U": 2}, which is how a
+    paper orders an SLO's whole share in one call; it sets count.
+
+    avoid lists questions already written for this SLO. A paper writes its MCQs
+    in small parallel batches, and no batch can see the others: without this the
+    same question comes back from every batch with the options shuffled.
+    """
+    if level_mix:
+        count = sum(level_mix.values())
     prompt = render_prompt(
         "quiz_slo_prompt",
         **slo.prompt_vars(),
@@ -49,6 +64,9 @@ async def generate_mcqs(
         custom_instructions=instructions,
         document_content="(none)",
         format_instructions="",
+        level=level,
+        level_mix=level_mix,
+        avoid=avoid or [],
     )
     result = await llm.with_structured_output(
         QuizGenerationResult, method="function_calling"

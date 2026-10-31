@@ -30,6 +30,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Textarea } from '@/components/ui/textarea'
 import { createSrqAtom, markSrqAtom, srqDetailAtom } from '@/data-acess/srq'
 import { cn } from '@/lib/utils'
+import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 
 const PointIcon = ({ awarded, marks }: { awarded: number; marks: number }) => {
   if (awarded >= marks)
@@ -172,6 +173,11 @@ const QuestionView = ({
             </Badge>
           )}
           <Badge variant="secondary">Short question (SRQ)</Badge>
+          <CognitiveBadge
+            level={question.cognitive_level}
+            showName
+            className="px-2 py-1 text-xs"
+          />
         </div>
         <MathText className="text-base leading-relaxed">
           {question.question}

@@ -266,11 +266,17 @@ export const ProjectDetailPage = ({
 }: ProjectDetailPageProps) => {
   const setCurrentProject = useAtomSet(currentProjectIdAtom)
   const projectResult = useAtomValue(projectAtom(projectId))
-  const gradeSubjectId = Result.isSuccess(projectResult)
-    ? projectResult.value.grade_subject_id
-    : null
+  // Until the project has loaded we do not know whether it has a syllabus.
+  // Choosing a tab before then shows Study and flips to Syllabus a moment
+  // later - and mounts Study, so its chats are fetched for nothing.
+  const loaded = Result.isSuccess(projectResult)
+  const gradeSubjectId = loaded ? projectResult.value.grade_subject_id : null
   const [tab, setTab] = useState<Tab>('syllabus')
-  const activeTab: Tab = gradeSubjectId || tab === 'history' ? tab : 'study'
+  const activeTab: Tab | null = !loaded
+    ? null
+    : gradeSubjectId || tab === 'history'
+      ? tab
+      : 'study'
 
   useEffect(() => {
     setCurrentProject(projectId)
@@ -303,7 +309,9 @@ export const ProjectDetailPage = ({
         </div>
       )}
 
-      {activeTab === 'history' ? (
+      {activeTab === null ? (
+        <div className="min-h-0 flex-1" />
+      ) : activeTab === 'history' ? (
         <div className="min-h-0 flex-1 overflow-y-auto">
           <PracticeHistory projectId={projectId} />
         </div>

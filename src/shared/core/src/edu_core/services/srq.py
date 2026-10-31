@@ -34,10 +34,15 @@ class SrqService:
         long: bool = False,
         marks: int | None = None,
         parts: bool = True,
+        level: str | None = None,
     ) -> SrqQuestionDto:
         """Generate a new SRQ for an SLO (or, with long=True, a 6-mark ERQ).
 
         marks asks for an exact total; bank questions are reused only when they match it.
+
+        level asks for a cognitive level (K, U or A). A paper decides its levels
+        before anything is written, so a reused bank question at the wrong level
+        is no use to it and is skipped.
 
         Raises:
             NotFoundError: If the project or SLO does not exist
@@ -62,6 +67,8 @@ class SrqService:
                         continue
                     if marks is not None and item.payload.get("marks") != marks:
                         continue
+                    if level and item.payload.get("cognitive_level") != level:
+                        continue
                     question = SrqQuestion(
                         id=str(uuid4()),
                         project_id=project_id,
@@ -79,7 +86,9 @@ class SrqService:
                     return self._question_to_dto(question)
 
         llm = create_chat_model(task=GENERATION, temperature=0.7)
-        generated = await generate_srq(llm, slo, language_code, long=long, marks=marks, parts=parts)
+        generated = await generate_srq(
+            llm, slo, language_code, long=long, marks=marks, parts=parts, level=level
+        )
 
         with self._get_db_session() as db:
             question = SrqQuestion(

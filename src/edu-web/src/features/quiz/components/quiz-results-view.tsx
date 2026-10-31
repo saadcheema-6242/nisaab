@@ -28,6 +28,7 @@ import {
 } from '@/data-acess/quiz-detail-state'
 import { MathText } from '@/components/math-text'
 import { latestQuizAttemptAtom } from '@/data-acess/quiz-attempt'
+import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 
 const getOptionText = (
   question: QuizQuestionDto,
@@ -169,6 +170,7 @@ const QuizQuestionListItem = ({
         <MathText className="text-sm font-medium leading-relaxed">
           {question.question_text}
         </MathText>
+        <CognitiveBadge level={question.cognitive_level} showName />
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground">You:</span>

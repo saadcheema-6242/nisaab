@@ -34,6 +34,7 @@ from edu_db.models import (
 )
 from edu_db.session import get_session_factory
 
+from edu_core import paper_blueprint as blueprint
 from edu_core.exceptions import NotFoundError
 from edu_core.grading import grade_for
 from edu_core.schemas.papers import (
@@ -149,41 +150,71 @@ class PaperService:
             scope_info = self._scope(db, project_id, user_id, topic)
             grade_subject_id = scope_info["grade_subject_id"]
             slo_info, order = scope_info["slo_info"], scope_info["order"]
+            domain_of = scope_info["domain_of"]
             mcqs = self._bank_mcqs(db, grade_subject_id, order, plan["mcq"])
-            fill_codes = order[:2]
+            # Which SLO to ask about and at which level, decided before anything
+            # is written. A short paper asks fewer questions; it still spreads
+            # them over the scope and still carries recall as well as application.
+            levels_of = {code: slo_info[code]["levels"] for code in order}
+            missing = plan["mcq"] - len(mcqs)
+            mcq_orders = blueprint.group_by_slo(
+                blueprint.assign_levels(
+                    blueprint.mcq_pool(order, domain_of, missing),
+                    levels_of, missing, domain_of,
+                )
+            )
+            written_levels = blueprint.choice_pairs(
+                order, levels_of, plan["srq"] + plan["erq"], domain_of
+            )
+            fill_codes = [code for code, _ in mcq_orders]
             slo_contexts = {
-                code: load_slo(db, code, grade_subject_id=grade_subject_id) for code in fill_codes
+                code: load_slo(db, code, grade_subject_id=grade_subject_id)
+                for code in {*fill_codes, *(c for pair in written_levels for c in pair[:2])}
             }
 
         # Top up with new MCQs when the bank is short (e.g. before content generation)
-        missing = plan["mcq"] - len(mcqs)
         if missing > 0:
             llm = create_chat_model(task=GENERATION, temperature=0.5)
-            for index, code in enumerate(fill_codes):
-                share = missing // len(fill_codes) + (1 if index < missing % len(fill_codes) else 0)
-                if share and slo_contexts.get(code):
-                    for payload in (await generate_mcqs(llm, slo_contexts[code], share))[:share]:
-                        mcqs.append({"bank_id": None, "slo_code": code, **payload})
+            bank_asked: dict[str, list[str]] = {}
+            for taken in mcqs:
+                bank_asked.setdefault(taken.get("slo_code") or "", []).append(
+                    taken.get("question_text", "")
+                )
+            written_mcqs = await asyncio.gather(
+                *(
+                    generate_mcqs(
+                        llm, slo_contexts[code], sum(mix.values()),
+                        level_mix=mix, avoid=bank_asked.get(code, []),
+                    )
+                    for code, mix in mcq_orders
+                    if slo_contexts.get(code)
+                ),
+                return_exceptions=True,
+            )
+            usable = [(code, mix) for code, mix in mcq_orders if slo_contexts.get(code)]
+            for (code, _), result in zip(usable, written_mcqs):
+                if isinstance(result, list):
+                    mcqs.extend({"bank_id": None, "slo_code": code, **p} for p in result)
+            mcqs = blueprint.dedupe(mcqs)[: plan["mcq"]]
 
-        # Sections B and C: written questions on SLOs that ask for understanding or application
-        written_pool = [c for c in order if {"U", "A"} & set(slo_info[c]["levels"])] or order
-        srq_codes = written_pool[: plan["srq"]]
-        erq_codes = [c for c in written_pool if c not in srq_codes][: plan["erq"]] or written_pool[: plan["erq"]]
+        # Sections B and C: one question per SLO, at the level the paper planned
+        srq_plan = written_levels[: plan["srq"]]
+        erq_plan = written_levels[plan["srq"] : plan["srq"] + plan["erq"]]
         srq_service = SrqService()
         marks = question_marks(scope_info["subject_code"])
         written = await asyncio.gather(
             *(
-                srq_service.generate(project_id, user_id, code, marks=marks["srq"])
-                for code in srq_codes
+                srq_service.generate(project_id, user_id, code, marks=marks["srq"], level=level)
+                for code, _, level in srq_plan
             ),
             *(
                 srq_service.generate(
-                    project_id, user_id, code, long=True, marks=marks["erq"]
+                    project_id, user_id, code, long=True, marks=marks["erq"], level=level
                 )
-                for code in erq_codes
+                for code, _, level in erq_plan
             ),
         )
-        srqs, erqs = written[: len(srq_codes)], written[len(srq_codes) :]
+        srqs, erqs = written[: len(srq_plan)], written[len(srq_plan) :]
 
         sections = [
             {
@@ -307,9 +338,11 @@ class PaperService:
             # Section A: straight MCQs from the bank, one per SLO first
             mcqs = self._bank_mcqs(db, grade_subject_id, order, plan["mcq"])
 
-            # Stimulus sets on SLOs that ask for understanding or application, spread over domains
+            # Stimulus sets on SLOs that ask for understanding or application.
+            # blueprint.spread never repeats a code, so a narrow scope yields
+            # fewer sets instead of printing one scenario three times over.
             deep = [c for c in order if {"U", "A"} & set(slo_info[c]["levels"])] or order
-            stimulus_codes = self._spread(deep, domain_of, plan["stimulus"])
+            stimulus_codes = blueprint.spread(deep, domain_of, plan["stimulus"])
             stimuli: dict[str, dict] = {}
             used_sets: set[str] = set()
             for code in stimulus_codes:
@@ -321,12 +354,31 @@ class PaperService:
                     used_sets.add(item.id)
                     stimuli[code] = dict(item.payload)
 
-            # Sections B and C: pairs of questions for the internal choice, on different SLOs
-            written_codes = [c for c in deep if c not in stimulus_codes] or deep
-            written_codes = self._spread(written_codes, domain_of, 2 * (plan["srq"] + plan["erq"]))
+            # What the AI still has to write for Section A, and at which level.
+            # Every SLO in scope is drawn on and the levels follow the
+            # framework's weighting, decided here before anything is written.
+            levels_of = {code: slo_info[code]["levels"] for code in order}
+            missing = plan["mcq"] - len(mcqs)
+            mcq_orders = blueprint.group_by_slo(
+                blueprint.assign_levels(
+                    blueprint.mcq_pool(order, domain_of, missing),
+                    levels_of, missing, domain_of,
+                )
+            )
+
+            # Sections B and C: each choice offers two comparable alternatives -
+            # the same cognitive level, and one domain wherever the scope allows
+            written_codes = [c for c in order if c not in stimulus_codes] or order
+            pairs = blueprint.choice_pairs(
+                written_codes, levels_of, plan["srq"] + plan["erq"], domain_of
+            )
+
+            wanted_codes = {code for code, _ in mcq_orders} | set(stimulus_codes)
+            for first, second, _ in pairs:
+                wanted_codes.update((first, second))
             contexts = {
                 code: load_slo(db, code, grade_subject_id=grade_subject_id)
-                for code in {*order[:4], *stimulus_codes}
+                for code in wanted_codes
             }
 
         llm = create_chat_model(task=GENERATION, temperature=0.6)
@@ -336,35 +388,49 @@ class PaperService:
             async with limit:
                 return await coro
 
-        # Top up the straight MCQs and write the missing stimulus sets, in parallel
-        missing = plan["mcq"] - len(mcqs)
-        top_up_codes = order[:4]
-        mcq_jobs = []
-        for index, code in enumerate(top_up_codes):
-            share = missing // len(top_up_codes) + (1 if index < missing % len(top_up_codes) else 0) if missing > 0 else 0
-            for size in _batches(share):
-                if contexts.get(code):
-                    mcq_jobs.append((code, limited(generate_mcqs(llm, contexts[code], size, language_code=language_code))))
+        # Top up the straight MCQs and write the missing stimulus sets, in parallel.
+        # One call per SLO for its whole share: a single call can see everything
+        # it has written, so it cannot repeat itself, and the questions already
+        # taken from the bank are listed so it does not write those again.
+        bank_asked: dict[str, list[str]] = {}
+        for taken in mcqs:
+            bank_asked.setdefault(taken.get("slo_code") or "", []).append(
+                taken.get("question_text", "")
+            )
+        mcq_jobs = [
+            (code, limited(generate_mcqs(
+                llm, contexts[code], sum(mix.values()),
+                language_code=language_code, level_mix=mix,
+                avoid=bank_asked.get(code, []),
+            )))
+            for code, mix in mcq_orders
+            if contexts.get(code)
+        ]
         stimulus_jobs = [
             (code, limited(generate_stimulus_set(llm, contexts[code], language_code)))
             for code in stimulus_codes
             if code not in stimuli and contexts.get(code)
         ]
         srq_service = SrqService()
-        srq_codes = written_codes[: 2 * plan["srq"]]
-        erq_codes = written_codes[2 * plan["srq"] : 2 * (plan["srq"] + plan["erq"])]
-        if len(erq_codes) < 2 * plan["erq"]:
-            erq_codes = (erq_codes + srq_codes)[: 2 * plan["erq"]]
+        # Both halves of a choice are written at the pair's level, so (a) and
+        # (b) ask the same thing of the student in two ways
+        srq_pairs = pairs[: plan["srq"]]
+        erq_pairs = pairs[plan["srq"] : plan["srq"] + plan["erq"]]
         written_jobs = [
-            limited(srq_service.generate(project_id, user_id, code, marks=plan["srq_marks"], parts=False))
-            for code in srq_codes
+            limited(srq_service.generate(
+                project_id, user_id, code, marks=plan["srq_marks"], parts=False, level=level,
+            ))
+            for first, second, level in srq_pairs
+            for code in (first, second)
         ] + [
             limited(srq_service.generate(
                 project_id, user_id, code, long=True, marks=plan["erq_marks"],
-                parts=plan["erq_parts"][index // 2],
+                parts=plan["erq_parts"][index], level=level,
             ))
-            for index, code in enumerate(erq_codes)
+            for index, (first, second, level) in enumerate(erq_pairs)
+            for code in (first, second)
         ]
+        srq_codes = [code for pair in srq_pairs for code in pair[:2]]
         results = await asyncio.gather(
             *(job for _, job in mcq_jobs), *(job for _, job in stimulus_jobs), *written_jobs,
             return_exceptions=True,
@@ -376,6 +442,10 @@ class PaperService:
         for (code, _), result in zip(mcq_jobs, mcq_results):
             if isinstance(result, list):
                 mcqs.extend({"bank_id": None, "slo_code": code, **payload} for payload in result)
+        # Last line of defence on repeats: the SLOs are written in parallel and
+        # a model told not to repeat itself still sometimes does. A paper one
+        # question short is worth more than a paper that asks one twice.
+        mcqs = blueprint.dedupe(mcqs)
         with self._get_db_session() as db:
             for (code, _), result in zip(stimulus_jobs, stimulus_results):
                 if isinstance(result, dict):
@@ -424,6 +494,16 @@ class PaperService:
             {"id": "C", "title": "Section C: Long questions (answer (a) OR (b) in each)",
              "items": written_items(erqs, "erq", "C")},
         ]
+        # Say so in the log when the finished paper drifted off the framework's
+        # weighting. The levels were planned, so drift means the model labelled
+        # questions differently from the level it was asked for - which is worth
+        # knowing about and is invisible from the paper itself.
+        drift = blueprint.off_target(
+            [item.get("cognitive_level") for section in sections for item in section["items"]]
+        )
+        if drift:
+            print(f"paper {paper_id} is off the cognitive target: {drift}")
+
         with self._get_db_session() as db:
             paper = db.get(PracticePaper, paper_id)
             paper.sections = sections
@@ -647,22 +727,6 @@ class PaperService:
         return mcqs
 
     @staticmethod
-    def _spread(codes: list[str], domain_of: dict[str, str], count: int) -> list[str]:
-        """Up to count SLO codes, taking domains in turn so the paper covers the syllabus."""
-        by_domain: dict[str, list[str]] = {}
-        for code in codes:
-            by_domain.setdefault(domain_of.get(code, ""), []).append(code)
-        picked: list[str] = []
-        while len(picked) < count and any(by_domain.values()):
-            for domain in list(by_domain):
-                if by_domain[domain] and len(picked) < count:
-                    picked.append(by_domain[domain].pop(0))
-        # Small scopes: reuse SLOs so the paper still has every question
-        while picked and len(picked) < count:
-            picked.append(picked[len(picked) % len(codes)] if codes else picked[0])
-        return picked
-
-    @staticmethod
     def _mcq_item(item_id: str, m: dict, marks: float) -> dict:
         return {
             "id": item_id,
@@ -769,11 +833,3 @@ class PaperService:
             raise
         finally:
             db.close()
-
-
-def _batches(total: int, size: int = 3) -> list[int]:
-    """Split total into batches of at most size, e.g. 7 -> [3, 2, 2]."""
-    if total <= 0:
-        return []
-    count = -(-total // size)
-    return [total // count + (1 if i < total % count else 0) for i in range(count)]

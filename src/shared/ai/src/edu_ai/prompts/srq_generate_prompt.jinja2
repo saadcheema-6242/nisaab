@@ -18,8 +18,14 @@ REQUIREMENTS
 {%- else -%}
 - Worth 3 or 4 marks, answerable in about 6 to 8 lines, as in the annual paper. It may have parts (a) and (b).
 {%- endif %}
+{% if level -%}
+- Cognitive level: write this question at level {{ level }}{% if level == "K" %} - state, define, list or name. Recall only: no explanation of why, and no calculation{% elif level == "U" %} - explain, compare, classify, justify or interpret. The student reasons about the concept; do not make it a numerical problem{% else %} - apply or calculate, with a short numerical using realistic SI values{% endif %}. Set cognitive_level to "{{ level }}". This is the level the paper needs, so do not substitute another.
+{%- else -%}
 - Match the SLO's cognitive level: K = define/state, U = explain/compare/justify, A = calculate or apply to a situation. For A, include a short numerical with realistic SI values.
+{%- endif %}
 - Stay within the FSc syllabus.
+- Assess only as far as the SLO's own wording goes. Its verbs set the limit: "describe qualitatively" or "explain" puts no calculation in scope, "state" or "define" means recall, and only "calculate", "determine", "solve" or "apply" put a numerical in scope. A question that is correct science but asks for more than this SLO assesses must not be written.
+- If the question asks the student to do more than one thing, show how the marks divide, as whole marks in square brackets after each task, e.g. "Define terminal velocity [2] and explain why a raindrop reaches it [2]." A student cannot budget an answer against a single total for two separate tasks.
 {% if marks -%}
 - The rubric has {{ marks }} points, each worth exactly 1 whole mark, in the order a student would write them. The rubric marks add up to {{ marks }}.
 {%- elif long -%}

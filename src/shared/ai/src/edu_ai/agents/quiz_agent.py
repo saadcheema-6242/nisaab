@@ -3,6 +3,7 @@ from typing import Any
 from uuid import uuid4
 
 from edu_core.study_images import StudyImageSpec, store as store_image
+from edu_core.paper_blueprint import distinct_by_text
 from edu_core.services.quizzes import clamp_count
 from edu_core.exceptions import NotFoundError
 from edu_db.models import Project, Quiz, QuizQuestion
@@ -191,8 +192,13 @@ class QuizAgent:
             # Delete existing questions and create new ones
             db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).delete()
 
+            # A model asked for twenty questions on one SLO sometimes writes the
+            # same one twice with the options shuffled. A shorter quiz is better
+            # than one that asks the same thing twice.
+            kept = distinct_by_text(result.questions)
+
             # Save quiz questions
-            for position, question_item in enumerate(result.questions):
+            for position, question_item in enumerate(kept):
                 question_id = str(uuid4())
                 image_path, image_alt = self._diagram(project_id, question_id,
                                                       question_item.diagram)

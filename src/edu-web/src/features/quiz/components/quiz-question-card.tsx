@@ -7,6 +7,7 @@ import {
   setSelectedAnswerAtom,
 } from '@/data-acess/quiz-detail-state'
 import { MathText } from '@/components/math-text'
+import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 
 type QuizQuestionCardProps = {
   quizId: string
@@ -91,6 +92,14 @@ export const QuizQuestionCard = ({
         <div className="bg-card border rounded-xl shadow-lg p-12">
           <div className="space-y-10">
             <div>
+              {/* What the question asks of the student - recall, explain or
+                  apply. Shown before the question, because knowing which it is
+                  changes how you read it. */}
+              <CognitiveBadge
+                level={currentQuestion.cognitive_level}
+                showName
+                className="mb-3"
+              />
               <MathText className="text-lg font-medium leading-relaxed mb-6">
                 {currentQuestion.question_text}
               </MathText>

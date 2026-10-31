@@ -391,6 +391,14 @@ export const streamMessageAtom = runtime
         }),
       )
 
+      // Say the tutor is thinking from the moment the student presses send.
+      // The status used to arrive with the first event from the server, so the
+      // longest wait in the whole chat - the request going out, the model
+      // starting, a syllabus search running - showed nothing at all, and the
+      // chat looked like it had ignored the message. Any failure below clears
+      // this again, and the first real event overwrites it.
+      get.set(chatStreamStatusAtom(input.chatId), 'thinking')
+
       const { httpClient } = yield* ApiClientService
 
       // Transform ChatMessageDto parts to API format (TextPart/FilePart)
@@ -427,14 +435,16 @@ export const streamMessageAtom = runtime
           },
         )
         .pipe(
-          // If the request fails, remove the temporary message
+          // If the request fails, remove the temporary message and stop
+          // saying the tutor is thinking - nothing is coming
           Effect.tapError(() =>
-            Effect.sync(() =>
+            Effect.sync(() => {
               get.set(
                 chatAtom(chatKey),
                 ChatMessagesAction.RemoveTemporaryMessage(),
-              ),
-            ),
+              )
+              get.set(chatStreamStatusAtom(input.chatId), null)
+            }),
           ),
         )
 
@@ -443,6 +453,7 @@ export const streamMessageAtom = runtime
           chatAtom(chatKey),
           ChatMessagesAction.RemoveTemporaryMessage(),
         )
+        registry.set(chatStreamStatusAtom(input.chatId), null)
         registry.refresh(usageAtom)
         return yield* new UsageLimitExceededError({
           message: 'Usage limit exceeded',
@@ -460,7 +471,13 @@ export const streamMessageAtom = runtime
         ),
         Stream.tap(handleStreamPart(input, get, registry)),
         Stream.runCollect,
+        // A dropped connection, or a stream that ends without its done event,
+        // must not leave the dots running for the rest of the session
+        Effect.tapErrorCause(() =>
+          Effect.sync(() => get.set(chatStreamStatusAtom(input.chatId), null)),
+        ),
       )
+      get.set(chatStreamStatusAtom(input.chatId), null)
 
       // Refresh usage only
       get.refresh(usageAtom)

@@ -44,11 +44,16 @@ async def generate_srq(
     long: bool = False,
     marks: int | None = None,
     parts: bool = True,
+    level: str | None = None,
 ) -> GeneratedSrq:
     """A short question (SRQ, 3-4 marks) or, with long=True, an extended one (ERQ, 6 marks).
 
     marks asks for an exact total (e.g. 4 for Section B of the new FBISE paper, 6 or 8
     for Section C) and parts=False for one straight question without (a) and (b).
+
+    level (K, U or A) asks for a cognitive level. A paper decides its levels in
+    advance to hit the framework's weighting, so without this the model picks
+    the level itself and the paper ends up almost entirely application.
     """
     prompt = render_prompt(
         "srq_generate_prompt",
@@ -57,6 +62,7 @@ async def generate_srq(
         long=long,
         marks=marks,
         parts=parts,
+        level=level,
     )
     for attempt in range(2):
         result = await llm.with_structured_output(GeneratedSrq, method="function_calling").ainvoke(prompt)
