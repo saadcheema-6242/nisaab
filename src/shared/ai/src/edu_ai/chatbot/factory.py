@@ -27,44 +27,6 @@ from langgraph.runtime import Runtime
 
 
 @wrap_tool_call
-async def respect_the_students_choice(request, handler):
-    """Refuse a tool the student did not tick beside the message box.
-
-    The system prompt is told about the choice too, but a prompt is a request,
-    not a guarantee - so the refusal lives here, where the call actually
-    happens. An unrestricted turn (nothing ticked) passes straight through,
-    which is how every existing client behaves.
-    """
-    ctx = request.runtime.context
-    name = request.tool.name
-
-    if name == "search_web" and ctx.web_search is False:
-        return ToolMessage(
-            content=(
-                "The student has turned web search off for this message. "
-                "Answer from the syllabus and your own knowledge, and say so "
-                "if that is not enough."
-            ),
-            tool_call_id=request.tool_call_id,
-            name=name,
-        )
-
-    allowed = ctx.allowed_tools
-    if allowed and name not in allowed:
-        return ToolMessage(
-            content=(
-                f"The student chose which tools to use this message, and "
-                f"{name} is not one of them. They picked: "
-                f"{', '.join(allowed)}. Use one of those, or answer in words."
-            ),
-            tool_call_id=request.tool_call_id,
-            name=name,
-        )
-
-    return await handler(request)
-
-
-@wrap_tool_call
 async def capture_sources_from_rag(request, handler):
     """Capture sources when RAG search tool is used."""
     # Execute the tool
@@ -171,7 +133,24 @@ def ensure_sources_in_stream(
     return {"sources": sources} if sources else None
 
 
-def make_chatbot(llm: BaseChatModel):
+# Tools the student never picks from the menu: the tutor needs them to answer
+# at all, so a choice of "only the quiz maker" must not take away its ability
+# to look up a syllabus outcome or read the student's own notes.
+ALWAYS_AVAILABLE = {"find_syllabus_slos", "search_project_documents"}
+
+
+def make_chatbot(
+    llm: BaseChatModel,
+    allowed_tools: list[str] | None = None,
+    web_search: bool | None = None,
+):
+    """Build the agent, optionally limited to the tools the student ticked.
+
+    The limit is applied here, by leaving tools out, rather than by refusing a
+    call once the model has made it. The model then cannot try a tool that is
+    not on offer, so no turn is wasted on a refusal - and this does not depend
+    on the shape of the middleware's request object, which is version specific.
+    """
     tools = [
         *rag_tools,
         *syllabus_tools,
@@ -184,11 +163,16 @@ def make_chatbot(llm: BaseChatModel):
         *mind_map_tools,
     ]
 
+    if web_search is False:
+        tools = [t for t in tools if t.name != "search_web"]
+    if allowed_tools:
+        keep = set(allowed_tools) | ALWAYS_AVAILABLE
+        tools = [t for t in tools if t.name in keep]
+
     return create_agent(
         model=llm,
         tools=tools,
         middleware=[
-            respect_the_students_choice,
             capture_sources_from_rag,
             dynamic_system_prompt,
             ensure_sources_in_stream,

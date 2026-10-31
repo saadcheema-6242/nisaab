@@ -102,11 +102,11 @@ class ChatService:
             "azure_api_version": azure_openai_api_version,
         }
 
-        llm_streaming = create_chat_model(streaming=True, **llm_kwargs)
+        self.llm_streaming = create_chat_model(streaming=True, **llm_kwargs)
 
         self.llm_non_streaming = create_chat_model(streaming=False, **llm_kwargs)
 
-        self.chatbot = make_chatbot(llm=llm_streaming)
+        self.chatbot = make_chatbot(llm=self.llm_streaming)
 
     def _db_part_to_dto(
         self, db_part: DBChatMessagePart
@@ -1095,8 +1095,19 @@ class ChatService:
             status="thinking",
         )
 
+        # A student who ticked tools gets an agent built with only those, so the
+        # model is never offered one it may not use. Everyone else reuses the
+        # agent made once in __init__.
+        chatbot = self.chatbot
+        if allowed_tools or web_search is False:
+            chatbot = make_chatbot(
+                llm=self.llm_streaming,
+                allowed_tools=list(allowed_tools) if allowed_tools else None,
+                web_search=web_search,
+            )
+
         # --- process stream chunks ----------------------------------------------
-        async for chunk in self.chatbot.astream(
+        async for chunk in chatbot.astream(
             {"messages": llm_chat_history, "sources": []},  # Pass llm_chat_history
             stream_mode=["updates", "messages"],
             context=ctx,

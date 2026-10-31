@@ -84,7 +84,10 @@ async def generate_image(
     try:
         path, alt = store(ctx.storage, ctx.project_id, f"chat-{uuid4()}", checked)
         url = ctx.storage.signed_url(path, expires_in=LINK_SECONDS)
-    except (ImageError, Exception) as error:  # noqa: BLE001 - never fail a turn over a picture
+    except Exception as error:  # noqa: BLE001 - never fail a turn over a picture
+        # Printed as well as returned: the tool's reply only reaches the model,
+        # so without this a failure leaves nothing in the logs to diagnose.
+        print(f"generate_image failed: {type(error).__name__}: {error}")
         return json.dumps(
             {
                 "message": (
