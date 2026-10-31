@@ -25,7 +25,7 @@ import httpx
 
 # Image models are not served from the "global" endpoint the text models use
 DEFAULT_LOCATION = "us-central1"
-DEFAULT_MODEL = "gemini-3.1-flash-image"
+DEFAULT_MODEL = "gemini-2.5-flash-image"
 TIMEOUT = 120.0
 
 # Asking for no words is the single most useful instruction: an image model
