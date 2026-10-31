@@ -19,7 +19,7 @@ import {
 export const CHAT_TOOLS = [
   { name: 'practice_quiz', label: 'Quiz maker' },
   { name: 'practice_paper', label: 'Paper maker' },
-  { name: 'draw_diagram', label: 'Image maker' },
+  { name: 'generate_image', label: 'Image maker' },
   { name: 'practice_flashcards', label: 'Flashcards' },
   { name: 'practice_mind_map', label: 'Mind map' },
 ] as const

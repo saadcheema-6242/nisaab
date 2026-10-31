@@ -111,11 +111,11 @@ const TOOLS: Record<string, Record<ChatLang, ToolLabels> | undefined> = {
       done: 'آپ کے فلیش کارڈز تیار ہیں',
     },
   },
-  draw_diagram: {
-    en: { running: 'Drawing your diagram…', done: 'Your diagram is ready' },
+  generate_image: {
+    en: { running: 'Making your picture…', done: 'Your picture is ready' },
     'ur-Latn': {
-      running: 'Diagram bana raha hoon…',
-      done: 'Aap ka diagram tayyar hai',
+      running: 'Picture bana raha hoon…',
+      done: 'Aap ki picture tayyar hai',
     },
     ur: {
       running: 'ڈائیگرام بنا رہا ہوں…',

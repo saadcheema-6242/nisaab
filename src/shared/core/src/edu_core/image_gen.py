@@ -4,12 +4,11 @@ Used for the one thing the drawn diagrams cannot do: a picture of a situation.
 A trolley on an inclined plane, a beaker over a flame, a person pulling a crate
 - scenes that set up a question but carry no measurement.
 
-It is deliberately not used for anything exact. An image model asked for a ray
-diagram or a circuit produces something that looks like one and is wrong, with
-labels that read as letters but spell nothing. Circuits, graphs, vectors and
-free-body diagrams are drawn by edu_core.diagrams, correctly by construction.
-For the same reason the prompt here asks for no text at all: any wording the
-model draws would be gibberish.
+The prompt asks for no text at all, because an image model cannot spell: any
+wording it drew would be letters that spell nothing. So anything exact - a
+value, a label, an axis - belongs in the question and the options, not in the
+picture. Callers go through edu_core.study_images, which anchors the prompt to
+the student's subject and keeps this to study material.
 
 Called over REST with the credentials the service already has, so this adds no
 dependency - httpx and google-auth are both in use already.

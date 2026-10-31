@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
-from edu_core.diagrams import DiagramSpec, store as store_diagram
+from edu_core.study_images import StudyImageSpec, store as store_image
 from edu_core.services.quizzes import clamp_count
 from edu_core.exceptions import NotFoundError
 from edu_db.models import Project, Quiz, QuizQuestion
 from langchain_openai import AzureChatOpenAI
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, Field
 
 from edu_ai.agents.slo_context import language_name, load_slo
 from edu_ai.agents.topic_graph_agent import TopicGraphAgent
@@ -33,39 +33,28 @@ class QuizQuestionGenerationResult(BaseModel):
     option_diagrams: dict | None = Field(
         None,
         description=(
-            "Only when the options themselves are pictures to choose between - "
-            '"which of these is benzene?". An object keyed by option letter, '
-            'each value a diagram spec of the same shape as diagram: '
-            '{"a":{"kind":"structure","ring_size":6,"aromatic":true},'
-            '"b":{"kind":"structure","ring_size":5,"aromatic":true}}. '
-            "If the picture belongs to the question rather than the choice, put "
-            "it in diagram instead - that is the usual case. Never put the same "
-            "picture on every option."
+            "Only when the options themselves are pictures to choose between. "
+            "An object keyed by option letter, each value the same shape as "
+            'diagram: {"a":{"prompt":"a six-sided ring of carbon atoms","subject"'
+            ':"Chemistry"},"b":{"prompt":"a five-sided ring of carbon atoms",'
+            '"subject":"Chemistry"}}. If the picture belongs to the question '
+            "rather than the choice, put it in diagram instead - that is the "
+            "usual case. Never put the same picture on every option."
         ),
     )
-    # Deliberately a plain dict, not DiagramSpec. It is validated on its own
-    # further down, so a diagram the model gets wrong costs that one picture
+    # Deliberately a plain dict, not StudyImageSpec. It is validated on its own
+    # further down, so a picture the model gets wrong costs that one image
     # instead of failing the whole structured output and losing the quiz.
     diagram: dict | None = Field(
         None,
         description=(
-            "Only when the question cannot be asked in words alone. An object "
-            'with "kind" and that kind\'s values. '
-            'circuit: {"kind":"circuit","arrangement":"series" or "parallel",'
-            '"source_label":"12 V","components":[{"label":"R1 = 4 Ohm"}]}. '
-            'free_body: {"kind":"free_body","body_label":"m","forces":'
-            '[{"label":"W = mg","direction_degrees":270}]}. '
-            'graph: {"kind":"graph","x_label":"t / s","y_label":"v / m/s",'
-            '"series":[{"label":"A","points":[{"x":0,"y":0},{"x":4,"y":8}]}]}. '
-            'vectors: {"kind":"vectors","show_resultant":true,"vectors":'
-            '[{"label":"F1 = 6 N","magnitude":6,"angle_degrees":0}]}. '
-            "Angles are degrees anticlockwise from the positive x-axis. "
-            'For a scene rather than a measurement: {"kind":"illustration",'
-            '"caption":"A block on a ramp","prompt":"a wooden block resting on '
-            'a wooden ramp, side view"} - generated, so it carries no labels, '
-            "arrows or values, and must never replace the four exact kinds. "
-            "Leave diagram out otherwise, and never describe a picture the "
-            "reader cannot see."
+            "A picture for the question, only when it cannot be asked in words "
+            'alone: {"prompt":"a wooden block resting on a wooden ramp, side '
+            'view","subject":"Physics","caption":"A block on a ramp"}. '
+            "The picture is generated, so it carries no labels, arrows, values "
+            "or any text - put those in the question and the options instead. "
+            "It must be something on the FSc syllabus. Leave it out otherwise, "
+            "and never describe a picture the reader cannot see."
         ),
     )
 
@@ -260,19 +249,19 @@ class QuizAgent:
     def _diagram(
         self, project_id: str, question_id: str, spec: dict | None
     ) -> tuple[str | None, str | None]:
-        """Draw and store the question's diagram, or carry on without one.
+        """Make and store the question's picture, or carry on without one.
 
-        A diagram is the least important part of a question: if drawing or
+        A picture is the least important part of a question: if making or
         uploading fails, the question is still worth having, so the failure is
         logged and the question keeps its text.
         """
         if not spec or self.storage is None:
             return None, None
         try:
-            checked = TypeAdapter(DiagramSpec).validate_python(spec)
-            return store_diagram(self.storage, project_id, question_id, checked)
+            checked = StudyImageSpec.model_validate(spec)
+            return store_image(self.storage, project_id, question_id, checked)
         except Exception as error:  # noqa: BLE001 - never lose a question over a picture
-            print(f"diagram for question {question_id} not drawn: {error}")
+            print(f"picture for question {question_id} not made: {error}")
             return None, None
 
 

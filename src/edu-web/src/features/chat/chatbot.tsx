@@ -407,10 +407,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           part.tool_name === 'ask_practice_questions'
                             ? parseSetup(part)
                             : null
-                        // A diagram the tutor drew on request. The link is
+                        // A picture the tutor made on request. The link is
                         // signed and lasts a week, so an old chat may lose it.
-                        const diagramUrl =
-                          part.tool_name === 'draw_diagram'
+                        const imageUrl =
+                          part.tool_name === 'generate_image'
                             ? toolOutputId(part, 'image_url')
                             : null
                         return (
@@ -428,7 +428,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 !mindMapId &&
                                 !paperId &&
                                 !setup &&
-                                !diagramUrl
+                                !imageUrl
                               }
                             />
                             {setup && (
@@ -461,11 +461,11 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 paperId={paperId}
                               />
                             )}
-                            {diagramUrl && (
+                            {imageUrl && (
                               <img
-                                src={diagramUrl}
+                                src={imageUrl}
                                 alt={
-                                  toolOutputId(part, 'alt') ?? 'Diagram'
+                                  toolOutputId(part, 'alt') ?? 'Picture'
                                 }
                                 className="w-full max-w-lg rounded-lg border bg-white"
                                 loading="lazy"
