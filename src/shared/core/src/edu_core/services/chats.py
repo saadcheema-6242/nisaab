@@ -819,7 +819,12 @@ class ChatService:
         )
 
     async def send_streaming_message(
-        self, chat_id: str, user_id: str, parts: list[dict[str, Any]]
+        self,
+        chat_id: str,
+        user_id: str,
+        parts: list[dict[str, Any]],
+        allowed_tools: list[str] | None = None,
+        web_search: bool | None = None,
     ) -> AsyncGenerator[StreamingChatMessage]:
         """Send a streaming message to a chat using grounded RAG responses.
 
@@ -909,6 +914,8 @@ class ChatService:
                     assistant_message_id=assistant_message_id,
                     db_session=db,
                     fbise=fbise,
+                    allowed_tools=allowed_tools,
+                    web_search=web_search,
                 ):
                     # If this is the final chunk, save the complete message to database
                     if stream_chunk.done:
@@ -1030,6 +1037,8 @@ class ChatService:
         assistant_message_id: str | None = None,
         db_session=None,
         fbise: FbiseContext | None = None,
+        allowed_tools: list[str] | None = None,
+        web_search: bool | None = None,
     ) -> AsyncGenerator[StreamingChatMessage]:
         """Get response stream from agent.
 
@@ -1433,7 +1442,7 @@ Only respond with the title, nothing else. Do not use quotes."""
 
         try:
             async for streaming_msg in self.send_streaming_message(
-                chat_id, user_id, parts
+                chat_id, user_id, parts, allowed_tools, web_search
             ):
                 # Stream each part as a separate SSE event with message ID
                 for part in streaming_msg.parts:
