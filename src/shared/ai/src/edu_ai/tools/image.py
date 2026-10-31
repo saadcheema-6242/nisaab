@@ -29,8 +29,9 @@ LINK_SECONDS = 7 * 24 * 60 * 60
         "Make a picture and show it to the student in the chat. Use it when a "
         "picture genuinely helps and the student has asked for one or cannot "
         "follow without it - a situation, an apparatus, a shape to recognise. "
-        'Pass spec as {"prompt":"a wooden block resting on a wooden ramp, side '
-        'view","subject":"Physics","caption":"A block on a ramp"}. '
+        "prompt is the scene in plain words, for example 'a wooden block resting "
+        "on a wooden ramp, side view'. subject is the FSc subject it belongs to. "
+        "caption is one line to show under it. "
         "Only for what the student is studying: if the request is not about "
         "their FSc subjects, say you only make pictures for their studies and "
         "do not call this. The picture is generated, so it cannot carry "
@@ -39,15 +40,18 @@ LINK_SECONDS = 7 * 24 * 60 * 60
     ),
 )
 async def generate_image(
-    spec: dict,
+    prompt: str,
     runtime: ToolRuntime[ChatbotContext],
+    subject: str = "",
+    caption: str = "",
 ) -> str:
-    """Draw the picture described by ``spec`` and return a link to it.
+    """Draw the picture and return a link to it.
 
-    ``spec`` is a plain dict rather than the model type, because a model's
-    function calling handles a flat object far better than a nested schema. It
-    is validated here, where a mistake costs one picture and a clear message
-    rather than a failed turn.
+    Plain typed arguments, not an object. A ``dict`` argument becomes a schema
+    with no properties, and Gemini rejects a function declared that way - which
+    takes down every turn in the chat, not just the ones that want a picture,
+    because the tool list goes out with every model call. Every other tool here
+    takes scalars for the same reason.
     """
     ctx = runtime.context
     if ctx.storage is None:
@@ -60,8 +64,12 @@ async def generate_image(
             }
         )
 
+    # The subject the student is working in, unless the model named one itself
+    if not subject and ctx.fbise:
+        subject = getattr(ctx.fbise, "subject", "") or ""
+
     try:
-        checked = StudyImageSpec.model_validate(spec)
+        checked = StudyImageSpec(prompt=prompt, subject=subject, caption=caption)
     except ValidationError as error:
         return json.dumps(
             {
@@ -71,12 +79,6 @@ async def generate_image(
                     "once more, or explain in words."
                 )
             }
-        )
-
-    # The subject the student is working in, unless the model named one itself
-    if not checked.subject and ctx.fbise:
-        checked = checked.model_copy(
-            update={"subject": getattr(ctx.fbise, "subject", "") or ""}
         )
 
     try:
