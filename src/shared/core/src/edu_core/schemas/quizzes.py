@@ -48,9 +48,19 @@ class QuizQuestionDto(BaseModel):
             "question is read, so it is absent on a question without one."
         ),
     )
+    image_credit: dict | None = Field(
+        None,
+        description=(
+            "Who the diagram belongs to: author, licence, licence_url, "
+            "source_url, source and a ready-made line. Present when the "
+            "diagram came from an openly licensed source, and shown with it "
+            "wherever it appears, because naming them is a condition of the "
+            "licence."
+        ),
+    )
     option_images: dict | None = Field(
         None,
-        description='Stored pictures for the options, as {"a": {path, alt}}',
+        description='Stored pictures for the options, as {"a": {path, alt, credit}}',
     )
     option_image_urls: dict | None = Field(
         None,

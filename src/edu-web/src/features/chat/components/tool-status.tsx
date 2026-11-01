@@ -78,6 +78,14 @@ export const toolOutputId = (toolCall: ToolCallPartDto, key: string) => {
   return typeof value === 'string' ? value : null
 }
 
+/** A tool's output under `key`, whatever shape it is - a credit is an object. */
+export const toolOutputValue = (toolCall: ToolCallPartDto, key: string) => {
+  if (toolCall.tool_state !== 'output-available') return null
+  const output = parseOutput(toolCall.tool_output)
+  if (!output || typeof output !== 'object') return null
+  return (output as Record<string, unknown>)[key] ?? null
+}
+
 /** Whether a tool is still running, so the chat can show one indicator and not two. */
 export const toolRunning = (toolCall: ToolCallPartDto) =>
   toolCall.tool_state !== 'output-available' &&

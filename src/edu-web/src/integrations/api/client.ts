@@ -1224,6 +1224,13 @@ export class QuizQuestionDto extends S.Class<QuizQuestionDto>(
   /**
    * Stored pictures for the options, as {"a": {path, alt}}
    */
+  /**
+   * Who the diagram belongs to: author, licence, licence_url, source_url,
+   * source and a ready-made line. Shown wherever the diagram is shown.
+   */
+  image_credit: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
+    nullable: true,
+  }),
   option_images: S.optionalWith(S.Record({ key: S.String, value: S.Unknown }), {
     nullable: true,
   }),

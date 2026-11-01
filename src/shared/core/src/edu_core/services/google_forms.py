@@ -73,6 +73,24 @@ def _options(question: dict, choices: list[str]) -> list[dict]:
     return options
 
 
+def _credit_line(credit: dict | None) -> str:
+    """The attribution to show with a diagram, or "" when it needs none.
+
+    A picture that was not taken from an openly licensed source has no credit
+    and gets no line.
+    """
+    if not isinstance(credit, dict):
+        return ""
+    line = (credit.get("line") or "").strip()
+    if not line:
+        parts = [credit.get("title"), credit.get("author"), credit.get("licence")]
+        line = " - ".join(p for p in (parts or []) if p)
+    if not line:
+        return ""
+    source_url = (credit.get("source_url") or "").strip()
+    return f"Diagram: {line}" + (f" - {source_url}" if source_url else "")
+
+
 def _question_item(question: dict, index: int) -> dict:
     """One multiple-choice question, with its answer key and its explanation.
 
@@ -112,6 +130,14 @@ def _question_item(question: dict, index: int) -> dict:
             "sourceUri": image_url,
             "altText": (question.get("image_alt") or "Diagram")[:1900],
         }
+        # A diagram from an openly licensed source may be used on condition
+        # that its author, licence and source are named wherever it appears,
+        # and a Google Form is one of those places. It goes in the item's
+        # description, which students actually see - alt text would satisfy a
+        # screen reader and nobody else.
+        credit = _credit_line(question.get("image_credit"))
+        if credit:
+            item["description"] = credit[:4000]
 
     return {
         "createItem": {

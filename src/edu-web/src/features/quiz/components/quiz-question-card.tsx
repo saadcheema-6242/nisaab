@@ -8,6 +8,7 @@ import {
 } from '@/data-acess/quiz-detail-state'
 import { MathText } from '@/components/math-text'
 import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
+import { ImageCredit } from '@/components/image-credit'
 
 type QuizQuestionCardProps = {
   quizId: string
@@ -106,12 +107,19 @@ export const QuizQuestionCard = ({
               {/* Some questions cannot be asked in words: a circuit, a graph,
                   the forces on a body. The link is signed and short-lived. */}
               {currentQuestion.image_url && (
-                <img
-                  src={currentQuestion.image_url}
-                  alt={currentQuestion.image_alt ?? 'Diagram for this question'}
-                  className="mb-6 w-full max-w-xl mx-auto rounded-lg border bg-white"
-                  loading="lazy"
-                />
+                <figure className="mb-6 w-full max-w-xl mx-auto">
+                  <img
+                    src={currentQuestion.image_url}
+                    alt={currentQuestion.image_alt ?? 'Diagram for this question'}
+                    className="w-full rounded-lg border bg-white"
+                    loading="lazy"
+                  />
+                  {/* Naming the author, licence and source is a condition of
+                      the licence the diagram was published under. */}
+                  <figcaption className="mt-1">
+                    <ImageCredit credit={currentQuestion.image_credit} />
+                  </figcaption>
+                </figure>
               )}
               {showResults && (
                 <div className="flex items-center gap-2 mb-4">

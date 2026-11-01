@@ -5,7 +5,13 @@ import { ChatAskCard, parseSetup } from './components/chat-ask-card'
 import { ChatFlashcardsCard } from './components/chat-flashcards-card'
 import { ChatMindMapCard } from './components/chat-mind-map-card'
 import { ChatQuizCard } from './components/chat-quiz-card'
-import { ToolStatus, toolOutputId, toolRunning } from './components/tool-status'
+import {
+  ToolStatus,
+  toolOutputId,
+  toolOutputValue,
+  toolRunning,
+} from './components/tool-status'
+import { ImageCredit } from '@/components/image-credit'
 import { ChatStudyPlanCard } from './components/chat-study-plan-card'
 import { ThinkingIndicator } from './components/thinking-indicator'
 import { chatLang, stageLabel } from './chat-labels'
@@ -436,6 +442,12 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           part.tool_name === 'make_study_plan'
                             ? toolOutputId(part, 'study_plan_id')
                             : null
+                        // A real diagram found in an openly licensed
+                        // collection. It must be shown with its credit.
+                        const diagramUrl =
+                          part.tool_name === 'find_diagram'
+                            ? toolOutputId(part, 'image_url')
+                            : null
                         return (
                           <div
                             key={`${message.id}-part-${i}`}
@@ -452,6 +464,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 !paperId &&
                                 !setup &&
                                 !imageUrl &&
+                                !diagramUrl &&
                                 !studyPlanId
                               }
                             />
@@ -500,6 +513,21 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 className="w-full max-w-lg rounded-lg border bg-white"
                                 loading="lazy"
                               />
+                            )}
+                            {diagramUrl && (
+                              <figure className="w-full max-w-lg">
+                                <img
+                                  src={diagramUrl}
+                                  alt={toolOutputId(part, 'alt') ?? 'Diagram'}
+                                  className="w-full rounded-lg border bg-white"
+                                  loading="lazy"
+                                />
+                                <figcaption className="mt-1">
+                                  <ImageCredit
+                                    credit={toolOutputValue(part, 'credit')}
+                                  />
+                                </figcaption>
+                              </figure>
                             )}
                             {mindMapId && (
                               <ChatMindMapCard

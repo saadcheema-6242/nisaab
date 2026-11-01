@@ -362,6 +362,10 @@ class QuizQuestion(Base):
     # {"a": {"path": ..., "alt": ...}}. A dict rather than four columns so an
     # option without a picture simply is not there.
     option_images: Mapped[dict] = mapped_column(JSON, nullable=True)
+    # Who the picture belongs to, when it came from an openly licensed source:
+    # author, licence, licence_url, source_url, source. Naming them is a
+    # condition of the licence, so it travels with the picture everywhere.
+    image_credit: Mapped[dict] = mapped_column(JSON, nullable=True)
     difficulty_level: Mapped[str] = mapped_column(
         String, default="medium"
     )  # easy, medium, hard
