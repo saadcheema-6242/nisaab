@@ -1,6 +1,8 @@
 """CRUD service for managing chats."""
 
+import base64
 import json
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import contextmanager, suppress
 from datetime import datetime
@@ -25,6 +27,11 @@ from edu_db.session import get_session_factory
 from langchain_core.messages import AIMessage, BaseMessage, ToolCall, ToolMessage
 from sqlalchemy.orm import joinedload, load_only
 
+from edu_core.chat_attachments import (
+    ATTACHMENT_LINK_SECONDS,
+    is_picture,
+    pictures_to_carry,
+)
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.chats import (
     ChatDetailDto,
@@ -40,6 +47,10 @@ from edu_core.schemas.chats import (
 
 
 # Constants for part types and tool names
+logger = logging.getLogger(__name__)
+
+
+
 class PartType:
     """Constants for message part types."""
 
@@ -108,6 +119,21 @@ class ChatService:
 
         self.chatbot = make_chatbot(llm=self.llm_streaming)
 
+    def _signed(self, path: str) -> str:
+        """A link the browser can load the attached file from, for a while.
+
+        An attachment that was stored before signing existed, or that is
+        already a full URL, is passed through untouched. A failure here only
+        costs the picture, so it must not take the conversation with it.
+        """
+        if not path or "://" in path or self.storage_service is None:
+            return path
+        try:
+            return self.storage_service.signed_url(path, expires_in=ATTACHMENT_LINK_SECONDS)
+        except Exception:  # noqa: BLE001 - the message still reads without it
+            logger.warning("Could not sign a link for attachment %s", path)
+            return ""
+
     def _db_part_to_dto(
         self, db_part: DBChatMessagePart
     ) -> Union[TextPartDto, FilePartDto, ToolCallPartDto, SourceDocumentPartDto]:
@@ -126,12 +152,16 @@ class ChatService:
                 order=db_part.order,
             )
         elif db_part.part_type == PartType.FILE:
-            # Return blob URL as-is from database (should be full blob URL without SAS token)
+            # The database keeps the storage path, because a signed link
+            # expires and a chat is reopened weeks later. The browser is given
+            # a fresh link each time it loads the conversation.
+            stored = db_part.file_url or ""
             return FilePartDto(
                 id=db_part.id,
                 file_name=db_part.file_name,
                 file_type=db_part.file_type,
-                file_url=db_part.file_url or "",
+                file_url=self._signed(stored),
+                file_path=stored or None,
                 order=db_part.order,
             )
         elif db_part.part_type == PartType.TOOL_CALL:
@@ -261,6 +291,14 @@ class ChatService:
         Returns:
             List of dictionaries with role and content for LLM
         """
+        # Which attached pictures to send this turn. Every one of them is sent
+        # again with every message - that is what lets the tutor still answer
+        # about a picture several questions later - so a long conversation
+        # would otherwise carry a growing pile of images on every single turn.
+        # The most recent ones are the ones being talked about, so a chat that
+        # goes past the limit loses the oldest.
+        carried = pictures_to_carry(messages)
+
         llm_chat_history = []
         for msg_dto in messages:
             content_parts = []
@@ -278,12 +316,52 @@ class ChatService:
                     if note:
                         content_parts.append({"type": "text", "text": note})
                 elif isinstance(part_dto, FilePartDto):
-                    # Filter out file parts - file upload is not supported
-                    continue
+                    if id(part_dto) not in carried:
+                        continue
+                    picture = self._image_content(part_dto)
+                    if picture is not None:
+                        content_parts.append(picture)
+                    else:
+                        # Say it was there. Silence would let the tutor answer
+                        # as though the student had sent nothing at all.
+                        content_parts.append({
+                            "type": "text",
+                            "text": f"(the student attached {part_dto.file_name})",
+                        })
             if not content_parts:
                 continue
             llm_chat_history.append({"role": msg_dto.role, "content": content_parts})
         return llm_chat_history
+
+    def _image_content(self, part: FilePartDto) -> dict[str, Any] | None:
+        """One attached picture, as model input, or None if it cannot be sent.
+
+        Every picture still in budget is sent with every turn. That is what
+        makes the tutor still know a picture several messages after it was
+        attached, instead of forgetting it the moment the next question is
+        asked - but it is also paid for on each of those turns, which is why
+        only the most recent few are carried.
+
+        A picture that cannot be read is skipped rather than raised: losing the
+        image is much better than losing the conversation.
+        """
+        if self.storage_service is None:
+            return None
+        if not is_picture(part):
+            return None
+        stored = part.file_path or part.file_url
+        if not stored or "://" in stored:
+            return None
+        try:
+            raw = self.storage_service.download(stored)
+        except Exception:  # noqa: BLE001 - a missing picture must not break the chat
+            logger.warning("Could not read attached picture %s", stored)
+            return None
+        encoded = base64.b64encode(raw).decode()
+        return {
+            "type": "image_url",
+            "image_url": {"url": f"data:{part.file_type};base64,{encoded}"},
+        }
 
     @staticmethod
     def _practice_note(part: ToolCallPartDto) -> str | None:
@@ -502,8 +580,32 @@ class ChatService:
         for part_index, part_dict in enumerate(parts):
             part_type = part_dict.get("type", PartType.TEXT)
 
-            # Filter out file parts - file upload is not supported
             if part_type == PartType.FILE:
+                # A picture the student attached. It is saved with the message,
+                # not as a project document, so it stays part of this
+                # conversation and is never searchable as a "source". Only the
+                # storage path is kept; the link to show it is signed on the
+                # way out, because a signed link expires.
+                db_part = DBChatMessagePart(
+                    id=str(uuid4()),
+                    message_id=user_message_db.id,
+                    part_type=part_type,
+                    order=part_index,
+                )
+                db_part.file_name = part_dict.get("file_name", "attachment")
+                db_part.file_type = part_dict.get("file_type", "")
+                db_part.file_url = part_dict.get("file_url", "")
+                db.add(db_part)
+                user_parts_dto.append(
+                    FilePartDto(
+                        id=db_part.id,
+                        file_name=db_part.file_name,
+                        file_type=db_part.file_type,
+                        file_url=self._signed(db_part.file_url),
+                        file_path=db_part.file_url or None,
+                        order=part_index,
+                    )
+                )
                 continue
 
             if part_type == PartType.TEXT:

@@ -219,6 +219,18 @@ def document_path(project_id: str, document_id: str, file_type: str) -> str:
     return f"{project_id}/{document_id}"
 
 
+def chat_upload_path(project_id: str, upload_id: str, file_type: str) -> str:
+    """Storage path of a picture a student attached in the chat.
+
+    Kept apart from the documents a student uploads deliberately. A picture in
+    a conversation belongs to that conversation: it is shown there, sent to the
+    tutor with every later message so the tutor still knows it, and never
+    indexed, so it can never come back as a "source" for an unrelated question.
+    """
+    suffix = f".{file_type}" if file_type and file_type != "unknown" else ""
+    return f"{project_id}/chat/{upload_id}{suffix}"
+
+
 def document_contents_path(project_id: str, document_id: str) -> str:
     """Storage path of a document's extracted markdown text."""
     return f"{project_id}/{document_id}.contents.txt"

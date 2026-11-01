@@ -240,22 +240,40 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           .filter(
                             (part): part is FilePartDto => part.type === 'file',
                           )
-                          .map((part: FilePartDto, i: number) => (
-                            <div
-                              key={`${message.id}-file-${i}`}
-                              className="flex items-center gap-2 p-2 bg-muted rounded"
-                            >
-                              <span className="text-sm">{part.file_name}</span>
+                          .map((part: FilePartDto, i: number) =>
+                            // A picture is shown, not named: the student sent
+                            // it to be looked at, and the tutor can see it too.
+                            part.file_type?.startsWith('image/') ? (
                               <a
+                                key={`${message.id}-file-${i}`}
                                 href={part.file_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-primary hover:underline"
+                                className="block"
                               >
-                                View
+                                <img
+                                  src={part.file_url}
+                                  alt={part.file_name}
+                                  className="max-h-64 w-auto rounded-lg border"
+                                />
                               </a>
-                            </div>
-                          ))}
+                            ) : (
+                              <div
+                                key={`${message.id}-file-${i}`}
+                                className="flex items-center gap-2 p-2 bg-muted rounded"
+                              >
+                                <span className="text-sm">{part.file_name}</span>
+                                <a
+                                  href={part.file_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-primary hover:underline"
+                                >
+                                  View
+                                </a>
+                              </div>
+                            ),
+                          )}
                       </div>
                     </MessageContent>
                   </Message>

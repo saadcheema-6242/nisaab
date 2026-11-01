@@ -4,8 +4,6 @@
 import base64
 import binascii
 from collections.abc import AsyncGenerator
-from datetime import datetime
-from typing import Any
 from uuid import uuid4
 
 from auth import get_current_user
@@ -21,6 +19,7 @@ from edu_core.schemas.chats import (
     ChatDto,
 )
 from edu_core.schemas.users import UserDto
+from edu_core.storage import chat_upload_path
 from edu_core.services import ChatService, UsageService
 from edu_core.services.document_upload import DocumentUploadService
 from edu_queue.schemas import DocumentProcessingData, QueueTaskMessage, TaskType
@@ -121,50 +120,77 @@ async def delete_chat(
 
 
 
+def _decode(part: FilePart, allowed: set[str]) -> tuple[str, str, bytes]:
+    """The name, extension and bytes of one attached file, or a 400."""
+    name = (part.filename or "attachment").strip()
+    suffix = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    if suffix not in allowed:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot read '{name}'. Supported: {', '.join(sorted(allowed))}.",
+        )
+
+    encoded = part.url.split(",", 1)[-1] if "," in part.url else part.url
+    try:
+        content = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as error:
+        raise HTTPException(
+            status_code=400, detail=f"Could not read '{name}': {error}"
+        ) from error
+    if not content:
+        raise HTTPException(status_code=400, detail=f"'{name}' is empty")
+    return name, suffix, content
+
+
 def _store_attachments(
     parts: list,
     project_id: str,
     user_id: str,
     upload_service: DocumentUploadService,
     queue_service: QueueService,
-) -> list[str]:
-    """Put every attached file into the project and queue it for indexing.
+) -> tuple[list[dict], list[str]]:
+    """Store what the student attached, each kind the way it is actually useful.
 
-    A file arrives as a data URL in the message. It becomes an ordinary project
-    document, so the tutor can find it with the same search it uses for
-    anything else the student has uploaded. Returns the filenames stored.
+    A picture and a textbook chapter are not the same thing, and treating them
+    alike is what made the tutor answer about the wrong image: the picture was
+    thrown away, the tutor was told to go and search instead, and the search
+    returned the nearest unrelated file.
 
-    Indexing runs in the worker and takes a few seconds, so a question asked in
-    the same breath may arrive before the text is searchable. The note added to
-    the message says so, rather than letting the tutor claim it read something
-    it has not.
+    So:
+
+    - A picture is kept with the conversation and handed to the tutor itself,
+      which can see it. It is never indexed, so it can never be returned as a
+      "source" for some later, unrelated question.
+    - Anything else - a PDF, a DOCX, a text file - is too big to re-send every
+      turn, so it becomes a project document and is indexed, and the tutor
+      reads it with the same search it uses for everything else.
+
+    Returns the pictures (as parts to pass to the tutor) and the filenames of
+    the documents being indexed.
     """
     allowed = {t.lower() for t in upload_service.get_supported_types()}
-    stored: list[str] = []
+    images: list[dict] = []
+    documents: list[str] = []
 
     for part in parts:
         if not isinstance(part, FilePart):
             continue
-        name = (part.filename or "attachment").strip()
-        suffix = name.rsplit(".", 1)[-1].lower() if "." in name else ""
-        if suffix not in allowed:
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    f"Cannot read '{name}'. Supported: "
-                    f"{', '.join(sorted(allowed))}."
-                ),
-            )
+        name, suffix, content = _decode(part, allowed)
 
-        encoded = part.url.split(",", 1)[-1] if "," in part.url else part.url
-        try:
-            content = base64.b64decode(encoded, validate=True)
-        except (binascii.Error, ValueError) as error:
-            raise HTTPException(
-                status_code=400, detail=f"Could not read '{name}': {error}"
-            ) from error
-        if not content:
-            raise HTTPException(status_code=400, detail=f"'{name}' is empty")
+        if (part.media_type or "").lower().startswith("image/"):
+            path = chat_upload_path(project_id, str(uuid4()), suffix)
+            upload_service.storage.upload(
+                path, content, content_type=part.media_type
+            )
+            images.append(
+                {
+                    "type": "file",
+                    "file_name": name,
+                    "file_type": part.media_type,
+                    "file_url": path,
+                }
+            )
+            continue
 
         document_id = upload_service.upload_document(
             file_content=content,
@@ -182,9 +208,9 @@ def _store_attachments(
                 ),
             )
         )
-        stored.append(name)
+        documents.append(name)
 
-    return stored
+    return images, documents
 
 
 @router.post(
@@ -209,20 +235,27 @@ async def send_streaming_message(
     # Check usage limit before processing
     usage_service.check_and_increment(user_id, "chat_message")
 
-    attached = _store_attachments(
+    images, documents = _store_attachments(
         body.parts, project_id, user_id, upload_service, queue_service
     )
-    for _ in attached:
+    for _ in documents:
         usage_service.check_and_increment(user_id, "document_upload")
 
-    # The file itself is now a project document; the message keeps the text and
-    # a note of what came with it, rather than a megabyte of base64.
+    # The pictures travel with the message - the tutor can see them, so it is
+    # never told to go and look for them. The base64 does not: each picture is
+    # in storage now, and its path is what the message carries.
     processed_parts = [
         part.model_dump() for part in body.parts if not isinstance(part, FilePart)
     ]
-    if attached:
+    processed_parts.extend(images)
+
+    if documents:
+        # A document is read and indexed by the worker, which takes a few
+        # seconds, so a question asked in the same breath can arrive before the
+        # text is searchable. Saying so stops the tutor claiming it has read
+        # something it has not.
         note = (
-            f"(attached: {', '.join(attached)} - now being read and indexed; "
+            f"(attached: {', '.join(documents)} - now being read and indexed; "
             "search the project documents to look inside, and say it is still "
             "being read if nothing is found yet)"
         )

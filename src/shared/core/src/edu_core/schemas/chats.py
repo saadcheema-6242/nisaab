@@ -22,6 +22,12 @@ class FilePartDto(ChatMessagePartDto):
     file_name: str = Field(..., description="Original name of the uploaded file")
     file_type: str = Field(..., description="MIME type of the uploaded file")
     file_url: str = Field(..., description="URL to access the uploaded file")
+    # Where the file actually lives. file_url is a signed link for the browser
+    # and expires; this does not, so it is what the server reads the file back
+    # by when the picture is sent to the tutor again on a later message.
+    file_path: str | None = Field(
+        None, description="Storage path of the file, for server-side reads"
+    )
 
 
 class ToolCallPartDto(ChatMessagePartDto):
