@@ -71,6 +71,9 @@ class NoteProcessor(BaseProcessor[NoteGenerationData]):
             topic=payload.get("topic"),
             custom_instructions=payload.get("custom_instructions"),
             note_id=payload["note_id"],
+            difficulty=payload.get("difficulty"),
+            page_range=payload.get("page_range"),
+            include_keywords=bool(payload.get("include_keywords")),
         )
 
         console.log(f"Populated note {payload['note_id']}")

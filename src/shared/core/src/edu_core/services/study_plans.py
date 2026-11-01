@@ -5,7 +5,14 @@ from uuid import uuid4
 
 from edu_ai.agents.utils import generate
 from edu_ai.llm import create_chat_model, is_llm_configured
-from edu_db.models import CurriculumDomain, PracticeRecord, Project, Slo, StudyPlan
+from edu_db.models import (
+    CurriculumDomain,
+    PracticeRecord,
+    Project,
+    Slo,
+    StudentProfile,
+    StudyPlan,
+)
 from edu_db.session import get_session_factory
 from pydantic import BaseModel, Field
 
@@ -17,6 +24,27 @@ from edu_core.schemas.study_plans import StudyPlanDto
 logger = logging.getLogger(__name__)
 
 
+class PlannedStep(BaseModel):
+    """How one sitting is described to the student."""
+
+    title: str = Field(
+        description=(
+            "One line naming the real content, not the outcome code: "
+            '"Work through projectile questions where the angle is given", '
+            'not "Practise P-11-B-07". Under about 90 characters.'
+        )
+    )
+    tasks: list[str] = Field(
+        description=(
+            "Two to four concrete things to do in this sitting, each naming "
+            "real content and a quantity where one makes sense: 'Attempt 8 "
+            "MCQs on inclined planes', 'Write out the derivation of range "
+            "twice from memory'. Never 'practise questions' or 'revise the "
+            "topic' - a student cannot act on those."
+        )
+    )
+
+
 class PlanWords(BaseModel):
     """What the model is asked for: wording, never the schedule itself."""
 
@@ -26,10 +54,16 @@ class PlanWords(BaseModel):
             "numbers given. Do not invent figures."
         )
     )
-    titles: list[str] = Field(
+    day_themes: list[str] = Field(
         description=(
-            "One line per planned step, in the same order as the steps given, "
-            "saying what to do. Same number of lines as steps."
+            "What each day is about, in order from day one: a short name like "
+            "'Resolving forces on a slope'. One per day, same number as days."
+        )
+    )
+    steps: list[PlannedStep] = Field(
+        description=(
+            "One entry per planned step, in the same order as the steps given, "
+            "and the same number of them."
         )
     )
     encouragement: str = Field(description="One or two encouraging sentences.")
@@ -111,6 +145,7 @@ class StudyPlanService:
         topic: str | None = None,
         days: int | None = None,
         hours_per_day: float | None = None,
+        specifications: str | None = None,
     ) -> StudyPlanDto:
         """Build a study plan and save it.
 
@@ -122,6 +157,9 @@ class StudyPlanService:
                 covers everything the student is weak at, across the syllabus.
             days: How long the plan runs for.
             hours_per_day: How long they can study each day.
+            specifications: Anything else the student said about how they
+                study - "only at weekends", "school until 2pm", "exams in
+                three weeks". Shapes the wording, never the arithmetic.
 
         The arithmetic - which outcomes, how long each, which day - is decided
         in edu_core.study_plan_blueprint from the student's practice records.
@@ -136,6 +174,7 @@ class StudyPlanService:
             if project is None:
                 raise NotFoundError(f"Project {project_id} not found")
             language_code = project.language_code or "en"
+            exam_year = self._exam_year(db, user_id)
 
             syllabus, scope = self._syllabus(db, project, topic)
             records = [
@@ -159,7 +198,9 @@ class StudyPlanService:
         )
 
         described = {slo["code"]: slo.get("description", "") for slo in syllabus}
-        content = await self._phrase(plan, described, language_code, project_id)
+        content = await self._phrase(
+            plan, described, language_code, project_id, specifications, exam_year
+        )
 
         with self._get_db_session() as db:
             study_plan = StudyPlan(
@@ -236,6 +277,8 @@ class StudyPlanService:
         described: dict[str, str],
         language_code: str,
         project_id: str,
+        specifications: str | None = None,
+        exam_year: int | None = None,
     ) -> StudyPlanContent:
         """Put the plan into words the student will read.
 
@@ -257,11 +300,13 @@ class StudyPlanService:
             )
             for item in plan.items
         ]
+        day_count = max((item.day for item in plan.items), default=0)
         focus = list(dict.fromkeys(item.slo_code for item in plan.items))
         plain = StudyPlanContent(
             analysis=blueprint.summarise(plan),
             focus_areas=focus,
             items=items,
+            day_themes=[],
             encouragement="",
         )
         if not self.llm or not items:
@@ -287,20 +332,68 @@ class StudyPlanService:
                 language_code=language_code,
                 document_content=blueprint.summarise(plan),
                 plan_lines="\n".join(lines),
+                day_count=day_count,
+                specifications=(specifications or "").strip(),
+                exam_note=self._exam_note(exam_year),
             )
         except Exception:  # noqa: BLE001 - the schedule is the valuable part
             logger.warning("Could not phrase the study plan; using plain wording")
             return plain
 
-        # Titles come back in order; anything missing keeps its plain wording.
-        for item, title in zip(items, written.titles or []):
-            if title and title.strip():
-                item.title = title.strip()
+        # Wording comes back in order; anything missing keeps its plain form.
+        for item, step in zip(items, written.steps or []):
+            if step.title and step.title.strip():
+                item.title = step.title.strip()
+            item.tasks = [t.strip() for t in (step.tasks or []) if t and t.strip()]
         return StudyPlanContent(
             analysis=written.analysis or plain.analysis,
             focus_areas=focus,
             items=items,
+            day_themes=[t.strip() for t in (written.day_themes or []) if t.strip()],
             encouragement=written.encouragement or "",
+        )
+
+    @staticmethod
+    def _exam_year(db, user_id: str) -> int | None:
+        """The year the student sits the board exam, if they said."""
+        profile = (
+            db.query(StudentProfile)
+            .filter(StudentProfile.user_id == user_id)
+            .first()
+        )
+        return getattr(profile, "exam_year", None) if profile else None
+
+    @staticmethod
+    def _exam_note(exam_year: int | None) -> str:
+        """How close the board exam is, as a fact for the model to plan around.
+
+        A plan written three weeks before the paper should look nothing like
+        one written in August. The model cannot know which it is, so it is
+        told rather than left to guess from the date.
+        """
+        if not exam_year:
+            return ""
+        # FBISE sits the annual HSSC papers in the second quarter
+        exam_month = datetime(int(exam_year), 5, 1)
+        months = (exam_month.year - datetime.now().year) * 12 + (
+            exam_month.month - datetime.now().month
+        )
+        if months < 0:
+            return ""
+        if months <= 1:
+            return (
+                "The board exam is within about a month. This is revision: "
+                "past papers, timed practice and the outcomes they still lose "
+                "marks on. Do not start anything new."
+            )
+        if months <= 3:
+            return (
+                f"The board exam is about {months} months away. Mix revision "
+                "with finishing the syllabus, and start timed practice."
+            )
+        return (
+            f"The board exam is about {months} months away. There is time to "
+            "build understanding properly before revision starts."
         )
 
     @staticmethod

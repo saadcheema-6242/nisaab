@@ -75,6 +75,15 @@ const Step = ({ item }: { item: StudyPlanItem }) => (
         .join(' · ')}
     </div>
     <div style={{ fontSize: 13, lineHeight: 1.5 }}>{item.title}</div>
+    {item.tasks.length > 0 && (
+      <ul style={{ margin: '3px 0 0', paddingLeft: 16 }}>
+        {item.tasks.map((task, i) => (
+          <li key={i} style={{ fontSize: 11, color: '#374151', lineHeight: 1.45 }}>
+            {task}
+          </li>
+        ))}
+      </ul>
+    )}
     {item.target && (
       <div style={{ fontSize: 11, color: BRAND.green, fontWeight: 600, marginTop: 2 }}>
         {item.target}
@@ -92,6 +101,7 @@ export async function exportStudyPlanPdf(
   const items = plan.content.items ?? []
   const total = items.reduce((sum, item) => sum + item.minutes, 0)
   const days = byDay(items)
+  const themes = plan.content.day_themes ?? []
 
   const { element, cleanup } = await renderOffscreen(
     <div style={{ padding: 8, fontSize: 13, lineHeight: 1.5 }}>
@@ -118,6 +128,7 @@ export async function exportStudyPlanPdf(
             }}
           >
             Day {day}
+            {themes[day - 1] ? ` - ${themes[day - 1]}` : ''}
           </div>
           {steps.map((item, index) => (
             <Step key={`${day}-${index}`} item={item} />
@@ -166,8 +177,13 @@ export async function exportStudyPlanDocx(
     blocks.push({ kind: 'paragraph', text: plan.content.analysis })
   }
 
+  const themes = plan.content.day_themes ?? []
   for (const { day, steps } of days) {
-    blocks.push({ kind: 'heading', text: `Day ${day}`, level: 2 })
+    blocks.push({
+      kind: 'heading',
+      text: themes[day - 1] ? `Day ${day} - ${themes[day - 1]}` : `Day ${day}`,
+      level: 2,
+    })
     blocks.push({
       kind: 'table',
       head: ['Outcome', 'What', 'Time', 'To do'],
@@ -175,9 +191,15 @@ export async function exportStudyPlanDocx(
         item.slo_code,
         ACTION_LABELS[item.action] ?? item.action,
         spell(item.minutes),
-        [item.title, item.target ? `Target: ${item.target}` : '']
+        // One cell, several lines: the step, then the tasks, then the target.
+        // The writer turns each newline into a real Word line break.
+        [
+          item.title,
+          ...item.tasks.map((task) => `- ${task}`),
+          item.target ? `Target: ${item.target}` : '',
+        ]
           .filter(Boolean)
-          .join(' — '),
+          .join('\n'),
       ]),
     })
   }

@@ -31,6 +31,15 @@ class StudyPlanItem(BaseModel):
     )
     title: str = Field(description="What to do, in one line a student can follow")
     minutes: int = Field(description="How long to spend on it")
+    tasks: list[str] = Field(
+        default_factory=list,
+        description=(
+            "The concrete things to do in this sitting, two to four of them, "
+            "each naming real content and a quantity: 'Attempt 8 MCQs on "
+            "inclined planes', not 'practise questions'. A single line told a "
+            "student what to open, not what to do once it was open."
+        ),
+    )
     target: str | None = Field(
         None, description="What counts as done, e.g. 'Score 70% or more'"
     )
@@ -54,6 +63,14 @@ class StudyPlanContent(BaseModel):
     )
     items: list[StudyPlanItem] = Field(
         default_factory=list, description="The plan itself: what to do, when."
+    )
+    day_themes: list[str] = Field(
+        default_factory=list,
+        description=(
+            "What each day is about, in order from day one. A day with a name "
+            "reads as a lesson; a day that is only a list of steps reads as a "
+            "chore."
+        ),
     )
     encouragement: str = Field("", description="Encouraging closing message.")
 

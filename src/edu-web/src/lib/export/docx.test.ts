@@ -121,6 +121,19 @@ describe('buildDocx', () => {
     expect(xml).toContain('Score 70% or more')
   })
 
+  it('turns a newline into a real line break, not run-together text', async () => {
+    const zip = await open([
+      { kind: 'paragraph', text: 'first line\nsecond line' },
+    ])
+    const xml = await zip.file('word/document.xml')!.async('string')
+    expect(xml).toContain('<w:br/>')
+    expect(xml).toContain('first line')
+    expect(xml).toContain('second line')
+    // and they must be separate runs of text, not one joined string
+    expect(xml).not.toContain('first linesecond line')
+    expect(parse(xml).error).toBeNull()
+  })
+
   it('sets A4, so the plan does not print on US Letter', async () => {
     const zip = await open()
     const xml = await zip.file('word/document.xml')!.async('string')

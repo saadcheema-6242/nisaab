@@ -35,12 +35,29 @@ def increment_usage(usage, user_id: str, feature: str) -> None:
 
 @tool(
     "note_create",
-    description="Create a study note (markdown) from project documents. Provide a short topic plus optional custom instructions (length, structure, focus, etc.).",
+    description=(
+        "Write the student a full set of study notes on a topic, saved to "
+        "their Study tab. "
+        "topic is what the notes are about. "
+        "custom_instructions is anything the student asked for in their own "
+        "words - shorter, only one section, more examples, exam-focused - and "
+        "it overrides the defaults, so pass it through rather than tidying it. "
+        "difficulty is Beginner, Intermediate or Advanced: Beginner defines "
+        "every term first, Advanced goes into derivations and exceptions. Ask "
+        "which they want if the topic is new to them and they have not said. "
+        "page_range limits the notes to pages of their own uploaded document, "
+        "e.g. '12-20'. "
+        "include_keywords adds a key-terms list at the end, which is what a "
+        "student wants the night before a paper."
+    ),
 )
 async def create_note(
     topic: str,
     runtime: ToolRuntime[ChatbotContext],
     custom_instructions: str | None = None,
+    difficulty: str = "",
+    page_range: str = "",
+    include_keywords: bool = False,
 ) -> str:
     """Create a study note from project documents."""
     ctx = runtime.context
@@ -62,6 +79,9 @@ async def create_note(
         topic=topic,
         custom_instructions=custom_instructions,
         user_id=ctx.user_id,
+        difficulty=difficulty.strip() or None,
+        page_range=page_range.strip() or None,
+        include_keywords=include_keywords,
     )
 
     return json.dumps(

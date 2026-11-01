@@ -171,7 +171,10 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
                           <h3 className="text-lg font-semibold mb-2">
                             Your plan
                           </h3>
-                          <StudyPlanSteps items={displayedPlan.content.items} />
+                          <StudyPlanSteps
+                            items={displayedPlan.content.items}
+                            dayThemes={displayedPlan.content.day_themes}
+                          />
                         </div>
                       ) : (
                         <>

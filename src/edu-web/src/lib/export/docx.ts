@@ -41,11 +41,21 @@ const GREY = '6B7280'
 const run = (
   text: string,
   { bold = false, italic = false, size = 20, color = '' } = {},
-) =>
-  `<w:r><w:rPr>${bold ? '<w:b/>' : ''}${italic ? '<w:i/>' : ''}` +
-  `<w:sz w:val="${size}"/>${color ? `<w:color w:val="${color}"/>` : ''}</w:rPr>` +
-  // xml:space keeps the leading and trailing spaces Word would otherwise trim
-  `<w:t xml:space="preserve">${esc(text)}</w:t></w:r>`
+) => {
+  // A newline inside <w:t> is not a line break in Word - it is whitespace, and
+  // the lines run together. Each one has to become an explicit <w:br/>, which
+  // is what makes a cell able to hold a step and its tasks.
+  const lines = String(text ?? '').split('\n')
+  const body = lines
+    // xml:space keeps the leading and trailing spaces Word would otherwise trim
+    .map((line) => `<w:t xml:space="preserve">${esc(line)}</w:t>`)
+    .join('<w:br/>')
+  return (
+    `<w:r><w:rPr>${bold ? '<w:b/>' : ''}${italic ? '<w:i/>' : ''}` +
+    `<w:sz w:val="${size}"/>${color ? `<w:color w:val="${color}"/>` : ''}</w:rPr>` +
+    `${body}</w:r>`
+  )
+}
 
 const para = (inner: string, { spaceAfter = 120 } = {}) =>
   `<w:p><w:pPr><w:spacing w:after="${spaceAfter}"/></w:pPr>${inner}</w:p>`

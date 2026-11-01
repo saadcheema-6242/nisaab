@@ -10,12 +10,28 @@ from edu_ai.agents.topic_graph_agent import TopicGraphAgent
 from edu_ai.agents.utils import generate, get_db_session
 
 
+class NoteKeyword(BaseModel):
+    """One term worth remembering, and what it means."""
+
+    term: str = Field(..., description="The term, as it appears in the paper")
+    explanation: str = Field(
+        ..., description="One sentence a student could repeat in an exam"
+    )
+
+
 class NoteGenerationResult(BaseModel):
     """Model for note generation result."""
 
     title: str = Field(..., description="The title of the note")
     description: str = Field(..., description="The description of the note")
     content: str = Field(..., description="The content of the note")
+    keywords: list[NoteKeyword] = Field(
+        default_factory=list,
+        description=(
+            "The key terms from these notes, each with a one-sentence "
+            "explanation. Only when keywords were asked for; otherwise empty."
+        ),
+    )
 
 
 class NoteAgent:
@@ -38,6 +54,9 @@ class NoteAgent:
         topic: str | None = None,
         custom_instructions: str | None = None,
         note_id: str | None = None,
+        difficulty: str | None = None,
+        page_range: str | None = None,
+        include_keywords: bool = False,
         **kwargs: Any,
     ) -> Note:
         """Generate note content and save to the database.
@@ -102,12 +121,27 @@ class NoteAgent:
                 topic=generation_topic or "",
                 language_code=language_code,
                 custom_instructions=custom_instructions,
+                difficulty=difficulty,
+                page_range=page_range,
+                include_keywords=include_keywords,
+                subject=getattr(
+                    getattr(project, "grade_subject", None), "name", ""
+                )
+                or "",
             )
 
             # Update note with generated content
             note.title = result.title
             note.description = result.description
             note.content = result.content
+            if result.keywords:
+                # Appended rather than stored apart: a note is one document a
+                # student reads, prints and revises from, and a key-terms list
+                # kept somewhere else is a list nobody opens.
+                lines = "\n".join(
+                    f"- **{k.term}** - {k.explanation}" for k in result.keywords
+                )
+                note.content = f"{result.content}\n\n## Key terms\n\n{lines}\n"
             note.updated_at = datetime.now()
 
             db.flush()

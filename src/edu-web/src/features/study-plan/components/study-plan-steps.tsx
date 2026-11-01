@@ -28,8 +28,11 @@ export const spellMinutes = (minutes: number) => {
  */
 export const StudyPlanSteps = ({
   items,
+  dayThemes = [],
 }: {
   items: ReadonlyArray<StudyPlanItem>
+  /** What each day is about, in order from day one. */
+  dayThemes?: ReadonlyArray<string>
 }) => {
   const days = [...new Set(items.map((item) => item.day))].sort((a, b) => a - b)
 
@@ -39,6 +42,9 @@ export const StudyPlanSteps = ({
         <li key={day} className="space-y-1.5">
           <div className="text-xs font-semibold text-muted-foreground">
             Day {day}
+            {dayThemes[day - 1] && (
+              <span className="text-foreground"> · {dayThemes[day - 1]}</span>
+            )}
           </div>
           <ul className="space-y-1.5">
             {items
@@ -69,6 +75,18 @@ export const StudyPlanSteps = ({
                   <MathText className="mt-1 text-sm leading-relaxed">
                     {item.title}
                   </MathText>
+                  {/* The part a student actually works through. Without it
+                      the step says what to open, not what to do. */}
+                  {item.tasks.length > 0 && (
+                    <ul className="mt-1 space-y-0.5">
+                      {item.tasks.map((task, i) => (
+                        <li key={i} className="flex gap-1.5 text-xs text-muted-foreground">
+                          <span aria-hidden>·</span>
+                          <MathText className="leading-relaxed">{task}</MathText>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   {item.target && (
                     <div className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                       {item.target}

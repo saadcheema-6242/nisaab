@@ -33,6 +33,10 @@ from edu_ai.chatbot.context import ChatbotContext
         "days is how long the plan runs; hours_per_day is how long they can "
         "study each day. Ask for whichever of those they have not said, rather "
         "than inventing one. "
+        "specifications is anything else they said about how they study, in "
+        "their own words - 'only at weekends', 'school until 2pm', 'exams in "
+        "three weeks', 'I want more past papers'. Pass it through; do not "
+        "tidy it up. "
         "Every step names the outcome it practises and what counts as done, so "
         "do not describe the plan again afterwards - it is shown to them."
     ),
@@ -43,6 +47,7 @@ async def make_study_plan(
     topic: str = "",
     days: int = 0,
     hours_per_day: float = 0.0,
+    specifications: str = "",
 ) -> str:
     """Build the plan and hand it back for the chat to show."""
     # Not metered yet. Every other generated thing has its own column on the
@@ -58,6 +63,7 @@ async def make_study_plan(
             topic=topic.strip() or None,
             days=days or None,
             hours_per_day=hours_per_day or None,
+            specifications=specifications.strip() or None,
         )
     except Exception as error:  # noqa: BLE001 - a failed plan must not end the chat
         print(f"make_study_plan failed: {type(error).__name__}: {error}")

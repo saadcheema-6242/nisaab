@@ -49,6 +49,12 @@ class NoteGenerationData(TypedDict):
     topic: NotRequired[str]
     custom_instructions: NotRequired[str]
     user_id: NotRequired[str]
+    # How deep to pitch the notes, which pages of the student's own document
+    # to stay inside, and whether to end with a key-terms list. All optional,
+    # so a message queued before they existed still processes.
+    difficulty: NotRequired[str]
+    page_range: NotRequired[str]
+    include_keywords: NotRequired[bool]
 
 
 class MindMapGenerationData(TypedDict):

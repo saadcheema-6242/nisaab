@@ -2567,6 +2567,13 @@ export class StudyPlanItem extends S.Class<StudyPlanItem>('StudyPlanItem')({
    */
   minutes: S.Int,
   /**
+   * The concrete things to do in this sitting, two to four of them.
+   */
+  tasks: S.optionalWith(S.Array(S.String), {
+    nullable: true,
+    default: () => [],
+  }),
+  /**
    * What counts as done, e.g. 'Score 70% or more'
    */
   target: S.optionalWith(S.String, { nullable: true }),
@@ -2595,6 +2602,13 @@ export class StudyPlanContent extends S.Class<StudyPlanContent>(
    * The plan itself: what to do, when.
    */
   items: S.optionalWith(S.Array(StudyPlanItem), {
+    nullable: true,
+    default: () => [],
+  }),
+  /**
+   * What each day is about, in order from day one.
+   */
+  day_themes: S.optionalWith(S.Array(S.String), {
     nullable: true,
     default: () => [],
   }),

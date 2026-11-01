@@ -76,7 +76,7 @@ export const ChatStudyPlanCard = ({
         </MathText>
       )}
 
-      <StudyPlanSteps items={items} />
+      <StudyPlanSteps items={items} dayThemes={plan.content.day_themes} />
 
       {plan.content.encouragement && (
         <MathText className="text-sm leading-relaxed">

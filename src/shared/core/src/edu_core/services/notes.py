@@ -212,6 +212,9 @@ class NoteService:
         topic: str | None = None,
         custom_instructions: str | None = None,
         user_id: str | None = None,
+        difficulty: str | None = None,
+        page_range: str | None = None,
+        include_keywords: bool = False,
     ) -> NoteDto:
         """Queue a note generation request to be processed by a worker.
 
@@ -245,6 +248,12 @@ class NoteService:
             task_data["custom_instructions"] = custom_instructions
         if user_id:
             task_data["user_id"] = user_id
+        if difficulty:
+            task_data["difficulty"] = difficulty
+        if page_range:
+            task_data["page_range"] = page_range
+        if include_keywords:
+            task_data["include_keywords"] = True
 
         # Send message to queue
         task_message: QueueTaskMessage = {
