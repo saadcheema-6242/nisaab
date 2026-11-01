@@ -807,6 +807,10 @@ export class FilePartDto extends S.Class<FilePartDto>('FilePartDto')({
    * URL to access the uploaded file
    */
   file_url: S.String,
+  /**
+   * Storage path of the file, for server-side reads
+   */
+  file_path: S.optionalWith(S.String, { nullable: true }),
 }) {}
 
 /**
@@ -2531,6 +2535,44 @@ export class WeeklyScheduleDay extends S.Class<WeeklyScheduleDay>(
 /**
  * Schema for structured study plan content.
  */
+/**
+ * One thing to do, on one day, against one FBISE outcome.
+ */
+export class StudyPlanItem extends S.Class<StudyPlanItem>('StudyPlanItem')({
+  /**
+   * Which day of the plan, starting at 1
+   */
+  day: S.Int,
+  /**
+   * The FBISE outcome, e.g. P-11-B-05
+   */
+  slo_code: S.String,
+  /**
+   * What the student does
+   */
+  action: S.Literal('read', 'flashcards', 'quiz', 'srq', 'paper'),
+  /**
+   * What to do, in one line a student can follow
+   */
+  title: S.String,
+  /**
+   * How long to spend on it
+   */
+  minutes: S.Int,
+  /**
+   * What counts as done, e.g. 'Score 70% or more'
+   */
+  target: S.optionalWith(S.String, { nullable: true }),
+  /**
+   * The syllabus domain this outcome sits in
+   */
+  domain: S.optionalWith(S.String, { nullable: true, default: () => '' }),
+  /**
+   * Why it is here: struggling, weak, unknown or solid
+   */
+  standing: S.optionalWith(S.String, { nullable: true, default: () => '' }),
+}) {}
+
 export class StudyPlanContent extends S.Class<StudyPlanContent>(
   'StudyPlanContent',
 )({
@@ -2543,13 +2585,26 @@ export class StudyPlanContent extends S.Class<StudyPlanContent>(
    */
   focus_areas: S.Array(S.String),
   /**
-   * Specific recommended actions/resources.
+   * The plan itself: what to do, when.
    */
-  action_items: S.Array(StudyResource),
+  items: S.optionalWith(S.Array(StudyPlanItem), {
+    nullable: true,
+    default: () => [],
+  }),
   /**
-   * Suggested weekly schedule.
+   * Specific recommended actions/resources. Written by earlier versions.
    */
-  schedule: S.Array(WeeklyScheduleDay),
+  action_items: S.optionalWith(S.Array(StudyResource), {
+    nullable: true,
+    default: () => [],
+  }),
+  /**
+   * Suggested weekly schedule. Written by earlier versions.
+   */
+  schedule: S.optionalWith(S.Array(WeeklyScheduleDay), {
+    nullable: true,
+    default: () => [],
+  }),
   /**
    * Encouraging closing message.
    */

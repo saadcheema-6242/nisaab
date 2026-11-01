@@ -5,14 +5,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { deleteProjectAtom, projectAtom } from '@/data-acess/project'
-import { cn } from '@/lib/utils'
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { PencilIcon, TrashIcon } from 'lucide-react'
 import { useCreateProjectDialog } from './upsert-project-dialog'
 
@@ -80,15 +79,8 @@ export const ProjectHeader = ({ projectId }: ProjectHeaderProps) => {
       </div>
       {Result.isSuccess(projectResult) && (
         <div className="flex items-center gap-2 px-3">
-          <Link
-            to="/dashboard/p/$projectId/study-plan"
-            params={{
-              projectId,
-            }}
-            className={cn(buttonVariants({ variant: 'ghost' }))}
-          >
-            Study Plan
-          </Link>
+          {/* A study plan is asked for in the chat now, where the student can
+              say what to plan around and how long they have. */}
           <Button
             variant="ghost"
             size="icon"

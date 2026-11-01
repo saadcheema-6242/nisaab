@@ -22,6 +22,7 @@ export const CHAT_TOOLS = [
   { name: 'generate_image', label: 'Image maker' },
   { name: 'practice_flashcards', label: 'Flashcards' },
   { name: 'practice_mind_map', label: 'Mind map' },
+  { name: 'make_study_plan', label: 'Study plan' },
 ] as const
 
 type Props = {

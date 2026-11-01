@@ -6,6 +6,7 @@ import { ChatFlashcardsCard } from './components/chat-flashcards-card'
 import { ChatMindMapCard } from './components/chat-mind-map-card'
 import { ChatQuizCard } from './components/chat-quiz-card'
 import { ToolStatus, toolOutputId, toolRunning } from './components/tool-status'
+import { ChatStudyPlanCard } from './components/chat-study-plan-card'
 import { ThinkingIndicator } from './components/thinking-indicator'
 import { chatLang, stageLabel } from './chat-labels'
 import { ChatPaperCard } from './components/chat-paper-card'
@@ -431,6 +432,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           part.tool_name === 'generate_image'
                             ? toolOutputId(part, 'image_url')
                             : null
+                        const studyPlanId =
+                          part.tool_name === 'make_study_plan'
+                            ? toolOutputId(part, 'study_plan_id')
+                            : null
                         return (
                           <div
                             key={`${message.id}-part-${i}`}
@@ -446,7 +451,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 !mindMapId &&
                                 !paperId &&
                                 !setup &&
-                                !imageUrl
+                                !imageUrl &&
+                                !studyPlanId
                               }
                             />
                             {setup && (
@@ -456,6 +462,12 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 onAsk={(text) =>
                                   handleSubmit({ text, files: [] })
                                 }
+                              />
+                            )}
+                            {studyPlanId && (
+                              <ChatStudyPlanCard
+                                projectId={projectId}
+                                studyPlanId={studyPlanId}
                               />
                             )}
                             {quizId && (

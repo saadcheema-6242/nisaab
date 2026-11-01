@@ -12,6 +12,7 @@ from edu_ai.tools.note import tools as note_tools
 from edu_ai.tools.practice import tools as practice_tools
 from edu_ai.tools.quiz import tools as quiz_tools
 from edu_ai.tools.rag import tools as rag_tools
+from edu_ai.tools.study_plan import tools as study_plan_tools
 from edu_ai.tools.syllabus import tools as syllabus_tools
 from edu_ai.tools.web import tools as web_tools
 from langchain.agents import create_agent
@@ -161,6 +162,7 @@ def make_chatbot(
         *quiz_tools,
         *note_tools,
         *mind_map_tools,
+        *study_plan_tools,
     ]
 
     if web_search is False:

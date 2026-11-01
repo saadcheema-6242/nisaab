@@ -20,6 +20,7 @@ import {
 } from '@/data-acess/study-plan'
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
+import { StudyPlanSteps } from './components/study-plan-steps'
 import {
   BrainCircuit,
   CalendarDays,
@@ -160,85 +161,99 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
                         </ol>
                       </div>
 
-                      {/* Action Items */}
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Action Items
-                        </h3>
-                        <div className="grid gap-2">
-                          {displayedPlan.content.action_items.map((item, i) => {
-                            const isQuiz = item.type === 'quiz'
-                            return (
-                              <Link
-                                key={i}
-                                to={
-                                  isQuiz
-                                    ? '/dashboard/p/$projectId/q/$quizId'
-                                    : '/dashboard/p/$projectId/f/$flashcardGroupId'
-                                }
-                                params={
-                                  isQuiz
-                                    ? {
-                                        projectId,
-                                        quizId: item.parent_id || item.id,
-                                      }
-                                    : {
-                                        projectId,
-                                        flashcardGroupId:
-                                          item.parent_id || item.id,
-                                      }
-                                }
-                                className="block"
-                              >
-                                <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 hover:bg-muted transition-colors border">
-                                  {isQuiz ? (
-                                    <BrainCircuit className="h-4 w-4 text-blue-500" />
-                                  ) : (
-                                    <Sparkles className="h-4 w-4 text-amber-500" />
-                                  )}
-                                  <div className="flex-1">
-                                    <div className="font-medium text-sm">
-                                      {item.title}
-                                    </div>
-                                    {item.description && (
-                                      <div className="text-xs text-muted-foreground">
-                                        {item.description}
+                      {/* The plan itself. Plans written before it became a
+                          day-by-day schedule have no items, so those still
+                          show the shape they were written in. */}
+                      {displayedPlan.content.items.length > 0 ? (
+                        <div>
+                          <h3 className="text-lg font-semibold mb-2">
+                            Your plan
+                          </h3>
+                          <StudyPlanSteps items={displayedPlan.content.items} />
+                        </div>
+                      ) : (
+                        <>
+                          {/* Action Items */}
+                          <div>
+                            <h3 className="text-lg font-semibold mb-2">
+                              Action Items
+                            </h3>
+                            <div className="grid gap-2">
+                              {displayedPlan.content.action_items.map((item, i) => {
+                                const isQuiz = item.type === 'quiz'
+                                return (
+                                  <Link
+                                    key={i}
+                                    to={
+                                      isQuiz
+                                        ? '/dashboard/p/$projectId/q/$quizId'
+                                        : '/dashboard/p/$projectId/f/$flashcardGroupId'
+                                    }
+                                    params={
+                                      isQuiz
+                                        ? {
+                                            projectId,
+                                            quizId: item.parent_id || item.id,
+                                          }
+                                        : {
+                                            projectId,
+                                            flashcardGroupId:
+                                              item.parent_id || item.id,
+                                          }
+                                    }
+                                    className="block"
+                                  >
+                                    <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 hover:bg-muted transition-colors border">
+                                      {isQuiz ? (
+                                        <BrainCircuit className="h-4 w-4 text-blue-500" />
+                                      ) : (
+                                        <Sparkles className="h-4 w-4 text-amber-500" />
+                                      )}
+                                      <div className="flex-1">
+                                        <div className="font-medium text-sm">
+                                          {item.title}
+                                        </div>
+                                        {item.description && (
+                                          <div className="text-xs text-muted-foreground">
+                                            {item.description}
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                  <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground opacity-70 border px-1.5 py-0.5 rounded">
-                                    {item.type}
-                                  </span>
-                                </div>
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Schedule */}
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Weekly Schedule
-                        </h3>
-                        <div className="space-y-4">
-                          {displayedPlan.content.schedule.map((day, i) => (
-                            <div
-                              key={i}
-                              className="border-l-2 border-primary/20 pl-4 py-1"
-                            >
-                              <div className="font-medium text-sm">
-                                {day.day}
-                              </div>
-                              <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
-                                {day.tasks.map((task, j) => (
-                                  <li key={j}>{task}</li>
-                                ))}
-                              </ul>
+                                      <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground opacity-70 border px-1.5 py-0.5 rounded">
+                                        {item.type}
+                                      </span>
+                                    </div>
+                                  </Link>
+                                )
+                              })}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
+
+                          {/* Schedule */}
+                          <div>
+                            <h3 className="text-lg font-semibold mb-2">
+                              Weekly Schedule
+                            </h3>
+                            <div className="space-y-4">
+                              {displayedPlan.content.schedule.map((day, i) => (
+                                <div
+                                  key={i}
+                                  className="border-l-2 border-primary/20 pl-4 py-1"
+                                >
+                                  <div className="font-medium text-sm">
+                                    {day.day}
+                                  </div>
+                                  <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
+                                    {day.tasks.map((task, j) => (
+                                      <li key={j}>{task}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
 
                       {/* Encouragement */}
                       <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
