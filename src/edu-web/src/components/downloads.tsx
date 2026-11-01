@@ -6,6 +6,8 @@ import { mindMapAtom } from '@/data-acess/mind-map'
 import { noteAtom } from '@/data-acess/note'
 import { paperAtom } from '@/data-acess/paper'
 import { projectAtom } from '@/data-acess/project'
+import { latestStudyPlanRemoteAtom } from '@/data-acess/study-plan'
+import { currentUserAtom } from '@/data-acess/auth'
 import {
   publishQuizAsFormAtom,
   quizAtom,
@@ -215,6 +217,48 @@ export const NoteDownload = ({
           label: 'PDF',
           run: async () =>
             (await import('@/lib/export/note')).exportNotePdf(note.title, note.content, projectName),
+        },
+      ]}
+    />
+  )
+}
+
+export const StudyPlanDownload = ({
+  projectId,
+  ...menu
+}: { projectId: string } & MenuProps) => {
+  const result = useAtomValue(latestStudyPlanRemoteAtom(projectId))
+  const userResult = useAtomValue(currentUserAtom)
+  const projectName = useProjectName(projectId)
+  if (!Result.isSuccess(result) || !result.value) return null
+  const plan = result.value
+  // Plans written before the plan became a day-by-day schedule have no steps,
+  // so there is nothing worth exporting from them.
+  if ((plan.content.items ?? []).length === 0) return null
+  const studentName = Result.isSuccess(userResult)
+    ? userResult.value.name || undefined
+    : undefined
+  return (
+    <DownloadMenu
+      {...menu}
+      options={[
+        {
+          label: 'PDF',
+          run: async () =>
+            (await import('@/lib/export/study-plan')).exportStudyPlanPdf(
+              plan,
+              projectName,
+              studentName,
+            ),
+        },
+        {
+          label: 'Word (.docx)',
+          run: async () =>
+            (await import('@/lib/export/study-plan')).exportStudyPlanDocx(
+              plan,
+              projectName,
+              studentName,
+            ),
         },
       ]}
     />

@@ -21,6 +21,7 @@ import {
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { StudyPlanSteps } from './components/study-plan-steps'
+import { StudyPlanDownload } from '@/components/downloads'
 import {
   BrainCircuit,
   CalendarDays,
@@ -83,6 +84,7 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <StudyPlanDownload projectId={projectId} />
               {historyPlans.length > 0 && (
                 <Select
                   value={selectedPlanId || 'latest'}

@@ -2,6 +2,7 @@ import { Result, useAtomRefresh, useAtomValue } from '@effect-atom/atom-react'
 import { CalendarDaysIcon, Loader2Icon } from 'lucide-react'
 import { useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { StudyPlanDownload } from '@/components/downloads'
 import { latestStudyPlanRemoteAtom } from '@/data-acess/study-plan'
 import { MathText } from '@/components/math-text'
 import {
@@ -62,10 +63,11 @@ export const ChatStudyPlanCard = ({
         <span className="font-semibold">Your study plan</span>
       </div>
 
-      <div className="flex flex-wrap gap-2 text-xs">
+      <div className="flex flex-wrap items-center gap-2 text-xs">
         <Badge variant="secondary">{days.length} days</Badge>
         <Badge variant="secondary">{items.length} steps</Badge>
         <Badge variant="secondary">{spellMinutes(total)} in total</Badge>
+        <StudyPlanDownload projectId={projectId} iconOnly />
       </div>
 
       {plan.content.analysis && (
