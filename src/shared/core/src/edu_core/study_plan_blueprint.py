@@ -1,18 +1,27 @@
 """How a study plan divides a student's time: what to revise, for how long, when.
 
-Two ways in, and they answer different questions:
+Two ways in, and they answer different questions. A student is asked which one
+they mean, because guessing from whether they happened to name a topic got it
+wrong often enough to matter:
 
-- A custom topic ("projectile motion", "Thermodynamics", "P-11-B-05"). The plan
-  stays inside that topic, and within it the outcomes the student is worst at
-  come first. A topic a student has never practised is still plannable, which
-  is the point - most custom topics have no practice history at all.
-- No topic. The plan covers everything the student is weak at, across the whole
-  syllabus, ordered by how badly they are doing.
+- A topic ("projectile motion", "Thermodynamics", "data science"). The plan
+  teaches that topic from the syllabus, in syllabus order, the way it would be
+  taught in class. Practice records are not consulted and never mentioned: the
+  student asked for a plan on a topic, not for a report on how they are doing.
+- Weak topics. The plan covers everything the student's own practice says they
+  are weak at, across the whole syllabus, worst first, and says so plainly.
 
 Weakness is measured, never guessed: every practice attempt is recorded against
 the FBISE outcome it assessed, so an outcome's accuracy is a fact in the
 database. An outcome with no attempts is not weak, it is unknown, and the two
 are planned for differently - you drill the first and introduce the second.
+
+A plan also has to fill the time it was asked for. The first version walked the
+outcomes once, gave each one its ladder, and stopped - so a topic holding four
+outcomes produced the same four hours of work whether the student asked for a
+week or for a month, and "thirty days, five hours a day" came back as one day.
+Learning something once is not a month of study, so the passes after the first
+revisit the same outcomes with harder work: practise, drill, then sit a paper.
 
 The arithmetic lives here, as pure functions of the practice records and the
 syllabus. A model is asked only to phrase the result. Left to decide the
@@ -22,6 +31,10 @@ wrote a paper with no recall questions in it.
 """
 
 from dataclasses import dataclass, field
+
+# How a plan was asked for. TOPIC teaches a named topic; WEAK drills whatever
+# the practice records say is going wrong.
+TOPIC, WEAK = "topic", "weak"
 
 # An outcome at or below this accuracy is one the student is getting wrong
 # often enough to need drilling rather than revision.
@@ -41,17 +54,35 @@ ACTIONS = {
     "flashcards": {"minutes": 10, "target": "Get every card right twice"},
     "quiz": {"minutes": 20, "target": "Score 70% or more"},
     "srq": {"minutes": 25, "target": "Score 3 of 4 marks or better"},
+    "paper": {"minutes": 45, "target": "Finish it inside the time"},
 }
 
-# The order work is introduced for one outcome. A student who cannot do the
-# questions is sent back to the explanation first; one who nearly has it goes
-# straight to the questions.
+# The order work is introduced for one outcome the student is weak at. A
+# student who cannot do the questions is sent back to the explanation first;
+# one who nearly has it goes straight to the questions.
 LADDERS = {
     "struggling": ["read", "flashcards", "quiz", "srq"],
     "weak": ["flashcards", "quiz", "srq"],
     "unknown": ["read", "quiz", "srq"],
     "solid": ["quiz", "srq"],
 }
+
+# How a topic is met for the first time, whatever the student's record on it.
+# In topic mode every outcome gets this, because the plan is teaching the
+# topic rather than reacting to a score.
+TOPIC_LADDER = ["read", "flashcards", "quiz", "srq"]
+
+# What the passes after the first one do. Covering a topic once is not a month
+# of study, so a long plan comes back to the same outcomes with harder work
+# instead of being padded out or silently shortened. Each pass is a sweep of
+# the whole scope, so an outcome is revisited days after it was learnt rather
+# than twice in an afternoon.
+REVISION_PASSES = [
+    ["quiz", "srq"],
+    ["flashcards", "quiz"],
+    ["srq", "paper"],
+]
+MAX_PASSES = 1 + len(REVISION_PASSES)
 
 MIN_DAYS, MAX_DAYS = 1, 180
 MIN_HOURS, MAX_HOURS = 0.25, 16.0
@@ -92,6 +123,17 @@ class Outcome:
 
 
 @dataclass
+class Sitting:
+    """One piece of work against one outcome, before it has a day."""
+
+    outcome: Outcome
+    action: str
+    # Which sweep of the scope this belongs to: 0 is meeting the outcome,
+    # 1 and up are coming back to it.
+    pass_index: int = 0
+
+
+@dataclass
 class PlanItem:
     """One thing to do on one day, against one outcome."""
 
@@ -103,6 +145,7 @@ class PlanItem:
     title: str = ""
     domain: str = ""
     standing: str = ""
+    pass_index: int = 0
 
 
 @dataclass
@@ -114,6 +157,12 @@ class Plan:
     days: int = 0
     minutes_per_day: int = 0
     scope: str = "whole syllabus"
+    mode: str = WEAK
+    # What the student asked for, kept even when the scope could not fill it,
+    # so the plan can say so rather than quietly delivering something smaller
+    # or padding itself out with work that is not really there.
+    asked_days: int = 0
+    asked_minutes_per_day: int = 0
 
     @property
     def total_minutes(self) -> int:
@@ -122,6 +171,30 @@ class Plan:
     @property
     def weak_codes(self) -> list[str]:
         return [o.code for o in self.outcomes if o.is_weak]
+
+    @property
+    def passes(self) -> int:
+        """How many times the plan goes over the scope."""
+        return max((item.pass_index for item in self.items), default=-1) + 1
+
+    @property
+    def offered_minutes(self) -> int:
+        """All the time the student put on the table."""
+        return self.asked_days * self.asked_minutes_per_day
+
+    @property
+    def is_light(self) -> bool:
+        """Whether the scope held appreciably less work than was asked for.
+
+        A topic holds the work it holds. Asked for a month on one chapter, the
+        plan covers that chapter properly - several times over, harder each
+        time - and then stops, rather than padding itself out with sittings
+        nobody needs. The wording says so plainly, because a plan that quietly
+        comes back a quarter of the length asked for reads as a broken plan.
+        """
+        return bool(self.items) and self.offered_minutes > 0 and (
+            self.total_minutes < self.offered_minutes * 0.75
+        )
 
 
 def clamp_period(days: int | None, hours_per_day: float | None) -> tuple[int, int]:
@@ -177,8 +250,7 @@ def rank(outcomes: list[Outcome], weak_only: bool = False) -> list[Outcome]:
     - they may well be fine - but ahead of the ones already solid.
 
     ``weak_only`` drops everything the student is not actually weak at, which
-    is what a plan over the whole syllabus wants. A plan on one topic keeps
-    them, because a topic with no weaknesses still needs to be revised.
+    is what a plan over their weaknesses wants.
     """
     if weak_only:
         outcomes = [o for o in outcomes if o.is_weak]
@@ -196,61 +268,130 @@ def rank(outcomes: list[Outcome], weak_only: bool = False) -> list[Outcome]:
     return sorted(outcomes, key=key)
 
 
-def share_out(ranked: list[Outcome], total_minutes: int) -> list[tuple[Outcome, list[str]]]:
-    """How far down the list the time reaches, and what to do with each outcome.
+def order_for(outcomes: list[Outcome], mode: str) -> list[Outcome]:
+    """The outcomes a plan will work through, in the order it will work through them.
 
-    Each outcome is given its ladder until the budget runs out. A short plan
-    therefore covers a few outcomes properly rather than every outcome
-    uselessly - ten minutes each on thirty topics teaches nobody anything.
+    In topic mode that is syllabus order, because a topic is taught in
+    sequence - you do not meet the hard outcome of a chapter before its first
+    one just because a quiz went badly. In weak mode it is worst first, and
+    anything the student is not weak at is dropped.
     """
-    out: list[tuple[Outcome, list[str]]] = []
+    if mode == WEAK:
+        return rank(outcomes, weak_only=True)
+    return list(outcomes)
+
+
+def ladder_for(outcome: Outcome, mode: str) -> list[str]:
+    """How this outcome is met the first time.
+
+    In topic mode every outcome gets the same teaching ladder: the plan is
+    covering the topic, not responding to a score, and a student who asked for
+    a plan on data science did not ask to be told what they are bad at.
+    """
+    if mode == TOPIC:
+        return list(TOPIC_LADDER)
+    return list(LADDERS[outcome.standing])
+
+
+def share_out(
+    ranked: list[Outcome], total_minutes: int, mode: str = WEAK
+) -> list[Sitting]:
+    """What to do, in order, for as long as the time lasts.
+
+    The first sweep meets every outcome the time reaches. Each later sweep goes
+    back over the same outcomes with harder work, so a plan asked for over a
+    month is a month of study rather than one afternoon repeated. Without the
+    later sweeps the plan's size came from how many outcomes the topic held and
+    ignored the days and hours entirely.
+
+    A budget too small for even the first sweep covers fewer outcomes properly
+    rather than every outcome uselessly - ten minutes each on thirty topics
+    teaches nobody anything.
+    """
+    out: list[Sitting] = []
     left = total_minutes
-    for outcome in ranked:
-        ladder = LADDERS[outcome.standing]
-        afford: list[str] = []
-        for action in ladder:
-            cost = ACTIONS[action]["minutes"]
-            if cost > left:
-                break
-            afford.append(action)
-            left -= cost
-        if afford:
-            out.append((outcome, afford))
+    for index in range(MAX_PASSES):
         if left < MIN_SESSION_MINUTES:
             break
+        for outcome in ranked:
+            actions = (
+                ladder_for(outcome, mode)
+                if index == 0
+                else REVISION_PASSES[index - 1]
+            )
+            for action in actions:
+                cost = ACTIONS[action]["minutes"]
+                if cost > left:
+                    break
+                out.append(Sitting(outcome=outcome, action=action, pass_index=index))
+                left -= cost
+            if left < MIN_SESSION_MINUTES:
+                break
     return out
 
 
 def lay_out(
-    shared: list[tuple[Outcome, list[str]]], days: int, minutes_per_day: int
+    sittings: list[Sitting], days: int, minutes_per_day: int
 ) -> list[PlanItem]:
-    """Put the work on days, filling each day before starting the next.
+    """Put the work on days, spread rather than packed into the first few.
 
-    An outcome's steps stay in order and stay together where a day has room,
-    because reading about something and then practising it a week later is not
-    the same lesson twice.
+    Filling each day to the brim before starting the next put a four-hour plan
+    entirely on day one and left the other twenty-nine days of a month-long
+    plan empty.
+
+    So each day takes an even share of the work that is still to be placed,
+    over the days still to come, and never more than the student said they
+    could manage. The share is recomputed at every step, which is the part
+    that matters: a day that comes out light makes the days after it heavier,
+    instead of the last day being left to absorb everything that did not fit.
+    A fixed share did exactly that, and put 190 minutes on day ten of a plan
+    the student had capped at 120.
+
+    An outcome's steps stay in order, because reading about something and then
+    practising it a week later is not the same lesson twice.
     """
     items: list[PlanItem] = []
+    if not sittings or days < 1:
+        return items
+
+    costs = [ACTIONS[s.action]["minutes"] for s in sittings]
+    left = sum(costs)
     day = 1
     used = 0
-    for outcome, actions in shared:
-        for action in actions:
-            cost = ACTIONS[action]["minutes"]
-            if used + cost > minutes_per_day and day < days:
-                day += 1
-                used = 0
-            items.append(
-                PlanItem(
-                    day=day,
-                    slo_code=outcome.code,
-                    action=action,
-                    minutes=cost,
-                    target=ACTIONS[action]["target"],
-                    domain=outcome.domain,
-                    standing=outcome.standing,
-                )
+    for index, sitting in enumerate(sittings):
+        cost = costs[index]
+        # The share this day should take: an even cut of the work still to be
+        # placed, over the days still to come, and never past the student's
+        # own limit.
+        share = min(
+            minutes_per_day,
+            max(MIN_SESSION_MINUTES, -(-left // (days - day + 1))),
+        )
+        if used > 0 and used + cost > share and day < days:
+            day += 1
+            used = 0
+        # The last day gets no more than any other. Packing a day greedily
+        # always leaves a little of it unused, so a budget of days times hours
+        # is slightly more work than those days can actually hold, and the
+        # remainder used to land on the final day - 235 minutes of it against
+        # a limit of 120. The honest answer is a plan that ends when the time
+        # is used up, not a last day nobody could sit through.
+        if used > 0 and used + cost > minutes_per_day:
+            break
+        items.append(
+            PlanItem(
+                day=day,
+                slo_code=sitting.outcome.code,
+                action=sitting.action,
+                minutes=cost,
+                target=ACTIONS[sitting.action]["target"],
+                domain=sitting.outcome.domain,
+                standing=sitting.outcome.standing,
+                pass_index=sitting.pass_index,
             )
-            used += cost
+        )
+        used += cost
+        left -= cost
     return items
 
 
@@ -259,34 +400,86 @@ def build(
     records: list[dict],
     days: int | None = None,
     hours_per_day: float | None = None,
-    weak_only: bool = False,
+    mode: str = WEAK,
     scope: str = "whole syllabus",
 ) -> Plan:
-    """The whole plan: who is weak at what, for how long, on which day."""
+    """The whole plan: what to study, for how long, on which day.
+
+    ``mode`` is ``TOPIC`` to teach the outcomes in ``syllabus`` in syllabus
+    order, or ``WEAK`` to drill whatever the records say is going wrong.
+    """
+    mode = TOPIC if mode == TOPIC else WEAK
     period, per_day = clamp_period(days, hours_per_day)
     outcomes = outcomes_from(syllabus, records)
-    ranked = rank(outcomes, weak_only=weak_only)
-    shared = share_out(ranked, period * per_day)
+    ordered = order_for(outcomes, mode)
+    sittings = share_out(ordered, period * per_day, mode)
+    items = lay_out(sittings, period, per_day)
+    if mode == TOPIC:
+        # Why a step is here is a claim about the student's practice. A topic
+        # plan makes no such claim, so it carries none, and nothing downstream
+        # can label a step "Not practised yet" on a topic they never asked to
+        # be assessed on.
+        for item in items:
+            item.standing = ""
+
+    # What the plan actually comes to, which is what the student is told. A
+    # month asked for on one chapter is however many days that chapter really
+    # holds; reporting the thirty days and showing eight of them is the kind
+    # of mismatch that makes a working plan look broken.
+    by_day: dict[int, int] = {}
+    for item in items:
+        by_day[item.day] = by_day.get(item.day, 0) + item.minutes
+
     return Plan(
-        items=lay_out(shared, period, per_day),
-        outcomes=ranked,
-        days=period,
-        minutes_per_day=per_day,
+        items=items,
+        outcomes=ordered,
+        days=max(by_day, default=0) or period,
+        minutes_per_day=max(by_day.values(), default=0) or per_day,
         scope=scope,
+        mode=mode,
+        asked_days=period,
+        asked_minutes_per_day=per_day,
     )
 
 
 def summarise(plan: Plan) -> str:
-    """What the student's practice says, as lines for the model to read.
+    """The facts behind the plan, as lines for the model to read.
 
-    Facts only. The model is asked to phrase a plan, not to work out which
-    outcomes are weak - it has no way of knowing and would guess.
+    Facts only, and only the ones that bear on how this plan was made. A topic
+    plan is told nothing about practice records: mentioning them is what put
+    "there are no practice records on file" at the top of a plan the student
+    asked for on data science, which is not an answer to what they asked.
     """
     lines = [
         f"Scope: {plan.scope}",
-        f"Time: {plan.days} days at {plan.minutes_per_day} minutes a day "
+        f"Time: {plan.days} days at about {plan.minutes_per_day} minutes a day "
         f"({plan.total_minutes} minutes planned)",
     ]
+
+    if plan.mode == TOPIC:
+        lines.append(
+            "This is a plan on a topic the student named. It teaches the "
+            "outcomes below in syllabus order."
+        )
+        if plan.passes > 1:
+            lines.append(
+                f"It goes over the topic {plan.passes} times: first to learn "
+                "it, then with harder practice each time."
+            )
+        lines.append(
+            "Outcomes covered: " + ", ".join(o.code for o in plan.outcomes[:25])
+        )
+        if plan.is_light:
+            lines.append(
+                f"The student offered {plan.asked_days} days at about "
+                f"{plan.asked_minutes_per_day} minutes a day. This topic does "
+                "not hold that much work, and the plan covers it properly "
+                "rather than being padded out. Say this plainly in one "
+                "sentence and offer a wider topic, or the whole syllabus, if "
+                "they want to use all that time."
+            )
+        return "\n".join(lines)
+
     graded = [o for o in plan.outcomes if o.attempts]
     if graded:
         lines.append("Practice so far:")
@@ -300,4 +493,16 @@ def summarise(plan: Plan) -> str:
     fresh = [o for o in plan.outcomes if not o.attempts]
     if fresh:
         lines.append(f"Never practised: {', '.join(o.code for o in fresh[:15])}")
+    if plan.passes > 1:
+        lines.append(
+            f"The plan goes over these outcomes {plan.passes} times, with "
+            "harder practice each time."
+        )
+    if plan.is_light:
+        lines.append(
+            f"The student offered {plan.asked_days} days at about "
+            f"{plan.asked_minutes_per_day} minutes a day, and there is less "
+            "than that to drill. Say so in one sentence, and suggest they use "
+            "the spare time on a topic they name."
+        )
     return "\n".join(lines)

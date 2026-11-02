@@ -2582,9 +2582,15 @@ export class StudyPlanItem extends S.Class<StudyPlanItem>('StudyPlanItem')({
    */
   domain: S.optionalWith(S.String, { nullable: true, default: () => '' }),
   /**
-   * Why it is here: struggling, weak, unknown or solid
+   * Why it is here: struggling, weak, unknown or solid. Empty on a plan the
+   * student asked for on a topic, which never looks at their practice record.
    */
   standing: S.optionalWith(S.String, { nullable: true, default: () => '' }),
+  /**
+   * Which sweep of the scope this step belongs to: 0 is meeting the outcome,
+   * 1 and up are coming back to it later with harder work.
+   */
+  pass_index: S.optionalWith(S.Number, { nullable: true, default: () => 0 }),
 }) {}
 
 export class StudyPlanContent extends S.Class<StudyPlanContent>(

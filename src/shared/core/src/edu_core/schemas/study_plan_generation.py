@@ -45,7 +45,19 @@ class StudyPlanItem(BaseModel):
     )
     domain: str = Field("", description="The syllabus domain this outcome sits in")
     standing: str = Field(
-        "", description="Why it is here: struggling, weak, unknown or solid"
+        "",
+        description=(
+            "Why it is here: struggling, weak, unknown or solid. Empty on a "
+            "plan the student asked for on a topic, which never looks at their "
+            "practice record and so has no such claim to make."
+        ),
+    )
+    pass_index: int = Field(
+        0,
+        description=(
+            "Which sweep of the scope this step belongs to: 0 is meeting the "
+            "outcome, 1 and up are coming back to it later with harder work."
+        ),
     )
 
 

@@ -3,9 +3,15 @@
 Two ways to ask, and they mean different things:
 
 - a topic ("make me a plan for projectile motion, two weeks, 3 hours a day"),
-  which keeps the whole plan inside that topic;
-- no topic ("plan around what I'm weak at"), which covers everything their
-  practice says they are weak at, across the syllabus.
+  which teaches that topic from the syllabus and never looks at the student's
+  practice record;
+- their weak areas ("plan around what I'm bad at"), which covers everything
+  their practice says they are weak at, across the whole syllabus.
+
+Which one is asked rather than guessed. Guessing from whether a topic happened
+to be mentioned produced plans that answered a question the student had not
+asked - a plan on data science that opened by reporting they had no practice
+records, and a plan on "my weak areas" narrowed to one chapter.
 
 Plain typed arguments, not an object: a dict argument becomes a schema with no
 properties and Gemini rejects a function declared that way, which would take
@@ -26,17 +32,31 @@ from edu_ai.chatbot.context import ChatbotContext
         "Write the student a day-by-day study plan and show it in the chat. "
         "Use it when they ask for a plan, a timetable, a revision schedule, or "
         "how to prepare in the time they have left. "
-        "topic is what to plan around - a chapter, a topic or an FBISE outcome "
-        "code - and makes the plan cover only that. Leave topic empty to plan "
-        "around everything they are weak at, which is worked out from their own "
-        "practice results, not guessed. "
+        "\n"
+        "Before calling it, you must know which of two plans they want, and "
+        "ask in one short question if they have not said: a plan on a topic "
+        "they choose, or a plan on the weak areas their practice results show. "
+        "Do not decide for them. "
+        "\n"
+        "mode is 'topic' or 'weak'. "
+        "With mode='topic', topic is what to plan around - a chapter, a topic "
+        "or an FBISE outcome code - and the plan covers that topic only. It "
+        "does not look at their practice results, so never say anything about "
+        "their scores or weak areas in a topic plan. "
+        "With mode='weak', leave topic empty: the plan covers every outcome "
+        "they are weak at, worked out from their own practice results, not "
+        "guessed. "
+        "\n"
         "days is how long the plan runs; hours_per_day is how long they can "
         "study each day. Ask for whichever of those they have not said, rather "
-        "than inventing one. "
+        "than inventing one. A long plan goes over the same outcomes several "
+        "times with harder work, so asking for thirty days gives thirty days. "
+        "\n"
         "specifications is anything else they said about how they study, in "
         "their own words - 'only at weekends', 'school until 2pm', 'exams in "
         "three weeks', 'I want more past papers'. Pass it through; do not "
         "tidy it up. "
+        "\n"
         "Every step names the outcome it practises and what counts as done, so "
         "do not describe the plan again afterwards - it is shown to them."
     ),
@@ -44,6 +64,7 @@ from edu_ai.chatbot.context import ChatbotContext
 )
 async def make_study_plan(
     runtime: ToolRuntime[ChatbotContext],
+    mode: str = "",
     topic: str = "",
     days: int = 0,
     hours_per_day: float = 0.0,
@@ -64,6 +85,7 @@ async def make_study_plan(
             days=days or None,
             hours_per_day=hours_per_day or None,
             specifications=specifications.strip() or None,
+            mode=mode.strip() or None,
         )
     except Exception as error:  # noqa: BLE001 - a failed plan must not end the chat
         print(f"make_study_plan failed: {type(error).__name__}: {error}")
@@ -85,8 +107,9 @@ async def make_study_plan(
                 "study_plan_id": plan.id,
                 "message": (
                     "There was nothing to plan: on this scope the student has no "
-                    "weak outcomes recorded. Suggest they practise first, or ask "
-                    "for a plan on a particular topic."
+                    "weak outcomes recorded. Say so, and offer either a plan on "
+                    "a topic they name or some practice first so there is "
+                    "something to work from."
                 ),
             }
         )

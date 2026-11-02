@@ -64,12 +64,19 @@ export const StudyPlanSteps = ({
                     <span className="text-muted-foreground">
                       {spellMinutes(item.minutes)}
                     </span>
-                    {/* Why this step is in the plan at all */}
+                    {/* Why this step is in the plan at all. A plan on a topic
+                        the student named has not looked at their practice
+                        record, carries no standing, and so says nothing here. */}
                     {item.standing === 'struggling' && (
                       <Badge variant="destructive">Needs work</Badge>
                     )}
                     {item.standing === 'unknown' && (
                       <Badge variant="outline">Not practised yet</Badge>
+                    )}
+                    {/* A long plan comes back to the same outcome with harder
+                        work. Saying so is what stops it reading as a repeat. */}
+                    {item.pass_index > 0 && (
+                      <Badge variant="outline">Revision</Badge>
                     )}
                   </div>
                   <MathText className="mt-1 text-sm leading-relaxed">

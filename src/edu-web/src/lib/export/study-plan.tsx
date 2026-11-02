@@ -70,6 +70,10 @@ const Step = ({ item }: { item: StudyPlanItem }) => (
         ACTION_LABELS[item.action] ?? item.action,
         spell(item.minutes),
         WHY[item.standing ?? ''] ?? '',
+        // A long plan comes back to the same outcome with harder work, so the
+        // printed page has to say which pass a step is, or it reads as a
+        // duplicate the student already did.
+        item.pass_index > 0 ? 'Revision' : '',
       ]
         .filter(Boolean)
         .join(' · ')}

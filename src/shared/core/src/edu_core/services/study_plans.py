@@ -146,6 +146,7 @@ class StudyPlanService:
         days: int | None = None,
         hours_per_day: float | None = None,
         specifications: str | None = None,
+        mode: str | None = None,
     ) -> StudyPlanDto:
         """Build a study plan and save it.
 
@@ -153,22 +154,38 @@ class StudyPlanService:
             user_id: The student.
             project_id: Their subject workspace.
             topic: What to plan around - a domain ("Dynamics"), a topic
-                ("projectile motion") or an outcome code. Without one the plan
-                covers everything the student is weak at, across the syllabus.
+                ("projectile motion") or an outcome code.
             days: How long the plan runs for.
             hours_per_day: How long they can study each day.
             specifications: Anything else the student said about how they
                 study - "only at weekends", "school until 2pm", "exams in
                 three weeks". Shapes the wording, never the arithmetic.
+            mode: "topic" to teach the named topic, "weak" to cover everything
+                their practice says they are weak at. Defaults to whichever
+                the arguments imply.
+
+        The two modes are kept apart deliberately. A topic plan never reads the
+        student's practice records, so it cannot open with "there are no
+        practice records on file" - a true statement, and not an answer to a
+        student who asked for a plan on data science.
 
         The arithmetic - which outcomes, how long each, which day - is decided
-        in edu_core.study_plan_blueprint from the student's practice records.
-        The model is asked only to phrase it, because a model left to choose
-        its own allocation writes a plan that reads well and does not add up.
+        in edu_core.study_plan_blueprint. The model is asked only to phrase it,
+        because a model left to choose its own allocation writes a plan that
+        reads well and does not add up.
 
         Raises:
             NotFoundError: If the project is not an FBISE subject workspace.
         """
+        asked = (mode or "").strip().lower()
+        if asked.startswith("weak"):
+            plan_mode = blueprint.WEAK
+        elif asked.startswith("topic"):
+            plan_mode = blueprint.TOPIC if (topic or "").strip() else blueprint.WEAK
+        else:
+            # Nothing said: a named topic means they want that topic.
+            plan_mode = blueprint.TOPIC if (topic or "").strip() else blueprint.WEAK
+
         with self._get_db_session() as db:
             project = db.query(Project).filter(Project.id == project_id).first()
             if project is None:
@@ -176,24 +193,29 @@ class StudyPlanService:
             language_code = project.language_code or "en"
             exam_year = self._exam_year(db, user_id)
 
-            syllabus, scope = self._syllabus(db, project, topic)
-            records = [
-                {"slo_code": record.slo_code, "was_correct": record.was_correct}
-                for record in db.query(PracticeRecord).filter(
-                    PracticeRecord.user_id == user_id,
-                    PracticeRecord.project_id == project_id,
-                )
-            ]
+            syllabus, scope = self._syllabus(
+                db, project, topic if plan_mode == blueprint.TOPIC else None
+            )
+            # A topic plan is not asked about the student's record and is not
+            # told it. A weak-topics plan is nothing but their record.
+            records = (
+                []
+                if plan_mode == blueprint.TOPIC
+                else [
+                    {"slo_code": record.slo_code, "was_correct": record.was_correct}
+                    for record in db.query(PracticeRecord).filter(
+                        PracticeRecord.user_id == user_id,
+                        PracticeRecord.project_id == project_id,
+                    )
+                ]
+            )
 
         plan = blueprint.build(
             syllabus=syllabus,
             records=records,
             days=days,
             hours_per_day=hours_per_day,
-            # A plan over the whole syllabus is about weaknesses. A plan on one
-            # topic covers that topic whether or not they are weak at it, which
-            # is what the student asked for by naming it.
-            weak_only=topic is None,
+            mode=plan_mode,
             scope=scope,
         )
 
@@ -221,9 +243,15 @@ class StudyPlanService:
         """The outcomes a plan may draw on, and what to call that scope.
 
         A named topic narrows the plan to a domain where the name matches one,
-        otherwise to whatever the syllabus search ranks against it. A topic
-        that matches nothing falls back to the whole syllabus rather than
-        producing an empty plan - a student who mistypes a chapter name is
+        otherwise to whatever the syllabus search ranks against it, widened to
+        the whole content area each match sits in. The widening matters: the
+        search demands a match on most of the query, so "data science" found
+        one outcome out of the syllabus and the plan that came back was three
+        steps long whatever period the student asked for. A topic is a chapter
+        of work, not a single line of it, so the plan covers the chapter.
+
+        A topic that matches nothing falls back to the whole syllabus rather
+        than producing an empty plan - a student who mistypes a chapter name is
         better served by a general plan than by nothing at all.
         """
         if not project.grade_subject_id:
@@ -244,7 +272,12 @@ class StudyPlanService:
             raise NotFoundError("This subject's syllabus map is not available yet")
 
         everything = [
-            {"code": slo.code, "description": slo.description, "domain": domain.name}
+            {
+                "code": slo.code,
+                "description": slo.description,
+                "domain": domain.name,
+                "area": slo.content_area or "",
+            }
             for slo, domain in rows
         ]
         wanted = (topic or "").strip()
@@ -266,7 +299,17 @@ class StudyPlanService:
             match["code"]
             for match in search_slos(project.grade_subject_id, wanted, limit=12)
         }
-        matched = [slo for slo in everything if slo["code"] in codes]
+        # Everything the search found, plus the rest of the content areas those
+        # outcomes belong to. The search is built to pinpoint one outcome for a
+        # citation; a plan needs the chapter around it.
+        areas = {
+            slo["area"] for slo in everything if slo["code"] in codes and slo["area"]
+        }
+        matched = [
+            slo
+            for slo in everything
+            if slo["code"] in codes or (slo["area"] and slo["area"] in areas)
+        ]
         if matched:
             return matched, wanted
         return everything, "whole syllabus"
@@ -297,6 +340,7 @@ class StudyPlanService:
                 target=item.target,
                 domain=item.domain,
                 standing=item.standing,
+                pass_index=item.pass_index,
             )
             for item in plan.items
         ]
@@ -316,9 +360,12 @@ class StudyPlanService:
         for item in plan.items:
             target = f" - {item.target}" if item.target else ""
             said = described.get(item.slo_code, "")[:110]
+            # Which sweep this is, so the wording can tell learning it the
+            # first time apart from coming back to it a fortnight later.
+            sweep = "first time" if item.pass_index == 0 else f"revisit {item.pass_index}"
             lines.append(
                 f"Day {item.day}: {item.slo_code} - {item.action} "
-                f"({item.minutes} min){target} [{said}]"
+                f"({item.minutes} min, {sweep}){target} [{said}]"
             )
 
         try:
@@ -335,6 +382,7 @@ class StudyPlanService:
                 day_count=day_count,
                 specifications=(specifications or "").strip(),
                 exam_note=self._exam_note(exam_year),
+                mode=plan.mode,
             )
         except Exception:  # noqa: BLE001 - the schedule is the valuable part
             logger.warning("Could not phrase the study plan; using plain wording")
@@ -402,13 +450,24 @@ class StudyPlanService:
         said = (description or item.slo_code).strip()
         if len(said) > 90:
             said = said[:87].rstrip() + "..."
-        verbs = {
+        first = {
             "read": f"Read through {said}",
             "flashcards": f"Run the flashcards on {said}",
             "quiz": f"Attempt a quiz on {said}",
             "srq": f"Answer a short question on {said}",
             "paper": f"Sit a practice paper covering {said}",
         }
+        # A revisit is not the same sitting again. Even with no model to phrase
+        # it, the wording has to say which of the two a student is looking at,
+        # or a month-long plan reads as one week printed four times.
+        again = {
+            "read": f"Read {said} again, this time without notes",
+            "flashcards": f"Clear the flashcards on {said} from memory",
+            "quiz": f"Retest yourself on {said}",
+            "srq": f"Write a full short answer on {said}, timed",
+            "paper": f"Sit a timed paper covering {said}",
+        }
+        verbs = again if getattr(item, "pass_index", 0) else first
         return verbs.get(item.action, said)
 
     def _model_to_dto(self, plan: StudyPlan) -> StudyPlanDto:
