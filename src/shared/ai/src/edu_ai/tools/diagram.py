@@ -28,6 +28,21 @@ from edu_ai.chatbot.context import ChatbotContext
 LINK_SECONDS = 7 * 24 * 60 * 60
 
 
+# What to do when the search comes back empty-handed. Plenty of what students
+# ask for is a box-and-arrow schematic - computer architecture, the carbon
+# cycle, a process flow - which draw_figure can draw outright. A student asked
+# for a picture of computer architecture, the search failed, and the tutor
+# wrote four paragraphs of prose instead of drawing the five boxes. It did that
+# because nothing here told it the other tool existed.
+_OR_DRAW = (
+    "If what they asked for is a schematic - boxes and arrows, a process, a "
+    "cycle, a block diagram, a graph - call draw_figure instead and it will be "
+    "drawn. Only fall back to words for something drawn from life, like an "
+    "organ or a leaf section, and then never describe a picture they cannot "
+    "see."
+)
+
+
 def stored_path(project_id: str, key: str) -> str:
     """Where a found diagram lives in the bucket."""
     return f"{project_id}/media/{key}.png"
@@ -70,23 +85,14 @@ async def find_diagram(
         results = search(query, limit=4)
     except SearchError as error:
         print(f"find_diagram search failed: {error}")
-        return json.dumps(
-            {
-                "message": (
-                    f"The diagram search is not working just now ({error}). "
-                    "Explain it in words instead."
-                )
-            }
-        )
+        return json.dumps({"message": f"The picture search is down ({error}). {_OR_DRAW}"})
 
     if not results:
         return json.dumps(
             {
                 "message": (
-                    "No freely licensed diagram was found for that. Say so "
-                    "plainly, explain it in words, and do not describe a "
-                    "picture the student cannot see. A shorter, more ordinary "
-                    "wording sometimes finds one."
+                    "No freely licensed picture was found for that. A shorter, "
+                    "more ordinary wording sometimes finds one. " + _OR_DRAW
                 )
             }
         )

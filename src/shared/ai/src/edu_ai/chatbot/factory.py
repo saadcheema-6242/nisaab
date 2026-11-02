@@ -2,6 +2,8 @@ import json
 from contextlib import suppress
 from typing import Any
 
+from edu_core.tool_loops import calls_since_student, loop_note
+
 from edu_ai.agents.slo_context import language_name
 from edu_ai.chatbot.context import ChatbotContext, ChatbotState
 from edu_ai.prompts.prompts_utils import render_prompt
@@ -26,6 +28,34 @@ from langchain.agents.middleware import (
 from langchain_core.messages import ToolMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.runtime import Runtime
+
+
+@wrap_tool_call
+async def stop_repeating_yourself(request, handler):
+    """Let a repeated tool call run, then tell the model it has enough.
+
+    A student asked for a picture of computer architecture and watched
+    "Checked the FBISE syllabus" five times over three minutes before anything
+    was written. Each of those is a whole round trip to the model, so a loop
+    costs the student the answer, not just the time.
+
+    The result is still returned - cutting it off would lose real information -
+    but a line is added saying the ground has been covered. The model stops
+    because it is told it already has what it went looking for, which is both
+    true and the only thing that ends a loop from inside.
+
+    The counting is in edu_core.tool_loops, where it can be checked without an
+    agent, a model or a framework to stand it up.
+    """
+    result = await handler(request)
+    if not isinstance(result, ToolMessage):
+        return result
+    with suppress(Exception):
+        name = getattr(request.tool, "name", "")
+        calls = calls_since_student(request.state.get("messages"), name)
+        if note := loop_note(name, calls):
+            result.content = f"{result.content}\n\n{note}"
+    return result
 
 
 @wrap_tool_call
@@ -177,6 +207,7 @@ def make_chatbot(
         model=llm,
         tools=tools,
         middleware=[
+            stop_repeating_yourself,
             capture_sources_from_rag,
             dynamic_system_prompt,
             ensure_sources_in_stream,
