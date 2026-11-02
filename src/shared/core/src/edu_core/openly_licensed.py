@@ -22,6 +22,7 @@ each needs its own licence handling and none is as broad.
 """
 
 import html
+import os
 import re
 from dataclasses import dataclass
 
@@ -34,8 +35,16 @@ COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 # export rasterises anyway.
 THUMB_WIDTH = 1024
 TIMEOUT = 20.0
-# Identify ourselves, as Wikimedia's API etiquette requires
-USER_AGENT = "NISAAB/1.0 (FBISE FSc study app; openly licensed media search)"
+# Identify ourselves, as Wikimedia's User-Agent policy requires. The contact
+# is not decoration: a string that merely describes the client, with no way to
+# reach whoever runs it, is refused with a 403 and no explanation beyond the
+# status. Every search from Cloud Run came back 403 - ten out of ten - until
+# this carried a URL.
+#
+# Settable, because the right contact is wherever this is actually deployed,
+# and a stale address is worse than none.
+CONTACT = os.getenv("MEDIA_SEARCH_CONTACT", "https://edu-web-yvi5hrqfda-el.a.run.app")
+USER_AGENT = f"NISAAB/1.0 ({CONTACT}; FBISE FSc study app) httpx"
 
 # Licences that allow reuse in a product. Commons reports these in a machine
 # readable field, so this is a comparison and not an interpretation.
@@ -218,7 +227,15 @@ def search(query: str, limit: int = 6, timeout: float = TIMEOUT) -> list[Found]:
     except httpx.HTTPError as error:
         raise SearchError(f"Wikimedia Commons could not be reached: {error}") from error
     if reply.status_code != 200:
-        raise SearchError(f"Wikimedia Commons refused the search ({reply.status_code})")
+        # Carry Wikimedia's own words. A bare 403 cost a day of guessing at
+        # firewalls and cloud IP ranges when the reply itself says which rule
+        # was broken - the policy is enforced with an explanation, and throwing
+        # it away was the real mistake.
+        said = " ".join((reply.text or "").split())[:300]
+        raise SearchError(
+            f"Wikimedia Commons refused the search ({reply.status_code})"
+            + (f": {said}" if said else "")
+        )
 
     pages = (reply.json().get("query") or {}).get("pages") or {}
     return parse(pages, limit)

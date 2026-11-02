@@ -187,6 +187,43 @@ check(
 )
 
 print()
+print("we identify ourselves the way Wikimedia's policy demands")
+# Nothing here checked the User-Agent, and that is how ten out of ten searches
+# came back 403 from Cloud Run with nobody any the wiser. The policy is plain:
+# a string that describes the client but gives no way to reach whoever runs it
+# is refused. Enforcement got stricter, the string did not change, and the
+# tutor quietly stopped being able to show a picture.
+from edu_core.openly_licensed import CONTACT, USER_AGENT  # noqa: E402
+
+check("there is a user agent at all", bool(USER_AGENT.strip()))
+check("it names the app", "NISAAB" in USER_AGENT, USER_AGENT)
+check("it carries a version", "/" in USER_AGENT.split()[0], USER_AGENT)
+check(
+    "it carries a way to contact us, which is the part that was missing",
+    "http" in USER_AGENT or "@" in USER_AGENT,
+    USER_AGENT,
+)
+check("the contact is inside the brackets, where the policy puts it",
+      CONTACT in USER_AGENT.split("(", 1)[-1].split(")", 1)[0], USER_AGENT)
+check("the contact is not a placeholder",
+      not any(bad in CONTACT.lower() for bad in ("example.com", "localhost", "todo", "changeme")),
+      CONTACT)
+check("it is not one of the generic strings that get refused",
+      not any(
+          USER_AGENT.lower().startswith(generic)
+          for generic in ("python", "httpx", "requests", "mozilla", "curl")
+      ),
+      USER_AGENT)
+
+print()
+print("a refusal says why, so the next one is not guesswork")
+source = (ROOT / "src/shared/core/src/edu_core/openly_licensed.py").read_text(
+    encoding="utf-8"
+)
+check("the reply's own text is put into the error", "reply.text" in source)
+check("and it is trimmed rather than dumped whole", "[:300]" in source)
+
+print()
 if failures:
     print(f"{len(failures)} failed: " + ", ".join(failures))
     sys.exit(1)

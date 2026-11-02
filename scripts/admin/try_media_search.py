@@ -37,6 +37,7 @@ QUERIES = [
 def main() -> int:
     queries = sys.argv[1:] or QUERIES
     missing = 0
+    refused = 0
 
     for query in queries:
         print(f"\n{query}")
@@ -45,6 +46,7 @@ def main() -> int:
         except SearchError as error:
             print(f"  search failed: {error}")
             missing += 1
+            refused += 1
             continue
 
         if not results:
@@ -62,6 +64,21 @@ def main() -> int:
     print(f"{len(queries) - missing} of {len(queries)} queries found a usable picture")
     if missing:
         print("Where nothing was found the tutor must say so, not invent a picture.")
+
+    # A probe that returns 0 whatever happens is not a probe. This one printed
+    # ten refusals in a row and the deploy still finished with SUCCESS, so the
+    # one thing it existed to tell us was the one thing it did not.
+    #
+    # A query that simply finds nothing is a fact about Commons, not a fault.
+    # A query the API refuses is a fault, and the run fails on it.
+    if refused:
+        print()
+        print(
+            f"FAILED: Commons refused {refused} of {len(queries)} searches. "
+            "Read the message above - it says which rule was broken. A "
+            "User-Agent with no way to contact us is the usual one."
+        )
+        return 1
     return 0
 
 
