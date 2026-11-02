@@ -111,6 +111,9 @@ const TOOLS: Record<string, Record<ChatLang, ToolLabels> | undefined> = {
       done: 'آپ کے فلیش کارڈز تیار ہیں',
     },
   },
+  // The image maker was removed. Its wording stays, because chats that used
+  // it still have those turns in them and an old picture should keep the
+  // caption it was given rather than falling back to "Making your note...".
   generate_image: {
     en: { running: 'Making your picture…', done: 'Your picture is ready' },
     'ur-Latn': {

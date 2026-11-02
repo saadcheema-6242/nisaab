@@ -20,7 +20,6 @@ export const CHAT_TOOLS = [
   { name: 'practice_quiz', label: 'Quiz maker' },
   { name: 'practice_paper', label: 'Paper maker' },
   { name: 'find_diagram', label: 'Diagram finder' },
-  { name: 'generate_image', label: 'Image maker' },
   { name: 'practice_flashcards', label: 'Flashcards' },
   { name: 'practice_mind_map', label: 'Mind map' },
   { name: 'make_study_plan', label: 'Study plan' },

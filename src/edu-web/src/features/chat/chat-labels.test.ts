@@ -30,7 +30,6 @@ describe('toolLabels', () => {
       'practice_flashcards',
       'practice_mind_map',
       'practice_paper',
-      'generate_image',
     ]
     for (const tool of tools)
       for (const lang of ['en', 'ur-Latn', 'ur'] as const) {

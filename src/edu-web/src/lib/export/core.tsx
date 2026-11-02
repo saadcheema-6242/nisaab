@@ -71,6 +71,15 @@ export async function toCanvas(element: HTMLElement, pixelRatio = 2, fontCss?: s
     backgroundColor: '#ffffff',
     preferredFontFormat: 'woff2',
     fontEmbedCSS: fontCss ?? (await fontsFor(element)),
+    // A capture is sized to the element's own box, which excludes its margins
+    // - but the clone that gets drawn keeps them, so a margin-top pushes the
+    // content down inside a box that did not grow, and exactly that many
+    // pixels fall off the bottom. A study plan's day heading had 10px above it
+    // and lost half its text to this. Margin is space between elements and
+    // means nothing in a picture of one on its own, so it is dropped here;
+    // blocksToPdf measures it from the page and puts the space back between
+    // the images instead.
+    style: { margin: '0' },
   })
 }
 
@@ -94,7 +103,9 @@ export const fileSlug = (text: string) =>
 
 /**
  * Places each block (an element marked data-block) on A4 pages without splitting it;
- * a block marked data-page-break starts a new page. Adds page numbers and the app name.
+ * a block marked data-page-break starts a new page, and one marked
+ * data-keep-with-next is never left stranded at the foot of a page without the
+ * block that follows it. Adds page numbers and the app name.
  */
 export async function blocksToPdf(
   root: HTMLElement,
@@ -116,11 +127,27 @@ export async function blocksToPdf(
   // long documents are drawn at a lower resolution: still sharp in print, and
   // the difference is what makes the download finish at all.
   const scale = blocks.length > 60 ? 1.25 : blocks.length > 25 ? 1.5 : 2
-  for (const block of blocks) {
+  // A block is drawn at contentWidth whatever its size on screen, so any
+  // measurement of it converts the same way its own capture does.
+  const mmPerPx = (block: HTMLElement) =>
+    contentWidth / (block.getBoundingClientRect().width || contentWidth)
+  const spanOf = (block: HTMLElement) =>
+    block.getBoundingClientRect().height * mmPerPx(block)
+
+  for (const [index, block] of blocks.entries()) {
+    const css = getComputedStyle(block)
+    const perPx = mmPerPx(block)
+    // Put back the space the capture dropped, so blocks are not all flush
+    const before = (parseFloat(css.marginTop) || 0) * perPx
+    const after = (parseFloat(css.marginBottom) || 0) * perPx
+
     if (block.dataset.pageBreak !== undefined && y > margin) {
       pdf.addPage()
       y = margin
+    } else if (y > margin) {
+      y += before
     }
+
     const canvas = await toCanvas(block, scale, fontCss)
     let height = (canvas.height * contentWidth) / canvas.width
     let width = contentWidth
@@ -129,12 +156,18 @@ export async function blocksToPdf(
       width = (contentWidth * (bottom - margin)) / height
       height = bottom - margin
     }
-    if (y + height > bottom && y > margin) {
+    // A heading alone at the foot of a page, with its first step overleaf,
+    // reads as a day with nothing in it. Measured from the page rather than
+    // captured, because capturing the next block here would draw it twice.
+    const next = blocks[index + 1]
+    const held =
+      block.dataset.keepWithNext !== undefined && next ? spanOf(next) + gap : 0
+    if (y + height + held > bottom && y > margin) {
       pdf.addPage()
       y = margin
     }
     pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, y, width, height)
-    y += height + gap
+    y += height + Math.max(gap, after)
     // Drop the bitmap rather than holding ninety of them, and hand the browser
     // a turn so the tab does not freeze while a long paper is drawn.
     canvas.width = 0

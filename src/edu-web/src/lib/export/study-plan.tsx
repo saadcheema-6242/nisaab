@@ -124,6 +124,7 @@ export async function exportStudyPlanPdf(
         <div key={day}>
           <div
             data-block
+            data-keep-with-next
             style={{
               fontSize: 13,
               fontWeight: 700,

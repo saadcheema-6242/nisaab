@@ -5,7 +5,6 @@ from typing import Any
 from edu_ai.agents.slo_context import language_name
 from edu_ai.chatbot.context import ChatbotContext, ChatbotState
 from edu_ai.prompts.prompts_utils import render_prompt
-from edu_ai.tools.image import tools as image_tools
 from edu_ai.tools.diagram import tools as diagram_tools
 from edu_ai.tools.flashcard import tools as flashcard_tools
 from edu_ai.tools.mind_map import tools as mind_map_tools
@@ -158,7 +157,6 @@ def make_chatbot(
         *syllabus_tools,
         *web_tools,
         *practice_tools,
-        *image_tools,
         *diagram_tools,
         *flashcard_tools,
         *quiz_tools,
