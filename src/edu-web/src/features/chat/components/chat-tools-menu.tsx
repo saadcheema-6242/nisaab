@@ -19,7 +19,8 @@ import {
 export const CHAT_TOOLS = [
   { name: 'practice_quiz', label: 'Quiz maker' },
   { name: 'practice_paper', label: 'Paper maker' },
-  { name: 'find_diagram', label: 'Diagram finder' },
+  { name: 'draw_figure', label: 'Graph & diagram' },
+  { name: 'find_diagram', label: 'Picture finder' },
   { name: 'practice_flashcards', label: 'Flashcards' },
   { name: 'practice_mind_map', label: 'Mind map' },
   { name: 'make_study_plan', label: 'Study plan' },

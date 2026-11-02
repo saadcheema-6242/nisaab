@@ -432,12 +432,15 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                           part.tool_name === 'ask_practice_questions'
                             ? parseSetup(part)
                             : null
-                        // A picture the tutor made back when it could. The
-                        // image maker is gone, so nothing new arrives here,
-                        // but chats that used it keep their pictures. The
-                        // link is signed and lasts a week, so an old chat may
-                        // lose it anyway.
+                        // A figure the tutor drew by writing and running the
+                        // code for it, so it needs no credit - unlike a found
+                        // diagram, nobody else drew it. generate_image is
+                        // here too: the image maker is gone and nothing new
+                        // arrives from it, but chats that used it keep their
+                        // pictures. The link is signed and lasts a week, so an
+                        // old chat may lose it anyway.
                         const imageUrl =
+                          part.tool_name === 'draw_figure' ||
                           part.tool_name === 'generate_image'
                             ? toolOutputId(part, 'image_url')
                             : null

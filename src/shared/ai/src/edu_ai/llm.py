@@ -30,6 +30,7 @@ from pathlib import Path
 import httpx
 import openai
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+from edu_core.code_run import CodeRun, read_parts
 from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
@@ -587,36 +588,24 @@ def supports_file_input() -> bool:
     return get_llm_settings().provider in GOOGLE_PROVIDERS and is_llm_configured()
 
 
-def generate_from_file(
-    data: bytes, mime_type: str, prompt: str, task: str = OCR, timeout: float = 600
-) -> str:
-    """Send a file (PDF or image) plus a prompt to Gemini and return the text reply.
+def supports_code_execution() -> bool:
+    """Whether ``run_code`` can be used (Gemini API or Vertex AI)."""
+    return supports_file_input()
 
-    Uses the native ``generateContent`` API, which reads PDFs and images directly.
-    Tries the task model first, then ``LLM_FALLBACK_MODELS`` on rate limits or
-    server errors.
+
+def _native_generate(body: dict, task: str, timeout: float, what: str) -> list[dict]:
+    """Post to Gemini's own ``generateContent`` and return the reply's parts.
+
+    The chat runs on the OpenAI-compatible endpoint, which cannot express
+    Google's own tools - reading a PDF directly, running code in a sandbox - so
+    the few things that need one come through here instead. Keeping it to a
+    separate call is deliberate: the chat's hot path is untouched and pays
+    nothing for a feature most turns never use.
+
+    Tries the task's model, then ``LLM_FALLBACK_MODELS``, on a rate limit or a
+    server error. ``what`` only names the work in the log line.
     """
     settings = get_llm_settings()
-    if not supports_file_input():
-        raise RuntimeError("File input needs LLM_PROVIDER=gemini or vertex")
-
-    body = {
-        "contents": [
-            {
-                "role": "user",
-                "parts": [
-                    {
-                        "inlineData": {
-                            "mimeType": mime_type,
-                            "data": base64.b64encode(data).decode(),
-                        }
-                    },
-                    {"text": prompt},
-                ],
-            }
-        ]
-    }
-
     models = [settings.model_for(task)]
     models += [m for m in settings.fallback_models if m not in models]
     last_error: Exception | None = None
@@ -638,14 +627,69 @@ def generate_from_file(
             last_error = RuntimeError(
                 f"{model}: HTTP {response.status_code} {response.text[:200]}"
             )
-            logger.warning("File generation with %s failed; trying next model", model)
+            logger.warning("%s with %s failed; trying next model", what, model)
             continue
         response.raise_for_status()
 
         candidates = response.json().get("candidates") or []
         if not candidates:
-            raise RuntimeError("Gemini returned no content for the file")
-        parts = candidates[0].get("content", {}).get("parts", [])
-        return "".join(part.get("text", "") for part in parts)
+            raise RuntimeError(f"Gemini returned no content for {what}")
+        return candidates[0].get("content", {}).get("parts", []) or []
 
-    raise RuntimeError(f"All models failed for file input: {last_error}")
+    raise RuntimeError(f"All models failed for {what}: {last_error}")
+
+
+def generate_from_file(
+    data: bytes, mime_type: str, prompt: str, task: str = OCR, timeout: float = 600
+) -> str:
+    """Send a file (PDF or image) plus a prompt to Gemini and return the text reply.
+
+    Uses the native ``generateContent`` API, which reads PDFs and images directly.
+    """
+    if not supports_file_input():
+        raise RuntimeError("File input needs LLM_PROVIDER=gemini or vertex")
+
+    body = {
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "inlineData": {
+                            "mimeType": mime_type,
+                            "data": base64.b64encode(data).decode(),
+                        }
+                    },
+                    {"text": prompt},
+                ],
+            }
+        ]
+    }
+    parts = _native_generate(body, task, timeout, "file input")
+    return "".join(part.get("text", "") for part in parts)
+
+
+def run_code(prompt: str, task: str = GENERATION, timeout: float = 180) -> CodeRun:
+    """Ask the model to work something out by writing Python, and run it.
+
+    Google runs the sandbox, not us: no network, thirty seconds, numpy, pandas
+    and matplotlib already there and nothing installable. That is the whole
+    reason to use it rather than execute a model's code ourselves - there is no
+    sandbox of our own to get wrong, and no package to keep patched.
+
+    A figure drawn in there comes back as PNG bytes in the reply. A model
+    cannot draw a correct labelled graph; it can write the ten lines of
+    matplotlib that do, and then the geometry is Python's rather than a guess.
+
+    The call is made with temperature 0. Drawing is not a creative task, and
+    the same question twice should give the same figure.
+    """
+    if not supports_code_execution():
+        raise RuntimeError("Code execution needs LLM_PROVIDER=gemini or vertex")
+
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "tools": [{"codeExecution": {}}],
+        "generationConfig": {"temperature": 0},
+    }
+    return read_parts(_native_generate(body, task, timeout, "code execution"))

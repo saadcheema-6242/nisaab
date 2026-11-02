@@ -111,6 +111,20 @@ const TOOLS: Record<string, Record<ChatLang, ToolLabels> | undefined> = {
       done: 'آپ کے فلیش کارڈز تیار ہیں',
     },
   },
+  // Drawing takes longer than the other tools - the code has to be written
+  // and then run - so the student is told what is happening rather than left
+  // on "Thinking...".
+  draw_figure: {
+    en: { running: 'Drawing your figure…', done: 'Your figure is ready' },
+    'ur-Latn': {
+      running: 'Aap ka figure bana raha hoon…',
+      done: 'Aap ka figure tayyar hai',
+    },
+    ur: {
+      running: 'آپ کا figure بنا رہا ہوں…',
+      done: 'آپ کا figure تیار ہے',
+    },
+  },
   // The image maker was removed. Its wording stays, because chats that used
   // it still have those turns in them and an old picture should keep the
   // caption it was given rather than falling back to "Making your note...".
