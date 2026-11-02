@@ -17,7 +17,7 @@ from langgraph.prebuilt import ToolRuntime
 #
 # Tunable, because the right value depends on the embedding model and on what
 # a particular student has uploaded.
-MIN_SCORE = float(os.getenv("DOCUMENT_SEARCH_MIN_SCORE", "0.3"))
+MIN_SCORE = float(os.getenv("DOCUMENT_SEARCH_MIN_SCORE", "0.45"))
 
 
 @tool(
@@ -51,9 +51,19 @@ async def search_project_documents(
         for i, result in enumerate(search_results, 1)
     ]
 
-    close_enough = [source for source in sources if source["score"] >= MIN_SCORE]
+    # Two filters, because they catch different failures. The floor drops a
+    # search that found nothing good at all. The relative cut drops the weak
+    # tail when something good was found - without it one strong match drags
+    # unrelated files along with it, and the tutor cites all of them.
+    best = max((source["score"] for source in sources), default=0.0)
+    close_enough = [
+        source
+        for source in sources
+        if source["score"] >= MIN_SCORE and source["score"] >= best * 0.75
+    ]
     if not close_enough:
-        best = max((source["score"] for source in sources), default=0.0)
+        # Logged so the floor can be tuned from real traffic, not guessed
+        print(f"document search found nothing above {MIN_SCORE}: best was {best:.3f}")
         return {
             "content": (
                 "Nothing in the student's documents answers this. Do not use "
@@ -75,7 +85,18 @@ async def search_project_documents(
     formatted_content = "\n\n---\n\n".join(context_blocks)
 
     return {
-        "content": f"Here is relevant information from the course documents:\n\n{formatted_content}\n\nPlease use this information to answer the student's question in a clear, educational way.",
+        "content": (
+            "Search results from the student's own uploaded documents. These "
+            "are what a search returned, not an answer and not necessarily "
+            "relevant: use only what genuinely bears on what was asked, and "
+            "ignore the rest.\n\n"
+            f"{formatted_content}\n\n"
+            "The student asked their question, not a question about these "
+            "files. Do not open your reply by announcing what you have read, "
+            "do not summarise a document they did not ask about, and if none "
+            "of this bears on the question, answer from the syllabus and your "
+            "own knowledge instead."
+        ),
         "sources": sources,  # This will be captured by middleware
     }
 

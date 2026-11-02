@@ -15,6 +15,8 @@ Pure functions of the message list, with no database, model or storage, so the
 rules can be checked on their own.
 """
 
+import re
+
 from edu_core.schemas.chats import FilePartDto
 
 # How many attached pictures ride along with each message. Four covers the way
@@ -50,3 +52,21 @@ def pictures_to_carry(messages: list, limit: int = MAX_CARRIED_PICTURES) -> set[
                 if len(found) >= limit:
                     return set(found)
     return set(found)
+
+
+# Attachment notes written before these were known to be a bad idea. A note is
+# saved with the message and replayed to the tutor on every later turn, so an
+# instruction inside one never expires: a student who attached a PDF and then
+# asked for a diagram three questions later still had the tutor searching for
+# that PDF and answering about it. Conversations that already carry one are
+# cleaned as they are read, rather than rewritten in the database, so what the
+# student sees in their own message stays as it was.
+_STALE_ORDERS = re.compile(
+    r"\s*-\s*now being read and indexed;.*?being read if nothing is found yet",
+    re.S,
+)
+
+
+def without_stale_orders(text: str) -> str:
+    """A past message's text, with any standing order it carried removed."""
+    return _STALE_ORDERS.sub("", text or "")

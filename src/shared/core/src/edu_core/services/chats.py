@@ -31,6 +31,7 @@ from edu_core.chat_attachments import (
     ATTACHMENT_LINK_SECONDS,
     is_picture,
     pictures_to_carry,
+    without_stale_orders,
 )
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.chats import (
@@ -228,7 +229,11 @@ class ChatService:
         Returns:
             SourceDocumentPartDto if created, None if skipped (duplicate or invalid)
         """
-        source_id = source.get("id") or source.get("document_id", "")
+        # Keyed on the document, not on the segment that matched. A search
+        # returns a segment id, and the tutor may search more than once in a
+        # turn, so keying on the segment listed the same file once per search -
+        # which is why "study-plan (1).pdf" appeared twice under one answer.
+        source_id = source.get("document_id") or source.get("id", "")
         if not source_id or source_id in existing_source_ids:
             return None
 
@@ -305,7 +310,7 @@ class ChatService:
             for part_dto in msg_dto.parts:
                 if isinstance(part_dto, TextPartDto):
                     content_parts.append(
-                        {"type": "text", "text": part_dto.text_content}
+                        {"type": "text", "text": without_stale_orders(part_dto.text_content)}
                     )
                 elif isinstance(part_dto, ToolCallPartDto):
                     # Practice cards end the turn without text; tell the tutor what was shown.

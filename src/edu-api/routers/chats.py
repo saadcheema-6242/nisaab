@@ -250,15 +250,16 @@ async def send_streaming_message(
     processed_parts.extend(images)
 
     if documents:
-        # A document is read and indexed by the worker, which takes a few
-        # seconds, so a question asked in the same breath can arrive before the
-        # text is searchable. Saying so stops the tutor claiming it has read
-        # something it has not.
-        note = (
-            f"(attached: {', '.join(documents)} - now being read and indexed; "
-            "search the project documents to look inside, and say it is still "
-            "being read if nothing is found yet)"
-        )
+        # A statement of fact, not an instruction.
+        #
+        # This note is saved with the message and so is replayed to the tutor
+        # on every later turn of the conversation. An instruction here -
+        # "search the project documents to look inside" - therefore never
+        # expires: three questions later, asked for a diagram, the tutor was
+        # still dutifully searching and answering about the file attached
+        # earlier. The tool description is where standing behaviour belongs;
+        # a message should only say what happened.
+        note = f"(attached: {', '.join(documents)})"
         text = next(
             (p for p in processed_parts if p.get("type") == "text"), None
         )
