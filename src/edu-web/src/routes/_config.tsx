@@ -79,6 +79,16 @@ const MindMapDetailRoute = lazy(() =>
   })),
 )
 
+const CommunityPage = lazy(() =>
+  import('@/features/community/community-page').then((m) => ({
+    default: m.CommunityPage,
+  })),
+)
+const ProgressPage = lazy(() =>
+  import('@/features/progress/progress-page').then((m) => ({
+    default: m.ProgressPage,
+  })),
+)
 const ReviewPage = lazy(() =>
   import('@/features/review/review-page').then((m) => ({
     default: m.ReviewPage,
@@ -332,6 +342,26 @@ export const mindMapDetailRoute = createRoute({
   ),
 })
 
+export const communityRoute = createRoute({
+  path: '/community',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <CommunityPage />
+    </Suspense>
+  ),
+})
+
+export const progressRoute = createRoute({
+  path: '/progress',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <ProgressPage />
+    </Suspense>
+  ),
+})
+
 export const reviewRoute = createRoute({
   path: '/review',
   getParentRoute: () => dashboardRoute,
@@ -397,6 +427,8 @@ export const routeTree = rootRoute.addChildren([
     srqRoute,
     paperRoute,
     reviewRoute,
+    communityRoute,
+    progressRoute,
 
     studyPlanRoute,
     settingsRoute,

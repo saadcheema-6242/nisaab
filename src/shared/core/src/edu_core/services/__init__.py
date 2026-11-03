@@ -13,6 +13,7 @@ from edu_core.services.notes import NoteService
 from edu_core.services.papers import PaperService
 from edu_core.services.practice import PracticeService
 from edu_core.services.profiles import ProfileService
+from edu_core.services.community import CommunityService
 from edu_core.services.progress import ProgressService
 from edu_core.services.projects import ProjectService
 from edu_core.services.quizzes import QuizService
@@ -36,6 +37,7 @@ __all__ = [
     "PaperService",
     "PracticeService",
     "ProfileService",
+    "CommunityService",
     "ProgressService",
     "ProjectService",
     "QuizService",

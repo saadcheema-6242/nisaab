@@ -882,3 +882,36 @@ class PracticePaper(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class CommunityPost(Base):
+    """One message in the room a student shares with their own class.
+
+    A room is a grade and a group together - Pre-Medical XI is not the same
+    room as Pre-Engineering XI - because that pair is what decides which
+    papers a student sits. Both are copied onto the post rather than read from
+    the author's profile when it is shown: a student who moves up to XII, or
+    switches group, should not drag last year's messages into the new room or
+    rewrite the old one.
+    """
+
+    __tablename__ = "community_posts"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    grade: Mapped[int] = mapped_column(Integer, index=True)  # 11 or 12
+    group_code: Mapped[str] = mapped_column(String, index=True)  # PRE_MED, PRE_ENG, ICS
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    body: Mapped[str] = mapped_column(Text)
+    # A reply sits under another post. One level only: a thread a student can
+    # follow, rather than a tree nobody reads to the bottom of.
+    parent_id: Mapped[str] = mapped_column(
+        String, ForeignKey("community_posts.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), index=True
+    )
+
+    user = relationship("User")

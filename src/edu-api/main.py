@@ -28,6 +28,7 @@ from routers import (
     papers_router,
     practice_records_router,
     profile_router,
+    community_router,
     progress_router,
     projects_router,
     quizzes_router,
@@ -106,6 +107,7 @@ class Api:
         # Register all routers
         self.app.include_router(profile_router)
         self.app.include_router(progress_router)
+        self.app.include_router(community_router)
         self.app.include_router(curriculum_router)
         self.app.include_router(projects_router)
         self.app.include_router(documents_router)

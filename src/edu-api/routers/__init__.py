@@ -9,6 +9,7 @@ from .notes import router as notes_router
 from .papers import router as papers_router
 from .practice_records import router as practice_records_router
 from .profile import router as profile_router
+from .community import router as community_router
 from .progress import router as progress_router
 from .projects import router as projects_router
 from .quizzes import router as quizzes_router
@@ -30,6 +31,7 @@ __all__ = [
     "papers_router",
     "practice_records_router",
     "profile_router",
+    "community_router",
     "progress_router",
     "projects_router",
     "quizzes_router",

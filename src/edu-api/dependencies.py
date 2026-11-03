@@ -6,6 +6,7 @@ from config import Settings, get_settings
 from edu_core.services import (
     AttemptService,
     ChatService,
+    CommunityService,
     ContentService,
     CurriculumService,
     DocumentService,
@@ -99,6 +100,11 @@ def get_curriculum_service() -> CurriculumService:
 def get_progress_service() -> ProgressService:
     """Get ProgressService instance."""
     return ProgressService()
+
+
+def get_community_service() -> CommunityService:
+    """Get CommunityService instance."""
+    return CommunityService()
 
 
 def get_paper_service(

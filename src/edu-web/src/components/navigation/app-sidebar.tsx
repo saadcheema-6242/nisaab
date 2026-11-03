@@ -1,4 +1,10 @@
-import { ClipboardCheckIcon, LayoutDashboardIcon, Settings2 } from 'lucide-react'
+import {
+  BarChart3Icon,
+  ClipboardCheckIcon,
+  LayoutDashboardIcon,
+  MessageSquareIcon,
+  Settings2,
+} from 'lucide-react'
 import { NisaabMark } from '@/components/nisaab-mark'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
@@ -51,6 +57,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               title: 'My FSc',
               url: '/dashboard',
               icon: LayoutDashboardIcon,
+            },
+            {
+              title: 'Progress',
+              url: '/dashboard/progress',
+              icon: BarChart3Icon,
+            },
+            {
+              title: 'Community',
+              url: '/dashboard/community',
+              icon: MessageSquareIcon,
             },
             ...(isReviewer
               ? [
