@@ -49,6 +49,10 @@ class Settings(BaseSettings):
 
     # Comma-separated emails of subject teachers who review the shared content
     reviewer_emails: str = ""
+    # Comma-separated emails allowed to manage accounts. Deliberately not a
+    # column on the user: a flag in the database can be set by anything that
+    # can write to the database, whereas changing this needs a deploy.
+    admin_emails: str = ""
 
     # Google Forms publishing. A service account cannot own a Form, so these are
     # one real Google account's OAuth client and refresh token; set them with
@@ -60,6 +64,10 @@ class Settings(BaseSettings):
     @property
     def reviewers(self) -> set[str]:
         return {e.strip().lower() for e in self.reviewer_emails.split(",") if e.strip()}
+
+    @property
+    def admins(self) -> set[str]:
+        return {e.strip().lower() for e in self.admin_emails.split(",") if e.strip()}
 
 
 @lru_cache

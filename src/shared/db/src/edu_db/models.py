@@ -35,6 +35,20 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
+    # Suspension. The dates are the whole state: banned_at says a ban was
+    # applied, banned_until says when it lifts, and NULL there means it does
+    # not. A separate "is banned" flag would eventually disagree with the
+    # dates - a temporary ban expires, the flag stays true, and a student is
+    # locked out for good by accident.
+    banned_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    banned_until: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    ban_reason: Mapped[str] = mapped_column(Text, nullable=True)
+    banned_by: Mapped[str] = mapped_column(String, nullable=True)
+
     # Relationships
     projects = relationship(
         "Project", back_populates="owner", cascade="all, delete-orphan"

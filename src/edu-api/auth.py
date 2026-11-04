@@ -3,6 +3,7 @@ from functools import lru_cache
 import jwt as pyjwt
 from config import get_settings
 from edu_core.schemas.users import UserDto
+from edu_core.moderation import ban_message, is_banned
 from edu_core.services import UserService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -138,6 +139,20 @@ def get_current_user(
             email=email,
             name=name,
         )
+
+        # A suspended account is turned away here, at the one point every
+        # signed-in request passes through. Checking it in each router would
+        # mean a banned student kept whichever endpoint somebody forgot.
+        #
+        # 403 and not 401: the token is perfectly valid, so the client must
+        # not treat this as an expired session and try to refresh it in a
+        # loop. The message says when it lifts, because an account that stops
+        # working with no explanation reads as a broken app.
+        if is_banned(user_dto.banned_at, user_dto.banned_until):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=ban_message(user_dto.banned_until, user_dto.ban_reason),
+            )
 
         return user_dto
 

@@ -17,3 +17,6 @@ wheels/
 
 # Google Cloud deploy settings (contains secrets)
 deploy/gcp/deploy.env
+
+# Node
+node_modules/

@@ -4,6 +4,7 @@ import {
   LayoutDashboardIcon,
   MessageSquareIcon,
   Settings2,
+  ShieldIcon,
 } from 'lucide-react'
 import { NisaabMark } from '@/components/nisaab-mark'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
@@ -12,6 +13,7 @@ import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
 import { NavUser } from './nav-user'
 import { brand } from '@/lib/brand'
+import { adminStateAtom } from '@/data-acess/admin'
 import { reviewerStateAtom } from '@/data-acess/review'
 import {
   Sidebar,
@@ -25,6 +27,9 @@ import {
 } from '@/components/ui/sidebar'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const adminResult = useAtomValue(adminStateAtom)
+  const isAdmin =
+    Result.isSuccess(adminResult) && adminResult.value.is_admin
   const reviewerResult = useAtomValue(reviewerStateAtom)
   const isReviewer =
     Result.isSuccess(reviewerResult) && reviewerResult.value.is_reviewer
@@ -68,6 +73,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: '/dashboard/community',
               icon: MessageSquareIcon,
             },
+            ...(isAdmin
+              ? [
+                  {
+                    title: 'Accounts',
+                    url: '/dashboard/admin',
+                    icon: ShieldIcon,
+                  },
+                ]
+              : []),
             ...(isReviewer
               ? [
                   {

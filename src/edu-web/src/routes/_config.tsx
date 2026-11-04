@@ -79,6 +79,11 @@ const MindMapDetailRoute = lazy(() =>
   })),
 )
 
+const AdminPage = lazy(() =>
+  import('@/features/admin/admin-page').then((m) => ({
+    default: m.AdminPage,
+  })),
+)
 const CommunityPage = lazy(() =>
   import('@/features/community/community-page').then((m) => ({
     default: m.CommunityPage,
@@ -342,6 +347,16 @@ export const mindMapDetailRoute = createRoute({
   ),
 })
 
+export const adminRoute = createRoute({
+  path: '/admin',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <AdminPage />
+    </Suspense>
+  ),
+})
+
 export const communityRoute = createRoute({
   path: '/community',
   getParentRoute: () => dashboardRoute,
@@ -428,6 +443,7 @@ export const routeTree = rootRoute.addChildren([
     paperRoute,
     reviewRoute,
     communityRoute,
+    adminRoute,
     progressRoute,
 
     studyPlanRoute,

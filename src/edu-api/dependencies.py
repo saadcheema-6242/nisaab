@@ -4,6 +4,7 @@ from functools import lru_cache
 
 from config import Settings, get_settings
 from edu_core.services import (
+    AdminService,
     AttemptService,
     ChatService,
     CommunityService,
@@ -105,6 +106,11 @@ def get_progress_service() -> ProgressService:
 def get_community_service() -> CommunityService:
     """Get CommunityService instance."""
     return CommunityService()
+
+
+def get_admin_service() -> AdminService:
+    """Get AdminService instance."""
+    return AdminService()
 
 
 def get_paper_service(
