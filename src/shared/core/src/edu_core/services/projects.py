@@ -98,7 +98,12 @@ class ProjectService:
             try:
                 projects = (
                     db.query(Project)
-                    .filter(Project.owner_id == owner_id)
+                    .filter(
+                        Project.owner_id == owner_id,
+                        # A subject dropped by changing group is hidden here,
+                        # not deleted. It comes back if they switch back.
+                        Project.archived_at.is_(None),
+                    )
                     .order_by(Project.created_at.desc())
                     .all()
                 )

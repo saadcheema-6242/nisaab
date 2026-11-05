@@ -2,14 +2,17 @@
 
 from auth import get_current_user
 from dependencies import get_profile_service
+from edu_core.exceptions import NotFoundError
 from edu_core.schemas.profiles import (
     OnboardingResultDto,
     ProfileStateDto,
     StudentProfileDto,
 )
+from edu_core.group_change import describe, is_group
 from edu_core.schemas.users import UserDto
 from edu_core.services import ProfileService
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 
 from routers.schemas import OnboardingRequest, ProfileUpdate
 
@@ -53,3 +56,50 @@ async def complete_onboarding(
         explanation_language=onboarding.explanation_language,
         exam_year=onboarding.exam_year,
     )
+
+
+class GroupChange(BaseModel):
+    """Which FSc group to move to."""
+
+    group_code: str = Field(..., description="PRE_MED, PRE_ENG or ICS")
+
+
+@router.get("/profile/group-change")
+async def preview_group_change(
+    group_code: str,
+    current_user: UserDto = Depends(get_current_user),
+    service: ProfileService = Depends(get_profile_service),
+):
+    """What moving to this group would add and hide, before committing to it.
+
+    Named subjects rather than a count: "2 subjects will be hidden" is not
+    something a student can check, and "Chemistry and Biology" is.
+    """
+    if not is_group(group_code):
+        raise HTTPException(status_code=400, detail=f"{group_code} is not an FSc group")
+    state = service.get_profile_state(user_id=current_user.id)
+    current = state.profile.group_code if state.profile else None
+    return {"summary": describe(current, group_code), "current_group": current}
+
+
+@router.post("/profile/group", response_model=OnboardingResultDto)
+async def change_group(
+    change: GroupChange,
+    current_user: UserDto = Depends(get_current_user),
+    service: ProfileService = Depends(get_profile_service),
+):
+    """Move to another FSc group.
+
+    Subjects the new group does not study are hidden, not deleted, so moving
+    back restores them with the work still in them.
+    """
+    if not is_group(change.group_code):
+        raise HTTPException(
+            status_code=400, detail=f"{change.group_code} is not an FSc group"
+        )
+    try:
+        return service.change_group(
+            user_id=current_user.id, group_code=change.group_code
+        )
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))

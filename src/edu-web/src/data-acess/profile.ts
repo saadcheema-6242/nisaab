@@ -1,4 +1,5 @@
 import { Atom, Registry } from '@effect-atom/atom-react'
+import { HttpBody } from '@effect/platform'
 import { Effect } from 'effect'
 import { projectsRemoteAtom } from './project'
 import { runtime } from './runtime'
@@ -50,6 +51,46 @@ export const updateProfileAtom = runtime.fn(
       onWaiting: () => 'Saving...',
       onSuccess: 'Saved',
       onFailure: 'Could not save',
+    }),
+  ),
+)
+
+/**
+ * Moving to another FSc group.
+ *
+ * Through the raw httpClient because the generated client is built by a
+ * command that cannot run here yet. Both the profile and the project list are
+ * refreshed afterwards: the group decides which subjects exist, so the
+ * sidebar is wrong until it is read again.
+ */
+export const groupChangePreviewAtom = runtime.fn(
+  Effect.fn(function* (groupCode: string) {
+    const { httpClient } = yield* ApiClientService
+    const response = yield* httpClient.get(
+      `/api/v1/profile/group-change?group_code=${encodeURIComponent(groupCode)}`,
+    )
+    return (yield* response.json) as {
+      summary: string
+      current_group: string | null
+    }
+  }),
+)
+
+export const changeGroupAtom = runtime.fn(
+  Effect.fn(
+    function* (groupCode: string) {
+      const registry = yield* Registry.AtomRegistry
+      const { httpClient } = yield* ApiClientService
+      yield* httpClient.post('/api/v1/profile/group', {
+        body: HttpBody.unsafeJson({ group_code: groupCode }),
+      })
+      registry.refresh(profileAtom)
+      registry.refresh(projectsRemoteAtom)
+    },
+    withToast({
+      onWaiting: () => 'Moving you to the new group...',
+      onSuccess: 'Your subjects have been updated',
+      onFailure: 'Could not change your group, please try again',
     }),
   ),
 )

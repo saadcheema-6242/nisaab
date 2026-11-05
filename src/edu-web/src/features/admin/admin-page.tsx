@@ -17,6 +17,7 @@ import type { AdminUser } from '@/data-acess/admin'
 import {
   adminUsersAtom,
   banUserAtom,
+  deleteAllUsersAtom,
   deleteUserAtom,
   unbanUserAtom,
 } from '@/data-acess/admin'
@@ -233,6 +234,89 @@ const UserRow = ({ user }: { user: AdminUser }) => {
   )
 }
 
+
+const WIPE_PHRASE = 'DELETE ALL USERS'
+
+/**
+ * Wiping the system.
+ *
+ * Kept at the bottom, behind a disclosure, and needing a typed phrase. The
+ * count is shown and sent: if the page is stale, or this is not the system
+ * the administrator thinks they are looking at, the server refuses rather
+ * than deleting the wrong database.
+ */
+const WipeEverything = ({ others }: { others: number }) => {
+  const [open, setOpen] = useState(false)
+  const [typed, setTyped] = useState('')
+  const wipe = useAtomSet(deleteAllUsersAtom)
+  const ready = typed === WIPE_PHRASE && others > 0
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs text-muted-foreground hover:text-destructive"
+      >
+        Delete all accounts…
+      </button>
+    )
+  }
+
+  return (
+    <Card className="border-destructive/50">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base text-destructive">
+          Delete all accounts
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm">
+          This permanently deletes{' '}
+          <span className="font-semibold">{others} accounts</span> and
+          everything in them: projects, chats, documents, quizzes, papers,
+          answers and progress. Your own account is kept. There is no undo.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Take a database backup first. Type{' '}
+          <span className="font-mono font-semibold">{WIPE_PHRASE}</span> to
+          confirm.
+        </p>
+        <Input
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder={WIPE_PHRASE}
+          autoComplete="off"
+        />
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="destructive"
+            disabled={!ready}
+            onClick={() => {
+              wipe({ confirm: typed, expectedCount: others })
+              setTyped('')
+              setOpen(false)
+            }}
+          >
+            Delete {others} accounts
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setOpen(false)
+              setTyped('')
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export const AdminPage = () => {
   const [search, setSearch] = useState('')
   const result = useAtomValue(adminUsersAtom)
@@ -312,6 +396,10 @@ export const AdminPage = () => {
           ))}
         </ul>
       )}
+
+      <div className="pt-6">
+        <WipeEverything others={Math.max(0, overview.total_users - 1)} />
+      </div>
     </div>
   )
 }

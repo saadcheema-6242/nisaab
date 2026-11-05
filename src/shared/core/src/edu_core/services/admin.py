@@ -251,6 +251,60 @@ class AdminService:
                 ),
             )
 
+    def delete_everyone(self, keep_user_id: str) -> DeletionReportDto:
+        """Delete every account except the administrator running it.
+
+        The administrator is kept on purpose. Deleting them too would end the
+        session that is doing the deleting, leave nobody able to sign in, and
+        make the result impossible to see.
+
+        Other administrators are deleted along with everyone else: this is a
+        wipe, and quietly sparing a list of people would be a worse surprise
+        than the obvious reading.
+        """
+        with self._session() as db:
+            doomed = [
+                user.id
+                for user in db.query(User.id).filter(User.id != keep_user_id).all()
+            ]
+            if not doomed:
+                return DeletionReportDto(
+                    user_id=keep_user_id,
+                    deleted={},
+                    note="There was nobody else to delete.",
+                )
+
+            totals: dict[str, int] = {"accounts": len(doomed)}
+            for user_id in doomed:
+                for kind, count in self._owned(db, user_id).items():
+                    if count:
+                        totals[kind] = totals.get(kind, 0) + count
+                totals["projects"] = totals.get("projects", 0) + (
+                    db.query(Project).filter(Project.owner_id == user_id).count()
+                )
+
+            # One statement rather than a loop of deletes: either every account
+            # goes or none does, so a failure halfway cannot leave the system
+            # with some students wiped and the rest intact.
+            db.query(User).filter(User.id.in_(doomed)).delete(
+                synchronize_session=False
+            )
+            db.commit()
+            logger.warning(
+                "every account except %s deleted: %s accounts", keep_user_id, len(doomed)
+            )
+
+            return DeletionReportDto(
+                user_id=keep_user_id,
+                deleted=totals,
+                note=(
+                    "Your own account was kept. The sign-ins themselves live "
+                    "with the identity provider, not here, so those people can "
+                    "still log in and will start over with an empty workspace "
+                    "unless you remove them there too."
+                ),
+            )
+
     # -------------------------------------------------------------- shared
 
     @staticmethod

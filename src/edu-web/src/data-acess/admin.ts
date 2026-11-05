@@ -160,3 +160,24 @@ export const deleteUserAtom = runtime.fn(
     return report
   }),
 )
+
+/**
+ * Delete every account except your own.
+ *
+ * The expected count is sent so the server can refuse if it does not match.
+ * A number read off a staging screen will not match production, and the
+ * request is turned down rather than wiping the wrong database.
+ */
+export const deleteAllUsersAtom = runtime.fn(
+  Effect.fn(function* (input: { confirm: string; expectedCount: number }) {
+    const registry = yield* Registry.AtomRegistry
+    const { httpClient } = yield* ApiClientService
+    const response = yield* httpClient.del(
+      `/api/v1/admin/users?confirm=${encodeURIComponent(input.confirm)}` +
+        `&expected_count=${input.expectedCount}`,
+    )
+    const report = (yield* response.json) as DeletionReport
+    registry.refresh(adminUsersAtom)
+    return report
+  }),
+)

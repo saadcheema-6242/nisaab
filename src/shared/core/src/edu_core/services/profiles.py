@@ -9,6 +9,7 @@ from edu_db.session import get_session_factory
 from sqlalchemy.orm import joinedload
 
 from edu_core.exceptions import NotFoundError
+from edu_core.group_change import GROUP_SUBJECTS, subjects_for
 from edu_core.schemas.profiles import (
     OnboardingResultDto,
     ProfileStateDto,
@@ -17,12 +18,6 @@ from edu_core.schemas.profiles import (
 from edu_core.schemas.projects import ProjectDto
 
 SCHEME = "ISS-2024"
-GROUP_SUBJECTS = {
-    "PRE_MED": ["PHY", "CHEM", "BIO"],
-    "PRE_ENG": ["PHY", "CHEM", "MATH"],
-    # General Science / Computer Science group as offered by FBISE for FSc: ICS
-    "ICS": ["PHY", "MATH", "CS"],
-}
 GRADE_NAMES = {11: ("XI", "HSSC-I"), 12: ("XII", "HSSC-II")}
 SUBJECT_WORKSPACE = "subject_workspace"
 
@@ -62,6 +57,11 @@ class ProfileService:
             profile.explanation_language = explanation_language
             profile.exam_year = exam_year
             profile.onboarding_completed_at = datetime.now(timezone.utc)
+
+            # Subjects this group does not study are hidden first, so a
+            # student who switches group stops carrying the old one's papers
+            # into their mastery and their study plans.
+            self._archive_dropped(db, user_id, grade, group_code)
 
             codes = GROUP_SUBJECTS[group_code]
             grade_subjects = (
@@ -111,6 +111,61 @@ class ProfileService:
                 profile=StudentProfileDto.model_validate(profile),
                 projects=[project_to_dto(project) for project in workspaces],
             )
+
+    def change_group(self, user_id: str, group_code: str) -> OnboardingResultDto:
+        """Move a student to another FSc group, keeping their grade.
+
+        A thin wrapper: onboarding already does the work, and it is the path
+        the "Change class or group" button has always used. Having two ways to
+        change a group would mean two places to get the archiving right.
+        """
+        with self._get_db_session() as db:
+            profile = db.get(StudentProfile, user_id)
+            if profile is None:
+                raise NotFoundError("Complete onboarding first")
+            grade, language, exam_year = (
+                profile.grade,
+                profile.explanation_language,
+                profile.exam_year,
+            )
+        return self.complete_onboarding(
+            user_id=user_id,
+            grade=grade,
+            group_code=group_code,
+            explanation_language=language,
+            exam_year=exam_year,
+        )
+
+    @staticmethod
+    def _archive_dropped(db, user_id: str, grade: int, group_code: str) -> None:
+        """Hide the subjects this group does not study, and restore the ones it does.
+
+        Hidden, never deleted. A student who spent a month on Chemistry notes
+        before switching should not lose them to a dropdown, and switching
+        back must bring the work with it.
+
+        Only this grade's workspaces are touched. Moving from XI to XII drops
+        nothing, and archiving by subject alone would quietly hide last year's
+        work the first time anybody moved up.
+        """
+        wanted = set(subjects_for(group_code))
+        now = datetime.now(timezone.utc)
+        rows = (
+            db.query(Project, Subject.code)
+            .join(GradeSubject, Project.grade_subject_id == GradeSubject.id)
+            .join(Subject, GradeSubject.subject_id == Subject.id)
+            .filter(
+                Project.owner_id == user_id,
+                Project.kind == SUBJECT_WORKSPACE,
+                GradeSubject.grade == grade,
+            )
+            .all()
+        )
+        for project, code in rows:
+            if code in wanted:
+                project.archived_at = None
+            else:
+                project.archived_at = project.archived_at or now
 
     def update_profile(
         self,

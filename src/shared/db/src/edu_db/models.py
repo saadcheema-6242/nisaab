@@ -84,6 +84,13 @@ class Project(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    # Set when a student drops the subject by changing group. The workspace is
+    # hidden rather than deleted: somebody who spent a month on Chemistry notes
+    # before switching should not lose them to a dropdown, and switching back
+    # brings the subject and its work with it.
+    archived_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     owner = relationship("User", back_populates="projects")
     grade_subject = relationship("GradeSubject")

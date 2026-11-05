@@ -151,3 +151,52 @@ async def delete_user(
         return service.delete_user(user_id)
     except NotFoundError as error:
         raise HTTPException(status_code=404, detail=str(error))
+
+
+# What has to be typed, exactly, to wipe the system. A phrase rather than a
+# checkbox: it cannot be clicked through, it cannot be hit by a stray Enter,
+# and it says out loud what is about to happen.
+WIPE_PHRASE = "DELETE ALL USERS"
+
+
+@router.delete("/users", response_model=DeletionReportDto)
+async def delete_all_users(
+    confirm: str = Query(
+        ...,
+        description=f'Type exactly "{WIPE_PHRASE}". Anything else deletes nothing.',
+    ),
+    expected_count: int = Query(
+        ...,
+        ge=0,
+        description="How many accounts you expect to delete, excluding your own. "
+        "If the real number differs, nothing is deleted.",
+    ),
+    current_user: UserDto = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service),
+):
+    """Delete every account except your own. There is no undo.
+
+    Two guards, and they catch different mistakes. The phrase stops the action
+    being taken by accident. The count stops it being taken on a different
+    system from the one being looked at - a number read off a staging screen
+    will not match production, and the request is refused instead of wiping
+    the wrong database.
+    """
+    if confirm != WIPE_PHRASE:
+        raise HTTPException(
+            status_code=400,
+            detail=f'Type "{WIPE_PHRASE}" exactly. Nothing was deleted.',
+        )
+
+    listing = service.list_users(limit=1)
+    others = max(0, listing.overview.total_users - 1)
+    if others != expected_count:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"There are {others} other accounts, not {expected_count}. "
+                "Nothing was deleted. Reload and check what you are looking at."
+            ),
+        )
+
+    return service.delete_everyone(keep_user_id=current_user.id)
