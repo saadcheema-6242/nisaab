@@ -126,11 +126,15 @@ put_secret() { # name value: create the secret, add a version only when the valu
   fi
 }
 
-# Settings shared by the API, worker and jobs. "^@^" makes @ the separator,
-# because LLM_FALLBACK_MODELS contains commas.
+# Settings shared by the API, worker and jobs. "^|^" makes | the separator.
+# Not a comma, because LLM_FALLBACK_MODELS contains them. Not an @ either,
+# which it used to be: ADMIN_EMAILS and REVIEWER_EMAILS hold email
+# addresses, so a@b.com split into two variables and gcloud rejected the
+# second half as a malformed key. A pipe appears in no email, no model id
+# and no number we pass.
 common_env() {
-  local env="LLM_PROVIDER=vertex@GOOGLE_CLOUD_PROJECT=$PROJECT_ID@VERTEX_LOCATION=$VERTEX_LOCATION"
-  env="$env@STORAGE_BACKEND=gcs@STORAGE_BUCKET=$BUCKET@FIREBASE_PROJECT_ID=$PROJECT_ID"
+  local env="LLM_PROVIDER=vertex|GOOGLE_CLOUD_PROJECT=$PROJECT_ID|VERTEX_LOCATION=$VERTEX_LOCATION"
+  env="$env|STORAGE_BACKEND=gcs|STORAGE_BUCKET=$BUCKET|FIREBASE_PROJECT_ID=$PROJECT_ID"
   local var
   for var in LLM_TUTOR_MODEL LLM_GENERATION_MODEL LLM_MARKING_MODEL LLM_OCR_MODEL \
              LLM_FALLBACK_MODELS LLM_EMBEDDING_MODEL REVIEWER_EMAILS ADMIN_EMAILS \
@@ -138,7 +142,7 @@ common_env() {
              MAX_FLASHCARD_GENERATIONS_PER_DAY MAX_DOCUMENT_UPLOADS_PER_DAY \
              IMAGE_MODEL IMAGE_LOCATION; do
     if [[ -n "${!var:-}" ]]; then
-      env="$env@$var=${!var}"
+      env="$env|$var=${!var}"
     fi
   done
   printf '%s' "$env"
@@ -252,7 +256,7 @@ deploy_job() { # name image command args...
     --service-account "$SA_EMAIL" --set-cloudsql-instances "$(sql_connection)" \
     --command "$command" "--args=$args" \
     --cpu 1 --memory 1Gi --max-retries 0 --task-timeout 3600 \
-    --set-env-vars "^@^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)" >/dev/null
+    --set-env-vars "^|^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)" >/dev/null
 }
 
 migrate() {
@@ -312,7 +316,7 @@ deploy() {
     --add-cloudsql-instances "$connection" \
     --cpu 1 --memory 1Gi --cpu-boost --min-instances "${API_MIN_INSTANCES:-0}" --max-instances 2 \
     --timeout 3600 \
-    --set-env-vars "^@^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)"
+    --set-env-vars "^|^$(common_env)" --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)"
   API_URL="$(service_url "$API_SERVICE")"
 
   step "Deploying $WORKER_SERVICE"
@@ -329,7 +333,7 @@ deploy() {
     --service-account "$SA_EMAIL" --no-allow-unauthenticated \
     --add-cloudsql-instances "$connection" \
     --cpu 1 --memory 1Gi --cpu-boost "${worker_scaling[@]}" --timeout 1800 \
-    --set-env-vars "^@^$(common_env)@WORKER_POLL=$worker_poll@WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-3}" \
+    --set-env-vars "^|^$(common_env)|WORKER_POLL=$worker_poll|WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-3}" \
     --set-secrets "DATABASE_URL=edu-database-url:latest$(optional_secrets)"
   local worker_url
   worker_url="$(service_url "$WORKER_SERVICE")"
