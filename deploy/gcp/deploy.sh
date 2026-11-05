@@ -364,8 +364,16 @@ deploy() {
   web_url="$(service_url "$WEB_SERVICE")"
 
   step "Allowing sign-in from the web app's domain"
+  # This PATCH replaces the whole list, so every domain sign-in must work
+  # from has to be named here. A domain added by hand in the console would
+  # be wiped by the next deploy and sign-in would start failing on it with
+  # nothing to say why. Set WEB_DOMAIN to your own domain and it is kept.
+  local domains="\"localhost\",\"$PROJECT_ID.firebaseapp.com\",\"$PROJECT_ID.web.app\",\"${web_url#https://}\""
+  if [[ -n "${WEB_DOMAIN:-}" ]]; then
+    domains="$domains,\"$WEB_DOMAIN\""
+  fi
   identity_api PATCH "admin/v2/projects/$PROJECT_ID/config?updateMask=authorizedDomains" \
-    "{\"authorizedDomains\":[\"localhost\",\"$PROJECT_ID.firebaseapp.com\",\"$PROJECT_ID.web.app\",\"${web_url#https://}\"]}" >/dev/null
+    "{\"authorizedDomains\":[$domains]}" >/dev/null
 
   step "Checking the API"
   curl -fsS "$API_URL/health" && echo
