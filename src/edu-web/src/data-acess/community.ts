@@ -1,6 +1,7 @@
 import { Registry } from '@effect-atom/atom-react'
 import { HttpBody } from '@effect/platform'
-import { Effect } from 'effect'
+import type * as HttpClientResponse from '@effect/platform/HttpClientResponse'
+import { Data, Effect } from 'effect'
 import { runtime } from './runtime'
 import { ApiClientService } from '@/integrations/api/http'
 
@@ -13,6 +14,26 @@ import { ApiClientService } from '@/integrations/api/http'
  * room id to pass, since the server works the room out from the student's own
  * profile.
  */
+
+/**
+ * The server said no.
+ *
+ * Effect's HttpClient hands back a 404 as an ordinary response, so a body of
+ * {"detail":"..."} parses happily into whatever type the call claimed to
+ * return and the failure only shows up later as a blank screen. The status is
+ * checked here instead.
+ */
+export class CommunityUnavailable extends Data.TaggedError('CommunityUnavailable')<{
+  readonly status: number
+}> {}
+
+const expectOk = <A>(response: HttpClientResponse.HttpClientResponse) =>
+  Effect.gen(function* () {
+    if (response.status < 200 || response.status >= 300) {
+      return yield* new CommunityUnavailable({ status: response.status })
+    }
+    return (yield* response.json) as A
+  })
 
 export type CommunityPost = {
   id: string
@@ -35,7 +56,7 @@ export const communityRoomAtom = runtime.atom(
   Effect.fn(function* () {
     const { httpClient } = yield* ApiClientService
     const response = yield* httpClient.get('/api/v1/community')
-    return (yield* response.json) as CommunityRoom
+    return yield* expectOk<CommunityRoom>(response)
   }),
 )
 
@@ -49,7 +70,7 @@ export const addPostAtom = runtime.fn(
         parent_id: input.parentId ?? null,
       }),
     })
-    const post = (yield* response.json) as CommunityPost
+    const post = yield* expectOk<CommunityPost>(response)
     // Read the room again rather than splicing the new post in by hand. Other
     // people have been posting while this one was being typed, and showing
     // only your own arrival makes a busy room look empty.

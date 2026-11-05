@@ -25,7 +25,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { auth } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
+
+/** Who this browser is signed in as, for the refusal message. */
+const currentEmail = () => auth.currentUser?.email ?? null
 
 const GROUPS: Record<string, string> = {
   PRE_MED: 'Pre-Medical',
@@ -320,6 +324,35 @@ const WipeEverything = ({ others }: { others: number }) => {
 export const AdminPage = () => {
   const [search, setSearch] = useState('')
   const result = useAtomValue(adminUsersAtom)
+
+  // Three states, not two. Waiting and refused look identical if you only ask
+  // "did it succeed", and a refusal that renders as "Loading..." forever is
+  // the same bug as one that renders as a blank screen.
+  if (Result.isFailure(result)) {
+    return (
+      <div className="mx-auto w-full max-w-xl p-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Not available</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              This account cannot manage other accounts. Administrators are
+              listed in ADMIN_EMAILS on the server, and the address must match
+              the one you are signed in with.
+            </p>
+            <p>
+              Signed in as{' '}
+              <span className="font-medium text-foreground">
+                {currentEmail() ?? 'an unknown account'}
+              </span>
+              .
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (!Result.isSuccess(result)) {
     return <div className="p-6 text-sm text-muted-foreground">Loading accounts…</div>

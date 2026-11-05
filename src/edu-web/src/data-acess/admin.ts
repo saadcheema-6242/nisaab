@@ -1,6 +1,7 @@
 import { Registry } from '@effect-atom/atom-react'
 import { HttpBody } from '@effect/platform'
-import { Effect } from 'effect'
+import type * as HttpClientResponse from '@effect/platform/HttpClientResponse'
+import { Data, Effect } from 'effect'
 import { runtime } from './runtime'
 import { ApiClientService } from '@/integrations/api/http'
 
@@ -11,6 +12,28 @@ import { ApiClientService } from '@/integrations/api/http'
  * built by a command that cannot run here yet. Nothing on these endpoints
  * needs it.
  */
+
+/**
+ * The server said no, and said which no it was.
+ *
+ * Effect's HttpClient does not treat a 404 or a 403 as a failure: it hands
+ * back the response and carries on. So {"detail":"Not found"} was parsed as a
+ * user list, the page destructured an overview that was not there, and the
+ * whole screen died with "Something went wrong". A status is checked now, and
+ * the page is told what happened instead of being handed a lie.
+ */
+export class AdminRefused extends Data.TaggedError('AdminRefused')<{
+  readonly status: number
+}> {}
+
+/** Reads one of these responses, or fails loudly. */
+const expectOk = <A>(response: HttpClientResponse.HttpClientResponse) =>
+  Effect.gen(function* () {
+    if (response.status < 200 || response.status >= 300) {
+      return yield* new AdminRefused({ status: response.status })
+    }
+    return (yield* response.json) as A
+  })
 
 export type AdminUsage = {
   chat_messages: number
@@ -82,7 +105,7 @@ export const adminStateAtom = runtime.atom(
   Effect.fn(function* () {
     const { httpClient } = yield* ApiClientService
     const response = yield* httpClient.get('/api/v1/admin/me')
-    return (yield* response.json) as { is_admin: boolean }
+    return yield* expectOk<{ is_admin: boolean }>(response)
   }),
 )
 
@@ -90,7 +113,7 @@ export const adminUsersAtom = runtime.atom(
   Effect.fn(function* () {
     const { httpClient } = yield* ApiClientService
     const response = yield* httpClient.get('/api/v1/admin/users?limit=200')
-    return (yield* response.json) as AdminUserList
+    return yield* expectOk<AdminUserList>(response)
   }),
 )
 
@@ -98,7 +121,7 @@ export const adminUserAtom = runtime.fn(
   Effect.fn(function* (userId: string) {
     const { httpClient } = yield* ApiClientService
     const response = yield* httpClient.get(`/api/v1/admin/users/${userId}`)
-    return (yield* response.json) as AdminUserDetail
+    return yield* expectOk<AdminUserDetail>(response)
   }),
 )
 
@@ -119,7 +142,7 @@ export const banUserAtom = runtime.fn(
         }),
       },
     )
-    const user = (yield* response.json) as AdminUser
+    const user = yield* expectOk<AdminUser>(response)
     registry.refresh(adminUsersAtom)
     return user
   }),
@@ -133,7 +156,7 @@ export const unbanUserAtom = runtime.fn(
       `/api/v1/admin/users/${userId}/unban`,
       { body: HttpBody.unsafeJson({}) },
     )
-    const user = (yield* response.json) as AdminUser
+    const user = yield* expectOk<AdminUser>(response)
     registry.refresh(adminUsersAtom)
     return user
   }),
@@ -155,7 +178,7 @@ export const deleteUserAtom = runtime.fn(
         input.confirmEmail,
       )}`,
     )
-    const report = (yield* response.json) as DeletionReport
+    const report = yield* expectOk<DeletionReport>(response)
     registry.refresh(adminUsersAtom)
     return report
   }),
@@ -176,7 +199,7 @@ export const deleteAllUsersAtom = runtime.fn(
       `/api/v1/admin/users?confirm=${encodeURIComponent(input.confirm)}` +
         `&expected_count=${input.expectedCount}`,
     )
-    const report = (yield* response.json) as DeletionReport
+    const report = yield* expectOk<DeletionReport>(response)
     registry.refresh(adminUsersAtom)
     return report
   }),
