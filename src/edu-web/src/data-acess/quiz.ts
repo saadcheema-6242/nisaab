@@ -178,29 +178,6 @@ export const createQuizAtom = runtime.fn(
   }),
 )
 
-/**
- * Publish the quiz as a Google Form and hand back the link to share.
- *
- * The form carries the answer key and the explanations, so whoever attempts it
- * sees their score on the form itself; nothing comes back here.
- */
-export const publishQuizAsFormAtom = runtime.fn(
-  Effect.fn(
-    function* (input: { quizId: string; projectId: string }) {
-      const { apiClient } = yield* ApiClientService
-      return yield* apiClient.publishQuizAsGoogleFormApiV1ProjectsProjectIdQuizzesQuizIdGoogleFormPost(
-        input.projectId,
-        input.quizId,
-      )
-    },
-    withToast({
-      onWaiting: () => 'Making a Google Form...',
-      onSuccess: 'Form ready - the link is copied',
-      onFailure: 'Could not make the form',
-    }),
-  ),
-)
-
 export const deleteQuizAtom = runtime.fn(
   Effect.fn(
     function* (input: { quizId: string; projectId: string }) {

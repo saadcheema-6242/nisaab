@@ -3,6 +3,7 @@ from typing import Any
 from uuid import uuid4
 
 from edu_core.openly_licensed import fetch, search
+from edu_core.answer_check import keep_sound
 from edu_core.paper_blueprint import distinct_by_text
 from edu_core.services.quizzes import clamp_count
 from edu_core.exceptions import NotFoundError
@@ -200,6 +201,22 @@ class QuizAgent:
             # same one twice with the options shuffled. A shorter quiz is better
             # than one that asks the same thing twice.
             kept = distinct_by_text(result.questions)
+
+            # A question has to agree with itself. A teacher chose the option
+            # our own explanation calls correct and was marked wrong, because
+            # nothing compared the stored letter with the reasoning beside it.
+            # Being told a right answer is wrong does not make a student doubt
+            # the app - it makes them doubt themselves, and change their mind
+            # about something they had right. Dropped for the same reason
+            # duplicates are: a shorter quiz beats one that marks a right
+            # answer wrong.
+            kept, unsound = keep_sound(kept)
+            for bad in unsound:
+                print(
+                    "dropped a self-contradicting question "
+                    f"(key={getattr(bad, 'correct_option', None)!r}): "
+                    f"{getattr(bad, 'question_text', '')[:90]}"
+                )
 
             # Save quiz questions
             for position, question_item in enumerate(kept):

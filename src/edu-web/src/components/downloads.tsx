@@ -1,4 +1,4 @@
-import { Result, useAtom, useAtomValue } from '@effect-atom/atom-react'
+import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { DownloadMenu } from './download-menu'
 import type { convertToTree } from '@/features/mind-map/components/mind-map-view'
 import { flashcardGroupAtom, flashcardsAtom } from '@/data-acess/flashcard'
@@ -9,7 +9,6 @@ import { projectAtom } from '@/data-acess/project'
 import { latestStudyPlanRemoteAtom } from '@/data-acess/study-plan'
 import { currentUserAtom } from '@/data-acess/auth'
 import {
-  publishQuizAsFormAtom,
   quizAtom,
   quizQuestionsAtom,
 } from '@/data-acess/quiz'
@@ -37,7 +36,6 @@ export const QuizDownload = ({
   const quiz = useAtomValue(quizAtom(key))
   const questions = useAtomValue(quizQuestionsAtom(key))
   const projectName = useProjectName(projectId)
-  const [, publishForm] = useAtom(publishQuizAsFormAtom, { mode: 'promise' })
   if (!Result.isSuccess(quiz) || !Result.isSuccess(questions) || questions.value.length === 0) {
     return null
   }
@@ -58,18 +56,6 @@ export const QuizDownload = ({
           label: 'PDF questions only',
           run: async () =>
             (await import('@/lib/export/quiz')).exportQuizPdf({ ...args, withAnswers: false }),
-        },
-        {
-          // Google marks it and shows the score, so nothing has to come back here
-          label: 'Share as a Google Form',
-          pending: 'Making your Google Form…',
-          success: 'Link copied - anyone you send it to can attempt the quiz',
-          failure: 'Could not make the Google Form, please try again',
-          run: async () => {
-            const form = await publishForm({ projectId, quizId })
-            await navigator.clipboard.writeText(form.responder_url).catch(() => {})
-            window.open(form.responder_url, '_blank', 'noopener')
-          },
         },
       ]}
     />

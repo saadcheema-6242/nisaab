@@ -105,13 +105,6 @@ optional_secrets() { # prints ",NAME=secret:latest" for each optional secret pre
   if gc secrets describe edu-tavily-api-key >/dev/null 2>&1; then
     out+=",TAVILY_API_KEY=edu-tavily-api-key:latest"
   fi
-  # Google Forms publishing. All three go together, so the refresh token - the
-  # one that expires - decides whether the set is wired in at all.
-  if gc secrets describe edu-google-oauth-refresh-token >/dev/null 2>&1; then
-    out+=",GOOGLE_OAUTH_CLIENT_ID=edu-google-oauth-client-id:latest"
-    out+=",GOOGLE_OAUTH_CLIENT_SECRET=edu-google-oauth-client-secret:latest"
-    out+=",GOOGLE_OAUTH_REFRESH_TOKEN=edu-google-oauth-refresh-token:latest"
-  fi
   printf '%s' "$out"
 }
 
@@ -155,7 +148,6 @@ setup() {
     secretmanager.googleapis.com aiplatform.googleapis.com cloudscheduler.googleapis.com \
     sqladmin.googleapis.com storage.googleapis.com iam.googleapis.com iamcredentials.googleapis.com \
     identitytoolkit.googleapis.com securetoken.googleapis.com apikeys.googleapis.com \
-    forms.googleapis.com drive.googleapis.com
 
   step "Artifact Registry repository $REPO"
   if ! gc artifacts repositories describe "$REPO" --location "$REGION" >/dev/null 2>&1; then
