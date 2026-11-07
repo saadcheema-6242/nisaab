@@ -54,6 +54,16 @@ class Settings(BaseSettings):
     # can write to the database, whereas changing this needs a deploy.
     admin_emails: str = ""
 
+    # Serve the API reference (Scalar) and /openapi.json. Off by default:
+    # the spec names every route, every field and every shape the service
+    # accepts, which is the map you would want before writing a client
+    # against someone else's API. The endpoints are all guarded regardless,
+    # so this is not a lock - it is not leaving the plans on the doorstep.
+    # Turn it on in local development, or briefly to demonstrate the API.
+    # Client generation does not need it: scripts/export_openapi.py builds
+    # the spec in process without the server running.
+    api_docs: bool = False
+
 
     @property
     def reviewers(self) -> set[str]:

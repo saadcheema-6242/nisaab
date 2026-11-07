@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 
 import jwt as pyjwt
@@ -12,6 +13,8 @@ from edu_core.moderation import (
 from edu_core.services import UserService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+logger = logging.getLogger(__name__)
 
 security_scheme = HTTPBearer(auto_error=False)
 
@@ -183,16 +186,25 @@ def get_current_user(
             detail="Token has expired",
         )
     except pyjwt.InvalidTokenError as e:
+        # The reason stays in the log, not in the reply. The library's own
+        # wording describes its internals - which library it is, how far it
+        # parsed, which byte stopped it - and a caller holding a rejected
+        # token learns only that it was rejected. Expiry is told apart above,
+        # because that one is actionable: refresh and try again.
+        logger.warning("Rejected a token: %s", e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {e!s}",
+            detail="Invalid token",
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
+        # logger.exception already records the traceback, so the exception
+        # does not need binding.
+        logger.exception("Authentication failed")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed: {e!s}",
+            detail="Authentication failed",
         )
 
 

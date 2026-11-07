@@ -66,12 +66,17 @@ class Api:
             yield
             print(f"[{self.config.name}] Shutdown: cleanup complete.")
 
+        # Swagger and ReDoc stay off; Scalar replaced them. When API_DOCS is
+        # off, openapi_url goes too - the JSON is the disclosure and the UI is
+        # only a reader for it, so hiding the page alone would hide nothing.
+        docs_on = get_settings().api_docs
         self.app = FastAPI(
             title=config.name,
             version=config.version,
             lifespan=lifespan,
             docs_url=None,
             redoc_url=None,
+            openapi_url="/openapi.json" if docs_on else None,
         )
         self.setup_cors()
         self.setup_exception_handlers()
@@ -129,7 +134,14 @@ class Api:
         self.app.include_router(auth_router)
 
     def setup_openapi(self):
-        """Setup Scalar OpenAPI documentation UI."""
+        """Serve the Scalar API reference, if this deployment publishes it.
+
+        The root path is left unregistered when it does not, so an unknown
+        caller gets the same 404 as any other path that is not there, rather
+        than a page confirming what this service is.
+        """
+        if not get_settings().api_docs:
+            return
 
         @self.app.get("/", include_in_schema=False)
         async def scalar_docs_ui():
