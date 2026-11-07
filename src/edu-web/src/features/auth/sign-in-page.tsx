@@ -5,10 +5,15 @@ import { Cause } from 'effect'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { isAuthenticatedAtom, signInAtom } from '@/data-acess/auth'
+import {
+  isAuthenticatedAtom,
+  signInAtom,
+  signInWithGoogleAtom,
+} from '@/data-acess/auth'
 
 export const SignInPage = () => {
   const [signInResult, signIn] = useAtom(signInAtom)
+  const [, signInWithGoogle] = useAtom(signInWithGoogleAtom)
   const isAuthenticated = useAtomValue(isAuthenticatedAtom)
 
   const isLoading = signInResult.waiting
@@ -110,6 +115,28 @@ export const SignInPage = () => {
             disabled={isLoading || !email || !password}
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
+          </Button>
+
+          <div className="relative py-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          {/* Google has already confirmed the address, so this route never
+              meets the email confirmation step. It is also the way back in
+              for a student who mistyped their email on sign-up. */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+            onClick={() => signInWithGoogle()}
+          >
+            Continue with Google
           </Button>
 
           <div className="text-center text-xs text-muted-foreground">

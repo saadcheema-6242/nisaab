@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export const SignUpPage = () => {
-  const { signUp, isLoading, signUpError, isAuthenticated } = useAuth()
+  const { signUp, signInWithGoogle, isLoading, signUpError, isAuthenticated } =
+    useAuth()
   const navigate = useNavigate()
   const search = useSearch({ from: '/sign-up' })
   const [email, setEmail] = useState('')
@@ -202,6 +203,28 @@ export const SignUpPage = () => {
             disabled={isLoading || !email || !password || !confirmPassword}
           >
             {isLoading ? 'Creating account...' : 'Create account'}
+          </Button>
+
+          <div className="relative py-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          {/* Google has already confirmed the address, so this route never
+              meets the email confirmation step. It is also the way back in
+              for a student who mistyped their email on sign-up. */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+            onClick={() => signInWithGoogle()}
+          >
+            Continue with Google
           </Button>
 
           <div className="text-center text-xs text-muted-foreground">

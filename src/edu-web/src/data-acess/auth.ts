@@ -6,6 +6,7 @@ import {
   getCurrentUser,
   onAuthChange,
   signIn,
+  signInWithGoogle,
   signOut,
   signUp,
 } from '@/lib/auth-client'
@@ -71,6 +72,20 @@ export const signInAtom = Atom.fn(
 export const signUpAtom = Atom.fn(
   Effect.fn(function* (payload: { email: string; password: string }) {
     yield* Effect.promise(() => signUp(payload.email, payload.password))
+  }),
+)
+
+/**
+ * Sign in with Google.
+ *
+ * Google has already confirmed the address, so an account arriving this way
+ * is verified from the start and never meets the confirmation step. It is the
+ * quickest route in for a student who mistyped their email and cannot receive
+ * the link.
+ */
+export const signInWithGoogleAtom = Atom.fn(
+  Effect.fn(function* () {
+    yield* Effect.promise(() => signInWithGoogle())
   }),
 )
 

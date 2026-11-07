@@ -2,8 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtomValue } from '@effect-atom/atom-react'
 import { authAtom } from '@/data-acess/auth'
 import {
+  resendVerification,
   sendPasswordReset,
   signIn,
+  signInWithGoogle,
   signOut,
   signUp,
 } from '@/lib/auth-client'
@@ -50,12 +52,30 @@ export const useAuth = () => {
     return user.getIdToken()
   }
 
+  // Google has already confirmed the address, so an account arriving this
+  // way never meets the confirmation step.
+  const googleMutation = useMutation({
+    mutationFn: () => signInWithGoogle(),
+    onError: (error) => {
+      console.error('Google sign-in failed:', error)
+    },
+  })
+
+  const resendMutation = useMutation({
+    mutationFn: () => resendVerification(),
+    onError: (error) => {
+      console.error('Could not resend the verification email:', error)
+    },
+  })
+
   return {
     isAuthenticated: !!session && !!user,
     session,
     user,
     login: loginMutation.mutate,
     signUp: signUpMutation.mutate,
+    signInWithGoogle: googleMutation.mutate,
+    resendVerification: resendMutation.mutate,
     sendPasswordReset: passwordResetMutation.mutate,
     logout: logoutMutation.mutate,
     getAccessToken,
@@ -63,10 +83,14 @@ export const useAuth = () => {
       loginMutation.isPending ||
       logoutMutation.isPending ||
       signUpMutation.isPending ||
+      googleMutation.isPending ||
+      resendMutation.isPending ||
       passwordResetMutation.isPending,
     loginError: loginMutation.error,
     logoutError: logoutMutation.error,
     signUpError: signUpMutation.error,
+    googleError: googleMutation.error,
+    verificationSent: resendMutation.isSuccess,
     passwordResetError: passwordResetMutation.error,
     passwordResetSent: passwordResetMutation.isSuccess,
   }

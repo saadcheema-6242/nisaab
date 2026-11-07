@@ -1,10 +1,13 @@
 import { initializeApp } from 'firebase/app'
 import {
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
 import { FirebaseError } from 'firebase/app'
@@ -61,8 +64,45 @@ export const onAuthChange = (callback: (user: User | null) => void) =>
 export const signIn = (email: string, password: string) =>
   withFriendlyErrors(() => signInWithEmailAndPassword(auth, email, password))
 
-export const signUp = (email: string, password: string) =>
-  withFriendlyErrors(() => createUserWithEmailAndPassword(auth, email, password))
+/**
+ * Create the account and send the confirmation link in one go.
+ *
+ * The server refuses an unconfirmed address, so without this a student would
+ * be signed up, turned away, and given no way to put it right - an account
+ * that exists and cannot be used, with no email to explain why.
+ *
+ * A failure to send is not a failure to sign up. The account is real either
+ * way, and the sign-in page can offer to send the link again; throwing here
+ * would tell a student their registration failed when it did not.
+ */
+export const signUp = async (email: string, password: string) => {
+  const credential = await withFriendlyErrors(() =>
+    createUserWithEmailAndPassword(auth, email, password),
+  )
+  try {
+    await sendEmailVerification(credential.user)
+  } catch (error) {
+    console.error('Could not send the verification email', error)
+  }
+  return credential
+}
+
+/** Send the confirmation link again, for a student who never got the first. */
+export const resendVerification = () =>
+  withFriendlyErrors(async () => {
+    const user = auth.currentUser
+    if (!user) throw new Error('Sign in first, then we can resend the link.')
+    await sendEmailVerification(user)
+  })
+
+/**
+ * Sign in with Google.
+ *
+ * Google has already confirmed the address, so these accounts arrive
+ * verified and never meet the confirmation step at all.
+ */
+export const signInWithGoogle = () =>
+  withFriendlyErrors(() => signInWithPopup(auth, new GoogleAuthProvider()))
 
 export const signOut = () => withFriendlyErrors(() => firebaseSignOut(auth))
 

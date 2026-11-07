@@ -24,3 +24,6 @@ node_modules/
 # OAuth client file written by hand when re-authorising; holds a secret
 oauth-client.json
 client_secret*.json
+
+# Firebase Hosting deploy cache - local only
+.firebase/
