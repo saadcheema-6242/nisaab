@@ -115,7 +115,13 @@ async def draw_figure(
 
     try:
         path = stored_path(ctx.project_id, f"figure-{uuid4()}")
-        ctx.storage.upload(path, run.pictures[0], content_type="image/png")
+        # The last one, not the first. When the model draws more than once it
+        # is correcting itself, and the earlier frames are the rough versions.
+        # Proved on the deployed service: for a vector-addition question it
+        # drew four, and only the fourth carried the angle arcs - which, for
+        # an FSc student, is most of what the figure is for. Shipping
+        # pictures[0] handed them the draft.
+        ctx.storage.upload(path, run.pictures[-1], content_type="image/png")
         url = ctx.storage.signed_url(path, expires_in=LINK_SECONDS)
     except Exception as error:  # noqa: BLE001
         print(f"draw_figure store failed: {type(error).__name__}: {error}")

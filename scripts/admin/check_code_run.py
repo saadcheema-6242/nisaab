@@ -220,6 +220,15 @@ check("the picture finder is still registered beside it",
       "*diagram_tools," in factory)
 
 print()
+print("the student is given the finished figure, not a draft")
+# Gemini redraws when it is not satisfied, and every frame comes back. On the
+# deployed service a vector-addition question produced four, and only the last
+# one carried the angle arcs. pictures[0] is the roughest attempt there is.
+tool_src = (ROOT / "src/shared/ai/src/edu_ai/tools/figure.py").read_text(encoding="utf-8")
+check("the last picture is the one stored", "run.pictures[-1]" in tool_src)
+check("not the first", "run.pictures[0]" not in tool_src)
+
+print()
 if failures:
     print(f"{len(failures)} failed: " + ", ".join(failures))
     sys.exit(1)
