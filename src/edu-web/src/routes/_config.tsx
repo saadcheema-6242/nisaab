@@ -34,6 +34,11 @@ const ContactPage = lazy(() =>
     default: m.ContactPage,
   })),
 )
+const VerifyEmailPage = lazy(() =>
+  import('@/features/auth/verify-email-page').then((m) => ({
+    default: m.VerifyEmailPage,
+  })),
+)
 const SignInPage = lazy(() =>
   import('@/features/auth/sign-in-page').then((m) => ({
     default: m.SignInPage,
@@ -133,9 +138,9 @@ const DashboardPage = lazy(() =>
 const requireAuth = async () => {
   // Check if user is signed in (waits for the saved session to be restored)
   const { getCurrentUser } = await import('@/lib/auth-client')
-  const isAuthenticated = !!(await getCurrentUser())
+  const user = await getCurrentUser()
 
-  if (!isAuthenticated) {
+  if (!user) {
     const isSignInPage = window.location.pathname === '/sign-in'
 
     throw redirect({
@@ -144,6 +149,18 @@ const requireAuth = async () => {
         redirect: isSignInPage ? undefined : window.location.pathname,
       },
     })
+  }
+
+  // Signed in is not the same as confirmed. The API refuses a new account
+  // whose address has never been confirmed, so letting one through to the
+  // dashboard produces a page where every panel fails and nothing says why:
+  // the student sees "Failed to load your subjects" and has no idea an email
+  // is waiting for them. Checked here because this is the one place both
+  // /dashboard and /onboarding pass through.
+  //
+  // Google accounts arrive verified and never see this.
+  if (!user.emailVerified) {
+    throw redirect({ to: '/verify-email' })
   }
 }
 
@@ -217,6 +234,16 @@ export const onboardingRoute = createRoute({
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <OnboardingPage />
+    </Suspense>
+  ),
+})
+
+export const verifyEmailRoute = createRoute({
+  path: '/verify-email',
+  getParentRoute: () => rootRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <VerifyEmailPage />
     </Suspense>
   ),
 })
@@ -456,4 +483,5 @@ export const routeTree = rootRoute.addChildren([
   onboardingRoute,
   signInRoute,
   signUpRoute,
+  verifyEmailRoute,
 ])

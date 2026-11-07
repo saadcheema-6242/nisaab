@@ -1,16 +1,15 @@
-import { initializeApp } from 'firebase/app'
+import { FirebaseError, initializeApp } from 'firebase/app'
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
   getAuth,
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
-  signOut as firebaseSignOut,
 } from 'firebase/auth'
-import { FirebaseError } from 'firebase/app'
 import { Effect } from 'effect'
 import type { User } from 'firebase/auth'
 import { env } from '@/env'
@@ -103,6 +102,28 @@ export const resendVerification = () =>
  */
 export const signInWithGoogle = () =>
   withFriendlyErrors(() => signInWithPopup(auth, new GoogleAuthProvider()))
+
+/**
+ * Ask Firebase again whether this address has been confirmed.
+ *
+ * emailVerified is baked into the token the browser is holding, so clicking
+ * the link in the inbox changes nothing here until the user record is
+ * re-read. Without this the student clicks the link, comes back, and the app
+ * still insists they have not confirmed - which looks like the link did not
+ * work, and sends them round again.
+ */
+export const reloadUser = async (): Promise<boolean> => {
+  const user = auth.currentUser
+  if (!user) return false
+  await user.reload()
+  if (user.emailVerified) {
+    // The ID token carries the old claim until it is refreshed, and the API
+    // reads the claim, not the user record. Forcing a refresh here is what
+    // stops the first request after confirming from being turned away.
+    await user.getIdToken(true)
+  }
+  return user.emailVerified
+}
 
 export const signOut = () => withFriendlyErrors(() => firebaseSignOut(auth))
 

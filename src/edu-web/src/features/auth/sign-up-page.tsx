@@ -46,25 +46,17 @@ export const SignUpPage = () => {
     }
   }, [signUpError])
 
-  // Handle successful sign-up (might need email confirmation)
+  // Handle successful sign-up
   useEffect(() => {
     if (hasSubmitted && !isLoading && !signUpError) {
-      // Sign-up completed successfully
       if (isAuthenticated) {
-        // User is authenticated immediately (no email confirmation required)
-        const redirectUrl =
-          search?.redirect || sessionStorage.getItem('auth.redirect')
-        if (redirectUrl) {
-          sessionStorage.removeItem('auth.redirect')
-          const dashboardUrl = redirectUrl.startsWith('/dashboard')
-            ? redirectUrl
-            : `/dashboard${redirectUrl}`
-          navigate({ to: dashboardUrl })
-        } else {
-          navigate({ to: '/dashboard' })
-        }
+        // The account exists but the address has not been confirmed, and the
+        // API refuses it until it is. Sending them to the dashboard produced
+        // a page where every panel failed with no explanation; requireAuth
+        // would bounce them here anyway, and the bounce is visible. Go
+        // straight to the step that tells them what is waiting in the inbox.
+        navigate({ to: '/verify-email' })
       } else {
-        // Email confirmation required
         setSuccess(true)
       }
     }
@@ -230,7 +222,7 @@ export const SignUpPage = () => {
           <div className="text-center text-xs text-muted-foreground">
             By creating an account, you agree to our{' '}
             <a
-              href="https://github.com/StudentTraineeCenter/edu-agent/blob/master/docs/PRIVACY_POLICY.md"
+              href="/privacy.html"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
