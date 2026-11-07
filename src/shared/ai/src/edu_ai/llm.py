@@ -693,3 +693,28 @@ def run_code(prompt: str, task: str = GENERATION, timeout: float = 180) -> CodeR
         "generationConfig": {"temperature": 0},
     }
     return read_parts(_native_generate(body, task, timeout, "code execution"))
+
+
+def generate_text(
+    prompt: str,
+    task: str = MARKING,
+    timeout: float = 20,
+    temperature: float = 0,
+) -> str:
+    """One prompt in, the model's text out. No tools, no history, no state.
+
+    Used for the short judgement calls that are not a conversation: reading a
+    community post and saying whether a teacher should look at it. The chat
+    path would work, but it carries a system prompt, a tool list and a
+    message history that none of this needs, and it is the hot path.
+
+    The timeout is deliberately short. This runs while a student waits for
+    their post to appear, so a slow answer is worse than no answer: the
+    caller treats a failure as "nothing found" and the post goes through.
+    """
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": temperature},
+    }
+    parts = _native_generate(body, task, timeout, "text generation")
+    return "".join(part.get("text", "") for part in parts).strip()

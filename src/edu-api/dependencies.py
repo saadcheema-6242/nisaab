@@ -14,6 +14,7 @@ from edu_core.services import (
     DocumentUploadService,
     FlashcardGroupService,
     MindMapService,
+    ModerationQueueService,
     NoteService,
     PaperService,
     PracticeService,
@@ -75,6 +76,7 @@ def get_usage_service(
         max_flashcard_generations_per_day=settings.max_flashcard_generations_per_day,
         max_quiz_generations_per_day=settings.max_quiz_generations_per_day,
         max_document_uploads_per_day=settings.max_document_uploads_per_day,
+        max_community_posts_per_day=settings.max_community_posts_per_day,
     )
 
 
@@ -103,9 +105,43 @@ def get_progress_service() -> ProgressService:
     return ProgressService()
 
 
-def get_community_service() -> CommunityService:
-    """Get CommunityService instance."""
-    return CommunityService()
+def get_community_service(
+    settings: Settings = Depends(get_settings_dep),
+) -> CommunityService:
+    """Get CommunityService instance.
+
+    The storage client and the reviewer are handed in rather than reached
+    for. The reviewer is a plain callable so the service can be exercised
+    without a model, and so a failing model is one argument instead of a
+    network stub.
+    """
+    return CommunityService(
+        storage=get_storage(),
+        reviewer=_community_reviewer(),
+        daily_posts=settings.max_community_posts_per_day,
+    )
+
+
+def _community_reviewer():
+    """What reads each post, or None where no model is configured.
+
+    Returning None rather than raising means a setup with no LLM still has a
+    working room: posts go through unreviewed, and the admin queue shows
+    them as never looked at rather than as clean.
+    """
+    try:
+        from edu_ai.llm import generate_text, is_llm_configured
+
+        if not is_llm_configured():
+            return None
+        return lambda prompt: generate_text(prompt)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def get_moderation_queue_service() -> ModerationQueueService:
+    """Get ModerationQueueService instance."""
+    return ModerationQueueService(storage=get_storage())
 
 
 def get_admin_service() -> AdminService:

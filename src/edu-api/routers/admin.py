@@ -8,7 +8,7 @@ whereas this needs a deploy.
 
 from auth import get_current_user
 from config import get_settings
-from dependencies import get_admin_service
+from dependencies import get_admin_service, get_moderation_queue_service
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.admin import (
     AdminUserDetailDto,
@@ -16,8 +16,10 @@ from edu_core.schemas.admin import (
     AdminUserListDto,
     DeletionReportDto,
 )
+from edu_core.schemas.community import ModerationQueueDto
 from edu_core.schemas.users import UserDto
 from edu_core.services.admin import AdminService
+from edu_core.services.moderation_queue import ModerationQueueService
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -200,3 +202,58 @@ async def delete_all_users(
         )
 
     return service.delete_everyone(keep_user_id=current_user.id)
+
+
+# ---- the class rooms ------------------------------------------------------
+# Moderation sits behind the same administrator check as accounts, and the
+# same 404: a student who guesses the URL learns nothing about what is here.
+
+
+@router.get("/moderation", response_model=ModerationQueueDto)
+async def moderation_queue(
+    include_cleared: bool = Query(
+        False, description="Also show posts an administrator has already judged"
+    ),
+    _: UserDto = Depends(require_admin),
+    service: ModerationQueueService = Depends(get_moderation_queue_service),
+):
+    """Posts that need looking at, worst first.
+
+    Three things land here and they are counted separately: posts the model
+    flagged, posts students reported, and posts nobody has reviewed at all.
+    The third is not the same as clean.
+    """
+    return service.queue(include_cleared=include_cleared)
+
+
+@router.delete("/moderation/{post_id}", status_code=204)
+async def delete_any_post(
+    post_id: str,
+    admin: UserDto = Depends(require_admin),
+    service: ModerationQueueService = Depends(get_moderation_queue_service),
+):
+    """Remove any post, whoever wrote it. Replies and files go with it."""
+    try:
+        service.delete_post(admin_id=admin.id, post_id=post_id)
+        return None
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+
+
+@router.post("/moderation/{post_id}/clear", status_code=204)
+async def clear_post(
+    post_id: str,
+    admin: UserDto = Depends(require_admin),
+    service: ModerationQueueService = Depends(get_moderation_queue_service),
+):
+    """Looked at it, it is fine, take it out of the queue.
+
+    The model's finding is kept rather than erased. An administrator
+    disagreeing with the model is worth knowing later, and deleting the
+    verdict would hide that it was wrong.
+    """
+    try:
+        service.clear_post(admin_id=admin.id, post_id=post_id)
+        return None
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))

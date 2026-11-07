@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     max_flashcard_generations_per_day: int = 20
     max_quiz_generations_per_day: int = 30
     max_document_uploads_per_day: int = 10
+    # Posting in the class room. Generous for somebody actually studying,
+    # and a ceiling on how much one person can fill a room with - which
+    # matters more here than elsewhere, because only an administrator can
+    # take a post down.
+    max_community_posts_per_day: int = 40
 
     # Comma-separated emails of subject teachers who review the shared content
     reviewer_emails: str = ""

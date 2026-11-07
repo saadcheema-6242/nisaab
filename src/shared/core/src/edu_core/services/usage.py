@@ -21,6 +21,7 @@ class UsageService:
         max_quiz_generations_per_day: int = 10,
         max_mindmap_generations_per_day: int = 10,
         max_document_uploads_per_day: int = 5,
+        max_community_posts_per_day: int = 40,
     ) -> None:
         """Initialize the usage service.
 
@@ -30,12 +31,14 @@ class UsageService:
             max_quiz_generations_per_day: Maximum quiz generations per day
             max_mindmap_generations_per_day: Maximum mind map generations per day
             max_document_uploads_per_day: Maximum document uploads per day
+            max_community_posts_per_day: Maximum class room posts per day
         """
         self.max_chat_messages_per_day = max_chat_messages_per_day
         self.max_flashcard_generations_per_day = max_flashcard_generations_per_day
         self.max_quiz_generations_per_day = max_quiz_generations_per_day
         self.max_mindmap_generations_per_day = max_mindmap_generations_per_day
         self.max_document_uploads_per_day = max_document_uploads_per_day
+        self.max_community_posts_per_day = max_community_posts_per_day
 
     def check_and_increment(
         self,
@@ -46,6 +49,7 @@ class UsageService:
             "quiz_generation",
             "mindmap_generation",
             "document_upload",
+            "community_post",
         ],
     ) -> None:
         """Check if user has exceeded limit and increment counter.
@@ -83,6 +87,7 @@ class UsageService:
                     "quiz_generation": usage.quiz_generations_today,
                     "mindmap_generation": usage.mindmap_generations_today,
                     "document_upload": usage.document_uploads_today,
+                    "community_post": usage.community_posts_today,
                 }
 
                 limit_map = {
@@ -91,6 +96,7 @@ class UsageService:
                     "quiz_generation": self.max_quiz_generations_per_day,
                     "mindmap_generation": self.max_mindmap_generations_per_day,
                     "document_upload": self.max_document_uploads_per_day,
+                    "community_post": self.max_community_posts_per_day,
                 }
 
                 current_count = count_map[usage_type]
@@ -115,6 +121,8 @@ class UsageService:
                     usage.mindmap_generations_today += 1
                 elif usage_type == "document_upload":
                     usage.document_uploads_today += 1
+                elif usage_type == "community_post":
+                    usage.community_posts_today += 1
 
                 db.commit()
                 db.refresh(usage)

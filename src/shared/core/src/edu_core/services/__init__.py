@@ -15,6 +15,7 @@ from edu_core.services.practice import PracticeService
 from edu_core.services.profiles import ProfileService
 from edu_core.services.admin import AdminService
 from edu_core.services.community import CommunityService
+from edu_core.services.moderation_queue import ModerationQueueService
 from edu_core.services.progress import ProgressService
 from edu_core.services.projects import ProjectService
 from edu_core.services.quizzes import QuizService
@@ -40,6 +41,7 @@ __all__ = [
     "ProfileService",
     "AdminService",
     "CommunityService",
+    "ModerationQueueService",
     "ProgressService",
     "ProjectService",
     "QuizService",
