@@ -106,3 +106,49 @@ def until_from_days(days: int | None, now: datetime | None = None) -> datetime |
     if not days or days <= 0:
         return None
     return (_aware(now) or datetime.now(timezone.utc)) + timedelta(days=days)
+
+
+# Claims that say an email address was actually confirmed. Identity Platform
+# puts a boolean at the top level; Supabase records the moment of
+# confirmation instead, and sometimes inside user_metadata. All three are
+# read, because the one that is missing is the one that would let a made-up
+# address through.
+VERIFIED_FLAGS = ("email_verified",)
+VERIFIED_TIMES = ("email_confirmed_at", "confirmed_at")
+
+
+def _truthy(value: object) -> bool:
+    """Whether a claim means yes, however the provider spelled it."""
+    if value is True:
+        return True
+    return isinstance(value, str) and value.strip().lower() == "true"
+
+
+def is_verified(claims: dict | None) -> bool:
+    """Whether the sign-in token says this email address is real.
+
+    Google will happily issue a perfectly valid token for an address nobody
+    owns: it checks that the password matches, not that the inbox exists. The
+    token says which of those two things happened, and this reads it.
+
+    Unknown means no. A token with no such claim is one we cannot vouch for,
+    and treating silence as confirmation would leave the hole open.
+    """
+    claims = claims or {}
+    nested = claims.get("user_metadata")
+    nested = nested if isinstance(nested, dict) else {}
+
+    for where in (claims, nested):
+        for flag in VERIFIED_FLAGS:
+            if _truthy(where.get(flag)):
+                return True
+        for moment in VERIFIED_TIMES:
+            if str(where.get(moment) or "").strip():
+                return True
+    return False
+
+
+UNVERIFIED_MESSAGE = (
+    "Please confirm your email address before using NISAAB. Check your inbox "
+    "for the link we sent when you signed up, then sign in again."
+)

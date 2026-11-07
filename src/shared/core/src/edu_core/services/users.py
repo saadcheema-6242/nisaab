@@ -77,6 +77,20 @@ class UserService:
                 db.rollback()
                 raise
 
+    def exists(self, user_id: str) -> bool:
+        """Whether this account has used NISAAB before.
+
+        Asked before an unverified sign-in is turned away. Everyone already
+        studying here keeps working, whatever their token says; only accounts
+        that have never been seen must confirm an address first. Without that,
+        requiring verification would lock out every student mid-week for
+        something they were never asked to do.
+        """
+        with self._get_db_session() as db:
+            return (
+                db.query(User.id).filter(User.id == user_id).first() is not None
+            )
+
     def get_or_create_user_from_token(
         self,
         user_id: str,

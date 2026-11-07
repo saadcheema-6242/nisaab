@@ -21,11 +21,13 @@ sys.path.insert(0, str(ROOT / "src/shared/core/src"))
 
 from edu_core.moderation import (  # noqa: E402
     ACTIVE,
+    UNVERIFIED_MESSAGE,
     PERMANENT,
     TEMPORARY,
     ban_message,
     ban_state,
     is_banned,
+    is_verified,
     until_from_days,
 )
 
@@ -154,6 +156,55 @@ check("a wrong email deletes nothing",
       "Nothing was deleted." in router)
 check("the section is hidden rather than refused",
       'status_code=404, detail="Not found"' in router)
+
+print()
+print("a token proves a password was typed, not that the address exists")
+check("Identity Platform says verified", is_verified({"email_verified": True}))
+check("Identity Platform says not verified", not is_verified({"email_verified": False}))
+check("a string true is still true", is_verified({"email_verified": "true"}))
+check("a string false is not", not is_verified({"email_verified": "false"}))
+check("Supabase inside user_metadata",
+      is_verified({"user_metadata": {"email_verified": True}}))
+check("Supabase records the moment instead of a flag",
+      is_verified({"email_confirmed_at": "2026-11-07T07:00:00Z"}))
+check("and sometimes nests that too",
+      is_verified({"user_metadata": {"confirmed_at": "2026-11-07T07:00:00Z"}}))
+
+print()
+print("silence is never taken for confirmation")
+for name, claims in (
+    ("no claim at all", {"sub": "abc", "email": "x@y.com"}),
+    ("empty token", {}),
+    ("no token", None),
+    ("metadata that is not an object", {"user_metadata": "nope"}),
+    ("an empty confirmation time", {"email_confirmed_at": ""}),
+    ("a whitespace confirmation time", {"email_confirmed_at": "   "}),
+    ("verified is null", {"email_verified": None}),
+    ("verified is zero", {"email_verified": 0}),
+):
+    check(f"{name}: treated as unverified", not is_verified(claims), str(claims))
+
+print()
+print("the student is told what to do about it")
+check("it says to confirm the address", "confirm your email" in UNVERIFIED_MESSAGE.lower())
+check("it says where the link is", "inbox" in UNVERIFIED_MESSAGE.lower())
+check("it says what to do next", "sign in again" in UNVERIFIED_MESSAGE.lower())
+
+print()
+print("only new accounts are asked, so no class is locked out mid-week")
+auth = (ROOT / "src/edu-api/auth.py").read_text(encoding="utf-8")
+check("verification is checked at the one point every request passes",
+      "is_verified(payload)" in auth)
+check("an account that already exists is let through",
+      "not user_service.exists(supabase_user_id)" in auth)
+check("both conditions must hold before anyone is refused",
+      "not is_verified(payload) and not user_service.exists(" in auth)
+check("it refuses with 403, not 401",
+      "HTTP_403_FORBIDDEN" in auth.split("is_verified(payload)")[1][:300])
+
+users = (ROOT / "src/shared/core/src/edu_core/services/users.py").read_text(encoding="utf-8")
+check("exists() only asks whether the row is there",
+      "db.query(User.id).filter(User.id == user_id).first() is not None" in users)
 
 print()
 if failures:

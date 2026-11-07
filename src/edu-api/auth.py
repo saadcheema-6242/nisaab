@@ -3,7 +3,12 @@ from functools import lru_cache
 import jwt as pyjwt
 from config import get_settings
 from edu_core.schemas.users import UserDto
-from edu_core.moderation import ban_message, is_banned
+from edu_core.moderation import (
+    UNVERIFIED_MESSAGE,
+    ban_message,
+    is_banned,
+    is_verified,
+)
 from edu_core.services import UserService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -134,6 +139,22 @@ def get_current_user(
 
         # Use UserService to get or create user (doesn't expose DB directly)
         user_service = UserService()
+
+        # A token proves somebody typed a password, not that the address is
+        # real. Google issues one for anything@anywhere, so a made-up address
+        # became a working account with its own daily quota, and a copied
+        # front end could mint them in a loop. The token says which of the two
+        # happened; this reads it.
+        #
+        # Only new accounts are asked. Anyone already studying here keeps
+        # working whatever their token says - requiring it of them would lock
+        # out a class mid-week for something nobody told them to do.
+        if not is_verified(payload) and not user_service.exists(supabase_user_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=UNVERIFIED_MESSAGE,
+            )
+
         user_dto = user_service.get_or_create_user_from_token(
             user_id=supabase_user_id,
             email=email,
