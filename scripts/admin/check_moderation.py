@@ -207,6 +207,58 @@ check("exists() only asks whether the row is there",
       "db.query(User.id).filter(User.id == user_id).first() is not None" in users)
 
 print()
+print("every column the admin service names really exists")
+# A quiz, a note and a flashcard group belong to a project, not directly to a
+# student. Assuming they all had user_id made the counting crash, and it took
+# the whole delete with it - the account detail page, deleting one student and
+# deleting every student, all 500. Reading the models rather than importing
+# them, because edu_db needs pgvector and this has to run anywhere.
+import ast  # noqa: E402
+
+models_src = (ROOT / "src/shared/db/src/edu_db/models.py").read_text(encoding="utf-8")
+columns: dict[str, set[str]] = {}
+for node in ast.walk(ast.parse(models_src)):
+    if isinstance(node, ast.ClassDef):
+        columns[node.name] = {
+            stmt.target.id
+            for stmt in node.body
+            if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name)
+        }
+
+admin_src = (ROOT / "src/shared/core/src/edu_core/services/admin.py").read_text(
+    encoding="utf-8"
+)
+missing = []
+for node in ast.walk(ast.parse(admin_src)):
+    if (
+        isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in columns
+        and not node.attr.startswith("_")
+    ):
+        owner, field = node.value.id, node.attr
+        known = columns[owner] | {"id", "metadata", "query", "in_", "isnot"}
+        if field not in known:
+            missing.append(f"{owner}.{field}")
+
+check("no column is named that the model does not have",
+      not missing, ", ".join(sorted(set(missing))))
+
+for model, column in (
+    ("FlashcardGroup", "user_id"), ("Quiz", "user_id"), ("Note", "user_id"),
+):
+    check(f"{model} really has no {column}, so it must go through the project",
+          column not in columns.get(model, set()))
+for model in ("Chat", "MindMap", "PracticePaper", "StudyPlan", "PracticeRecord",
+              "SrqAttempt", "CommunityPost"):
+    check(f"{model} does own its rows directly", "user_id" in columns.get(model, set()))
+
+check("project-owned kinds are counted through the project",
+      "by_project(Quiz)" in admin_src and "by_project(Note)" in admin_src)
+check("flashcard groups too",
+      "FlashcardGroup.project_id.in_(project_ids)" in admin_src)
+
+print()
 if failures:
     print(f"{len(failures)} failed: " + ", ".join(failures))
     sys.exit(1)

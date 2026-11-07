@@ -330,11 +330,33 @@ class AdminService:
 
     @staticmethod
     def _owned(db, user_id: str) -> dict[str, int]:
-        """How many rows of each kind this account owns."""
-        def n(model, column=None):
+        """How many rows of each kind this account owns.
+
+        Two kinds of ownership, and assuming the wrong one is what made this
+        crash. A chat, a mind map, a paper and a practice record each name
+        their student directly. A quiz, a note and a flashcard group do not -
+        they belong to a project, and the project belongs to the student. The
+        first version counted them all the same way, died on the first model
+        with no user_id, and took the whole delete down with it.
+        """
+        def by_user(model, column=None):
             column = column if column is not None else model.user_id
             return db.query(func.count(model.id)).filter(column == user_id).scalar() or 0
 
+        def by_project(model):
+            if not project_ids:
+                return 0
+            return (
+                db.query(func.count(model.id))
+                .filter(model.project_id.in_(project_ids))
+                .scalar()
+                or 0
+            )
+
+        project_ids = [
+            row.id
+            for row in db.query(Project.id).filter(Project.owner_id == user_id).all()
+        ]
         chat_ids = [
             row.id for row in db.query(Chat.id).filter(Chat.user_id == user_id).all()
         ]
@@ -346,12 +368,14 @@ class AdminService:
                 .scalar()
                 or 0
             )
-        group_ids = [
-            row.id
-            for row in db.query(FlashcardGroup.id)
-            .filter(FlashcardGroup.user_id == user_id)
-            .all()
-        ]
+        group_ids = []
+        if project_ids:
+            group_ids = [
+                row.id
+                for row in db.query(FlashcardGroup.id)
+                .filter(FlashcardGroup.project_id.in_(project_ids))
+                .all()
+            ]
         flashcards = 0
         if group_ids:
             flashcards = (
@@ -364,17 +388,17 @@ class AdminService:
         return {
             "chats": len(chat_ids),
             "messages": messages,
-            "documents": n(Document, Document.owner_id),
-            "quizzes": n(Quiz),
+            "documents": by_user(Document, Document.owner_id),
+            "quizzes": by_project(Quiz),
             "flashcard_groups": len(group_ids),
             "flashcards": flashcards,
-            "notes": n(Note),
-            "mind_maps": n(MindMap),
-            "papers": n(PracticePaper),
-            "study_plans": n(StudyPlan),
-            "practice_records": n(PracticeRecord),
-            "srq_attempts": n(SrqAttempt),
-            "community_posts": n(CommunityPost),
+            "notes": by_project(Note),
+            "mind_maps": by_user(MindMap),
+            "papers": by_user(PracticePaper),
+            "study_plans": by_user(StudyPlan),
+            "practice_records": by_user(PracticeRecord),
+            "srq_attempts": by_user(SrqAttempt),
+            "community_posts": by_user(CommunityPost),
         }
 
     @staticmethod
