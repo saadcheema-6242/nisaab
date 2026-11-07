@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # Deploy EduAgent entirely on Google Cloud:
-#   Cloud Run (api, worker, web) + Vertex AI Gemini + Cloud SQL (Postgres + pgvector)
+#   Cloud Run (api, worker) + Firebase Hosting (the site) + Vertex AI Gemini
+#   + Cloud SQL (Postgres + pgvector)
 #   + Cloud Storage (documents) + Identity Platform (student logins).
 # Every step is safe to re-run.
 #
 # Usage (Git Bash, Cloud Shell, macOS or Linux):
 #   deploy/gcp/deploy.sh                 setup + deploy (first time, or everything)
 #   deploy/gcp/deploy.sh setup           create/update infrastructure only
-#   deploy/gcp/deploy.sh deploy          build images, migrate the database, deploy services
+#   deploy/gcp/deploy.sh deploy          build images, migrate the database, deploy the
+#                                        API and worker (not the site: use 'web' for that)
 #   deploy/gcp/deploy.sh deploy --skip-build   redeploy the latest images (settings changes)
-#   deploy/gcp/deploy.sh web             rebuild and deploy the web app only (front-end fixes)
+#   deploy/gcp/deploy.sh web             build the site and publish it to Firebase Hosting
+#                                        (front-end fixes; needs pnpm and the firebase CLI)
 #   deploy/gcp/deploy.sh migrate         run database migrations
 #   deploy/gcp/deploy.sh seed            load the FBISE curriculum (scripts/seed/data)
 #   deploy/gcp/deploy.sh content --subject PHY --grade 11 --domains B
@@ -72,7 +75,10 @@ SA_NAME=edu-agent-run
 SA_EMAIL="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 API_SERVICE=edu-api
 WORKER_SERVICE=edu-worker
-WEB_SERVICE=edu-web
+# The site is static files on Firebase Hosting, not a Cloud Run service.
+# WEB_DOMAIN (deploy.env) names the custom domains; this is the always-there
+# fallback, so nothing has to ask a deleted service for its URL.
+WEB_SITE="$PROJECT_ID"
 MIGRATE_JOB=edu-migrate
 E2E_JOB=edu-e2e
 SEED_JOB=edu-seed
@@ -85,6 +91,16 @@ IDP="https://identitytoolkit.googleapis.com"
 step() { printf '\n==> %s\n' "$*"; }
 gc() { "$GCLOUD" --project "$PROJECT_ID" "$@"; }
 service_url() { gc run services describe "$1" --region "$REGION" --format 'value(status.url)'; }
+# Where the site actually answers: the first WEB_DOMAIN if one is set,
+# otherwise the Firebase Hosting default, which exists as long as the
+# project does. Never a Cloud Run URL.
+web_origin() {
+  if [[ -n "${WEB_DOMAIN:-}" ]]; then
+    printf 'https://%s' "${WEB_DOMAIN%%,*}"
+  else
+    printf 'https://%s.web.app' "$WEB_SITE"
+  fi
+}
 sql_connection() { gc sql instances describe "$SQL_INSTANCE" --format 'value(connectionName)'; }
 
 identity_api() { # method path [json-body]; fails (with the error body) on HTTP errors
@@ -263,27 +279,29 @@ seed() {
   gc run jobs execute "$SEED_JOB" --region "$REGION" --wait
 }
 
-# Front-end only: rebuild the web image against the API already running and
-# redeploy it. Skips the backend build, the migrations and the seed, so a UI
-# fix ships in a couple of minutes without touching the database.
+# Front-end only: build the site and publish it to Firebase Hosting. Skips the
+# backend build, the migrations and the seed, so a UI fix ships in a couple of
+# minutes without touching the database.
+#
+# This used to build a container and deploy a Cloud Run service called
+# edu-web. Hosting replaced it: a static bundle needs no container, no
+# instance and no cold start, and it serves the custom domains directly.
 web() {
-  IMAGE_TAG="$TAG"
-  $SKIP_BUILD && IMAGE_TAG=latest
   local api_url
   api_url="$(service_url "$API_SERVICE")"
 
-  if ! $SKIP_BUILD; then
-    step "Building web image (API $api_url)"
-    gc builds submit "$SOURCE_DIR" --config "$BUILD_DIR/cloudbuild-web.yaml" \
-      --substitutions "_REGISTRY=$REGISTRY,_TAG=$TAG,_VITE_SERVER_URL=$api_url,_VITE_FIREBASE_API_KEY=$(firebase_api_key),_VITE_FIREBASE_PROJECT_ID=$PROJECT_ID"
-  fi
+  step "Building the site (API $api_url)"
+  (
+    cd "$REPO_ROOT/src/edu-web"
+    VITE_SERVER_URL="$api_url" \
+    VITE_FIREBASE_API_KEY="$(firebase_api_key)" \
+    VITE_FIREBASE_PROJECT_ID="$PROJECT_ID" \
+      pnpm build
+  )
 
-  step "Deploying $WEB_SERVICE"
-  gc run deploy "$WEB_SERVICE" \
-    --image "$REGISTRY/edu-web:$IMAGE_TAG" --region "$REGION" \
-    --allow-unauthenticated --port 80 \
-    --cpu 1 --memory 256Mi --min-instances 0 --max-instances 3
-  echo "   $(service_url "$WEB_SERVICE")"
+  step "Publishing to Firebase Hosting"
+  ( cd "$REPO_ROOT/src/edu-web" && firebase deploy --only hosting --project "$PROJECT_ID" )
+  echo "   $(web_origin)"
 }
 
 deploy() {
@@ -349,19 +367,10 @@ deploy() {
     echo "   worker always on (polling); drain job paused"
   fi
 
-  if ! $SKIP_BUILD; then
-    step "Building web image (API $API_URL)"
-    gc builds submit "$SOURCE_DIR" --config "$BUILD_DIR/cloudbuild-web.yaml" \
-      --substitutions "_REGISTRY=$REGISTRY,_TAG=$TAG,_VITE_SERVER_URL=$API_URL,_VITE_FIREBASE_API_KEY=$(firebase_api_key),_VITE_FIREBASE_PROJECT_ID=$PROJECT_ID"
-  fi
-
-  step "Deploying $WEB_SERVICE"
-  gc run deploy "$WEB_SERVICE" \
-    --image "$REGISTRY/edu-web:$IMAGE_TAG" --region "$REGION" \
-    --allow-unauthenticated --port 80 \
-    --cpu 1 --memory 256Mi --min-instances 0 --max-instances 3
-  local web_url
-  web_url="$(service_url "$WEB_SERVICE")"
+  # The site itself is not deployed here. It is a static bundle on Firebase
+  # Hosting, published with "deploy.sh web", and it does not need the database
+  # migration or the seed that this command exists for. Building it here cost
+  # a full Cloud Build run on every backend change for no reason.
 
   step "Allowing sign-in from the web app's domain"
   # This PATCH replaces the whole list, so every domain sign-in must work
@@ -370,7 +379,13 @@ deploy() {
   # nothing to say why. WEB_DOMAIN holds the ones to keep, comma separated:
   # a launch domain and a competition domain are both wanted at once, and
   # naming only one silently removes the other.
-  local domains="\"localhost\",\"$PROJECT_ID.firebaseapp.com\",\"$PROJECT_ID.web.app\",\"${web_url#https://}\""
+  #
+  # It used to start from the edu-web Cloud Run URL. That service is gone, so
+  # asking for its URL returned an empty string and put "" in the list - which
+  # is the same bug the paragraph above warns about, except it fires on every
+  # deploy and takes the real domains with it. The defaults are now the two
+  # Firebase Hosting domains, which exist for as long as the project does.
+  local domains="\"localhost\",\"$PROJECT_ID.firebaseapp.com\",\"$PROJECT_ID.web.app\""
   if [[ -n "${WEB_DOMAIN:-}" ]]; then
     local one
     for one in $(printf '%s' "$WEB_DOMAIN" | tr ',' ' '); do
@@ -379,11 +394,12 @@ deploy() {
   fi
   identity_api PATCH "admin/v2/projects/$PROJECT_ID/config?updateMask=authorizedDomains" \
     "{\"authorizedDomains\":[$domains]}" >/dev/null
+  echo "   $domains"
 
   step "Checking the API"
   curl -fsS "$API_URL/health" && echo
 
-  printf '\nDeployed.\n  Web:    %s\n  API:    %s\n  Worker: %s (private)\n' "$web_url" "$API_URL" "$worker_url"
+  printf '\nDeployed.\n  Site:   %s (unchanged; publish it with deploy.sh web)\n  API:    %s\n  Worker: %s (private)\n' "$(web_origin)" "$API_URL" "$worker_url"
 }
 
 content() {
