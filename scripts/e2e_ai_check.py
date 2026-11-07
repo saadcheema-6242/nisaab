@@ -42,6 +42,9 @@ from edu_core.services import (
 from edu_core import practice_options
 from edu_core.storage import create_storage
 from edu_db.models import (
+    CommunityAttachment,
+    CommunityPost,
+    CommunityReport,
     Document,
     Flashcard,
     MindMap,
@@ -62,6 +65,11 @@ TEST_USER = "e2e-test-user"
 ICS_USER = "e2e-test-user-ics"
 # A login deleted in Identity Platform, then the same email signing up again
 OLD_LOGIN, NEW_LOGIN = "e2e-test-user-deleted", "e2e-test-user-resignup"
+# Three students for the class room: two in one room, one in another,
+# because most of what can go wrong there is about who can see what.
+ROOM_A, ROOM_B, ROOM_C = (
+    "e2e-room-a", "e2e-room-b", "e2e-room-c",
+)
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -149,11 +157,22 @@ def sample_docx() -> bytes:
 
 def cleanup() -> None:
     with Session() as db:
-        users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN]
+        users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN, ROOM_A, ROOM_B, ROOM_C]
         project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
             db.execute(text("DELETE FROM jobs WHERE payload->>'project_id' = :pid"), {"pid": pid})
+        # Community files hang off posts, not projects, so they are not
+        # covered by the project sweep above. The rows cascade with the
+        # user; the bytes do not.
+        room_paths = [
+            a.storage_path
+            for a in db.query(CommunityAttachment).join(
+                CommunityPost, CommunityAttachment.post_id == CommunityPost.id
+            ).filter(CommunityPost.user_id.in_(users))
+        ]
+        if room_paths:
+            storage.delete(room_paths)
         db.query(User).filter(User.id.in_(users)).delete()
         db.commit()
     print(f"Cleaned up the test user, {len(project_ids)} project(s), their files and jobs")
@@ -675,6 +694,347 @@ async def run_fbise() -> None:
     )
 
 
+
+async def run_community() -> None:
+    """The class room: moderation, attachments, voice notes and polls.
+
+    Runs against the real database and the real bucket, with two students in
+    the same room and a third in another, because most of what can go wrong
+    here is about who can see what.
+
+    The reviewer is a stub rather than the live model. What needs proving in
+    an end-to-end run is that the verdict reaches the post, the warning
+    reaches the author, and the queue sorts by it - not that Gemini agrees
+    with us today, which would make this check fail for reasons that are not
+    bugs. The prompt and the parsing are checked in
+    scripts/admin/check_community_rules.py, and a real call is made at the
+    end to prove the model is reachable at all.
+    """
+    from edu_core.community_review import CLEAN, SELF_HARM
+    from edu_core.services.community import CommunityService
+    from edu_core.services.moderation_queue import ModerationQueueService
+
+    print("12. Class room: setting up two students in one room")
+    UserService().get_or_create_user_from_token(
+        user_id=ROOM_A, email="e2e-room-a@local.test", name="Ayesha"
+    )
+    UserService().get_or_create_user_from_token(
+        user_id=ROOM_B, email="e2e-room-b@local.test", name="Bilal"
+    )
+    UserService().get_or_create_user_from_token(
+        user_id=ROOM_C, email="e2e-room-c@local.test", name="Chaudhry"
+    )
+    ProfileService().complete_onboarding(
+        user_id=ROOM_A, grade=11, group_code="PRE_MED", explanation_language="en"
+    )
+    ProfileService().complete_onboarding(
+        user_id=ROOM_B, grade=11, group_code="PRE_MED", explanation_language="en"
+    )
+    # A different group, so a different room.
+    ProfileService().complete_onboarding(
+        user_id=ROOM_C, grade=11, group_code="ICS", explanation_language="en"
+    )
+
+    # What the stub reviewer says, set per call by the test.
+    verdict = {"finding": "clean", "confidence": 0.9, "why": ""}
+
+    def stub_reviewer(prompt: str) -> str:
+        return json.dumps(verdict)
+
+    def failing_reviewer(prompt: str) -> str:
+        raise RuntimeError("Vertex is having a bad minute")
+
+    room = CommunityService(storage=storage, reviewer=stub_reviewer)
+    queue = ModerationQueueService(storage=storage)
+
+    print("12a. Posting, replying and who can see it")
+    post = room.add_post(user_id=ROOM_A, body="Can someone explain Boyle's law?")
+    check("a student can post", bool(post.id), post.id)
+
+    reply = room.add_post(
+        user_id=ROOM_B, body="Pressure times volume is constant", parent_id=post.id
+    )
+    check("another student can reply", reply.id != post.id)
+
+    seen = room.get_room(user_id=ROOM_B)
+    check("the room has the post", any(p.id == post.id for p in seen.posts))
+    mine = next(p for p in seen.posts if p.id == post.id)
+    check("the reply is threaded under it", any(r.id == reply.id for r in mine.replies))
+    check("the author is named, never their email",
+          mine.author_name == "Ayesha", mine.author_name)
+    check("and no email appears anywhere in the room",
+          "@" not in json.dumps([p.model_dump(mode="json") for p in seen.posts]))
+
+    other = room.get_room(user_id=ROOM_C)
+    check("a student in another group sees a different room",
+          all(p.id != post.id for p in other.posts),
+          f"ICS student saw {len(other.posts)} posts")
+
+    print("12b. Contact details are refused, Physics is not")
+    for text_in, why in (
+        ("my number is 03001234567", "a phone number"),
+        ("mail me at test@example.com", "an email"),
+        ("add me on instagram.com/someone", "a link"),
+    ):
+        try:
+            room.add_post(user_id=ROOM_A, body=text_in)
+            check(f"refuses {why}", False, "it was accepted")
+        except ValueError as error:
+            said = str(error)
+            check(f"refuses {why}", "cannot be posted here" in said, said[:90])
+            check(f"and does not repeat the {why} back",
+                  text_in.split()[-1] not in said, said[:90])
+
+    allowed = room.add_post(
+        user_id=ROOM_A,
+        body="the charge is 1.6 x 10^-19 C and pi is 3.141592653, see chapter 11",
+    )
+    check("a post full of numbers is allowed", bool(allowed.id))
+
+    print("12c. The model's verdict reaches the post and the author")
+    verdict = {"finding": "bullying", "confidence": 0.95, "why": "targets a student"}
+    flagged = room.add_post(user_id=ROOM_B, body="A post the stub will flag")
+    with Session() as db:
+        row = db.get(CommunityPost, flagged.id)
+        check("the finding is stored", row.review_finding == "bullying", str(row.review_finding))
+        check("with a severity to sort by", (row.review_severity or 0) > 0, str(row.review_severity))
+        check("and the author was warned", bool(row.warning_text), str(row.warning_text)[:60])
+
+    warned_room = room.get_room(user_id=ROOM_B)
+    check("the author sees the warning", len(warned_room.warnings) >= 1)
+    check("and it is a warning, not an offer of help",
+          not warned_room.warnings[0].is_support)
+    others_view = room.get_room(user_id=ROOM_A)
+    check("nobody else is shown it", len(others_view.warnings) == 0)
+    check("and the room never exposes the finding",
+          "bullying" not in json.dumps([p.model_dump(mode="json") for p in others_view.posts]))
+
+    room.mark_warnings_seen(user_id=ROOM_B)
+    check("dismissing a warning works",
+          len(room.get_room(user_id=ROOM_B).warnings) == 0)
+
+    print("12d. Distress is handled the other way round")
+    verdict = {"finding": SELF_HARM, "confidence": 0.2, "why": "sounds desperate"}
+    sad = room.add_post(user_id=ROOM_A, body="A post the stub will treat as distress")
+    with Session() as db:
+        row = db.get(CommunityPost, sad.id)
+        check("acted on even at low confidence", row.review_finding == SELF_HARM,
+              str(row.review_finding))
+        check("it outranks everything else", row.review_severity == 100,
+              str(row.review_severity))
+        check("the message offers help rather than a telling-off",
+              "talk to someone" in (row.warning_text or "").lower(),
+              str(row.warning_text)[:80])
+    sad_room = room.get_room(user_id=ROOM_A)
+    support = [w for w in sad_room.warnings if w.post_id == sad.id]
+    check("and it is marked as support", support and support[0].is_support)
+    check("the post is still visible to the room",
+          any(p.id == sad.id for p in room.get_room(user_id=ROOM_B).posts),
+          "hiding it would help nobody")
+
+    print("12e. A failing model never loses a post")
+    broken = CommunityService(storage=storage, reviewer=failing_reviewer)
+    survived = broken.add_post(user_id=ROOM_A, body="Posted while Vertex was down")
+    check("the post still goes through", bool(survived.id))
+    with Session() as db:
+        row = db.get(CommunityPost, survived.id)
+        check("and is left unreviewed, not marked clean",
+              row.review_finding is None, str(row.review_finding))
+
+    print("12f. Attachments: an image, a document and a voice note")
+    verdict = {"finding": CLEAN, "confidence": 0.9, "why": ""}
+    png = bytes.fromhex("89504e470d0a1a0a") + b"0" * 64
+    pdf = b"%PDF-1.7\n" + b"0" * 64
+    ogg = b"OggS" + b"0" * 64
+    with_files = room.add_post(
+        user_id=ROOM_A,
+        body="Here is my working",
+        uploads=[
+            ("working.png", "image/png", png, None),
+            ("past-paper.pdf", "application/pdf", pdf, None),
+            ("voice-note.ogg", "audio/ogg", ogg, 42),
+        ],
+    )
+    kinds = sorted(a.kind for a in with_files.attachments)
+    check("all three are attached", kinds == ["audio", "file", "image"], str(kinds))
+    check("a voice note keeps its length",
+          any(a.duration_seconds == 42 for a in with_files.attachments))
+    check("every attachment has a link",
+          all(a.url for a in with_files.attachments),
+          "signing failed")
+
+    data, name, ctype = room.attachment_bytes(
+        user_id=ROOM_B,
+        attachment_id=next(a.id for a in with_files.attachments if a.kind == "file"),
+    )
+    check("a classmate can download it", data == pdf and name == "past-paper.pdf", name)
+
+    try:
+        room.attachment_bytes(
+            user_id=ROOM_C,
+            attachment_id=next(a.id for a in with_files.attachments if a.kind == "file"),
+        )
+        check("a student in another room cannot", False, "the download was allowed")
+    except Exception as error:
+        check("a student in another room cannot", "not in your room" in str(error), str(error)[:70])
+
+    print("12g. Files a student must not be able to share")
+    for filename, ctype_in, data_in, why in (
+        ("virus.png", "image/png", b"MZ\x90\x00" + b"0" * 40, "a program renamed to .png"),
+        ("notes.zip", "application/zip", b"PK\x03\x04" + b"0" * 40, "an archive"),
+        ("big.pdf", "application/pdf", b"%PDF-" + b"0" * 40, "a file over 50MB"),
+    ):
+        size_lie = 60 * 1024 * 1024 if why.startswith("a file over") else None
+        try:
+            payload = b"0" * size_lie if size_lie else data_in
+            room.add_post(
+                user_id=ROOM_A, body="trying it on",
+                uploads=[(filename, ctype_in, payload, None)],
+            )
+            check(f"refuses {why}", False, "it was accepted")
+        except ValueError:
+            check(f"refuses {why}", True)
+
+    print("12h. Polls")
+    poll = room.add_post(
+        user_id=ROOM_A,
+        body="",
+        poll_question="Which chapter is hardest?",
+        poll_options=["Thermodynamics", "Waves", "Optics"],
+    )
+    check("a poll is created", poll.poll is not None and len(poll.poll.options) == 3)
+
+    first = poll.poll.options[0].id
+    second = poll.poll.options[1].id
+    room.vote(user_id=ROOM_A, post_id=poll.id, option_id=first)
+    after = room.vote(user_id=ROOM_B, post_id=poll.id, option_id=first)
+    check("votes are counted", after.poll.total_votes == 2, str(after.poll.total_votes))
+    check("percentages total 100",
+          sum(o.percent for o in after.poll.options) == 100,
+          str([o.percent for o in after.poll.options]))
+
+    changed = room.vote(user_id=ROOM_B, post_id=poll.id, option_id=second)
+    check("a student may change their vote, and it is still one vote",
+          changed.poll.total_votes == 2, str(changed.poll.total_votes))
+    counts = {o.id: o.votes for o in changed.poll.options}
+    check("the change moved the vote", counts[first] == 1 and counts[second] == 1,
+          str(counts))
+
+    try:
+        room.vote(user_id=ROOM_C, post_id=poll.id, option_id=first)
+        check("a student in another room cannot vote", False, "the vote was allowed")
+    except Exception as error:
+        check("a student in another room cannot vote", "not in your room" in str(error))
+
+    print("12i. Reporting")
+    room.report_post(user_id=ROOM_B, post_id=post.id, reason="bullying", note="not ok")
+    room.report_post(user_id=ROOM_B, post_id=post.id, reason="bullying")
+    with Session() as db:
+        count = (
+            db.query(CommunityReport)
+            .filter(CommunityReport.post_id == post.id)
+            .count()
+        )
+    check("reporting twice counts once", count == 1, str(count))
+    reader = room.get_room(user_id=ROOM_B)
+    reported = next(p for p in reader.posts if p.id == post.id)
+    check("the reporter sees that they reported it", reported.reported_by_me)
+    author_view = next(
+        p for p in room.get_room(user_id=ROOM_A).posts if p.id == post.id
+    )
+    check("the author is not told it was reported", not author_view.reported_by_me)
+
+    print("12j. The administrator's queue")
+    waiting = queue.queue()
+    ids = [i.post_id for i in waiting.items]
+    check("the flagged post is in it", flagged.id in ids)
+    check("the distressed post is in it", sad.id in ids)
+    check("the reported post is in it", post.id in ids)
+    check("the unreviewed post is in it", survived.id in ids)
+    check("distress comes first", ids[0] == sad.id, f"first was {ids[0]}")
+    check("urgent items are counted", waiting.urgent_count >= 1, str(waiting.urgent_count))
+    check("so are the unreviewed, separately from the clean",
+          waiting.unreviewed_count >= 1, str(waiting.unreviewed_count))
+    item = next(i for i in waiting.items if i.post_id == post.id)
+    check("an administrator sees the reporter's reason",
+          item.reports and item.reports[0].reason == "bullying")
+    check("and the author's email, which the room never shows",
+          item.author_email == "e2e-room-a@local.test", str(item.author_email))
+
+    print("12k. An administrator can act")
+    queue.clear_post(admin_id=TEST_USER, post_id=flagged.id)
+    check("clearing takes it out of the queue",
+          flagged.id not in [i.post_id for i in queue.queue().items])
+    check("but the finding is kept",
+          db_get(lambda db: db.get(CommunityPost, flagged.id).review_finding) == "bullying")
+
+    paths = db_get(
+        lambda db: [
+            a.storage_path
+            for a in db.query(CommunityAttachment).filter(
+                CommunityAttachment.post_id == with_files.id
+            )
+        ]
+    )
+    queue.delete_post(admin_id=TEST_USER, post_id=with_files.id)
+    check("an administrator can delete anyone's post",
+          db_get(lambda db: db.get(CommunityPost, with_files.id)) is None)
+    check("its attachment rows go too",
+          db_get(lambda db: db.query(CommunityAttachment).filter(
+              CommunityAttachment.post_id == with_files.id).count()) == 0)
+    still_there = []
+    for path in paths:
+        try:
+            storage.download(path)
+            still_there.append(path)
+        except Exception:
+            pass
+    check("and the files leave the bucket", not still_there, str(still_there))
+
+    print("12l. A student deletes their own, and only their own")
+    own = room.add_post(user_id=ROOM_A, body="I will delete this myself")
+    room.delete_post(user_id=ROOM_A, post_id=own.id)
+    check("a student can delete their own post",
+          db_get(lambda db: db.get(CommunityPost, own.id)) is None)
+    try:
+        room.delete_post(user_id=ROOM_B, post_id=post.id)
+        check("a student cannot delete someone else's", False, "it was deleted")
+    except Exception as error:
+        check("a student cannot delete someone else's", "not yours" in str(error))
+
+    print("12m. A cascade: deleting a post takes its replies")
+    parent = room.add_post(user_id=ROOM_A, body="Parent post")
+    child = room.add_post(user_id=ROOM_B, body="A reply", parent_id=parent.id)
+    room.delete_post(user_id=ROOM_A, post_id=parent.id)
+    check("the reply goes with it",
+          db_get(lambda db: db.get(CommunityPost, child.id)) is None)
+
+    print("12n. The real model, to prove it is reachable")
+    try:
+        from edu_ai.llm import generate_text, is_llm_configured
+
+        if not is_llm_configured():
+            check("a model is configured", False, "LLM is not configured")
+        else:
+            live = CommunityService(
+                storage=storage, reviewer=lambda p: generate_text(p)
+            )
+            real = live.add_post(
+                user_id=ROOM_A,
+                body="Can someone explain how to balance a redox equation?",
+            )
+            finding = db_get(
+                lambda db: db.get(CommunityPost, real.id).review_finding
+            )
+            check(
+                "the live model reviews an ordinary question and leaves it alone",
+                finding == CLEAN,
+                f"it said {finding}",
+            )
+    except Exception as error:  # noqa: BLE001
+        check("the live model is reachable", False, f"{type(error).__name__}: {error}"[:150])
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pdf", type=Path, help="Test with this PDF instead of the sample document")
@@ -689,6 +1049,7 @@ def main() -> None:
     try:
         asyncio.run(run(args.pdf))
         asyncio.run(run_fbise())
+        asyncio.run(run_community())
     finally:
         if not args.keep:
             cleanup()
