@@ -10,8 +10,9 @@
  * instantly would be a way for three friends to silence anyone.
  */
 
-import { useState } from 'react'
-import { useAtomSet } from '@effect-atom/atom-react'
+import { useEffect, useState } from 'react'
+import { useAtom } from '@effect-atom/atom-react'
+import { Cause } from 'effect'
 import { FlagIcon } from 'lucide-react'
 import { reportPostAtom } from '@/data-acess/community'
 import { Button } from '@/components/ui/button'
@@ -44,22 +45,50 @@ export const ReportDialog = ({
   postId: string
   alreadyReported: boolean
 }) => {
-  const report = useAtomSet(reportPostAtom)
+  const [result, report] = useAtom(reportPostAtom)
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState<string | null>(null)
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
+  const [sent, setSent] = useState(false)
   const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const send = async () => {
     setBusy(true)
+    setError(null)
     try {
       await report({ postId, reason: reason ?? undefined, note })
-      setDone(true)
     } finally {
       setBusy(false)
+      setSent(true)
     }
   }
+
+  /**
+   * Only say it worked when it worked.
+   *
+   * The setter does not reject, so awaiting it and then showing "thank you"
+   * said a teacher had been told whether or not one had. On a report button
+   * that is worse than an error: a student who believes an adult is looking
+   * stops looking for one themselves.
+   */
+  useEffect(() => {
+    if (!sent || result.waiting) return
+    if (result._tag === 'Failure') {
+      const thrown = Cause.squash(result.cause)
+      setError(
+        thrown instanceof Error && thrown.message
+          ? thrown.message
+          : 'That did not send. Please try again.',
+      )
+    } else if (result._tag === 'Success') {
+      setDone(true)
+    }
+    setSent(false)
+    // result.cause is deliberately not a dependency: it only exists on a
+    // Failure, so naming it does not typecheck on the union.
+  }, [sent, result._tag, result.waiting])
 
   const close = () => {
     setOpen(false)
@@ -69,6 +98,7 @@ export const ReportDialog = ({
       setDone(false)
       setReason(null)
       setNote('')
+      setError(null)
     }, 200)
   }
 
@@ -142,6 +172,12 @@ export const ReportDialog = ({
                 className="min-h-16 resize-none"
                 maxLength={500}
               />
+
+              {error ? (
+                <p className="text-destructive text-sm" role="alert">
+                  {error}
+                </p>
+              ) : null}
 
               <DialogFooter>
                 <Button variant="ghost" onClick={close} disabled={busy}>

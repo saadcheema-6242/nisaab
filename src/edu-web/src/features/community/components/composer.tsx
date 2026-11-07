@@ -10,10 +10,17 @@
  * That wording is shown as it arrives: "this looks like it contains a phone
  * number" tells a student what to change, and a generic failure leaves them
  * retyping the same post until they give up.
+ *
+ * Which is why the failure is read off the atom rather than caught. The
+ * setter from useAtomSet does not reject - a failing effect lands in the
+ * atom's own Result - so a try/catch around it never runs. Tested on the
+ * live site: the server refused a phone number with a 400, the post
+ * correctly did not appear, and the student was told nothing at all.
  */
 
-import { useRef, useState } from 'react'
-import { useAtomSet } from '@effect-atom/atom-react'
+import { useEffect, useRef, useState } from 'react'
+import { useAtom } from '@effect-atom/atom-react'
+import { Cause } from 'effect'
 import {
   BarChart3Icon,
   PaperclipIcon,
@@ -59,8 +66,8 @@ export const Composer = ({
   onDone?: () => void
   autoFocus?: boolean
 }) => {
-  const addPost = useAtomSet(addPostAtom)
-  const addWithFiles = useAtomSet(addPostWithFilesAtom)
+  const [postResult, addPost] = useAtom(addPostAtom)
+  const [filesResult, addWithFiles] = useAtom(addPostWithFilesAtom)
 
   const [body, setBody] = useState('')
   const [files, setFiles] = useState<Array<Picked>>([])
@@ -68,6 +75,8 @@ export const Composer = ({
   const [question, setQuestion] = useState('')
   const [options, setOptions] = useState(['', ''])
   const [busy, setBusy] = useState(false)
+  // Which atom the outcome should be read from, or null when idle.
+  const [sent, setSent] = useState<'text' | 'files' | null>(null)
   const [error, setError] = useState<string | null>(null)
   const picker = useRef<HTMLInputElement>(null)
 
@@ -118,8 +127,9 @@ export const Composer = ({
   const send = async () => {
     setBusy(true)
     setError(null)
+    const sending = files.length > 0 ? 'files' : 'text'
     try {
-      if (files.length > 0) {
+      if (sending === 'files') {
         await addWithFiles({
           body,
           parentId,
@@ -134,17 +144,44 @@ export const Composer = ({
           pollOptions: polling ? options : undefined,
         })
       }
-      reset()
-      onDone?.()
-    } catch (thrown) {
-      // The server's own wording, which names the problem. Anything else is
-      // a sentence a student cannot act on.
-      const said = (thrown as { message?: string } | undefined)?.message
-      setError(said || 'That did not go through. Try again in a moment.')
     } finally {
       setBusy(false)
+      setSent(sending)
     }
   }
+
+  /**
+   * Clear the box once the post has actually landed, and show the server's
+   * refusal when it has not.
+   *
+   * Both have to happen here rather than in send(), because the setter does
+   * not reject and does not report success either: the outcome arrives as a
+   * new Result on the next render. Clearing optimistically in send() would
+   * throw away a post the server had just rejected, which is the one moment
+   * the text is hardest to get back.
+   */
+  const result = sent === 'files' ? filesResult : postResult
+  useEffect(() => {
+    if (sent === null || result.waiting) return
+    if (result._tag === 'Failure') {
+      const thrown = Cause.squash(result.cause)
+      setError(
+        thrown instanceof Error && thrown.message
+          ? thrown.message
+          : 'That did not go through. Try again in a moment.',
+      )
+      setSent(null)
+      return
+    }
+    if (result._tag === 'Success') {
+      reset()
+      setSent(null)
+      onDone?.()
+    }
+    // onDone and reset are intentionally not dependencies: they change
+    // identity on every render of the parent, which would re-run this on
+    // every keystroke.
+  }, [sent, result._tag, result.waiting])
 
   return (
     <div className="space-y-2">
