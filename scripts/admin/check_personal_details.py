@@ -230,4 +230,4 @@ if failures:
     for name in failures:
         print(f"  - {name}")
     sys.exit(1)
-print(f"all checks passed")
+print("all checks passed")

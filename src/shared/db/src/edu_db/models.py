@@ -566,6 +566,12 @@ class UserUsage(Base):
     quiz_generations_today: Mapped[int] = mapped_column(Integer, default=0)
     mindmap_generations_today: Mapped[int] = mapped_column(Integer, default=0)
     document_uploads_today: Mapped[int] = mapped_column(Integer, default=0)
+    # Posting had no cap at all, which mattered more than it looks: nobody
+    # but the author could delete a post, so an unlimited poster could fill
+    # a room with things that could not be taken down.
+    community_posts_today: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
 
     # Last reset date
     last_reset_date: Mapped[datetime] = mapped_column(
@@ -935,4 +941,182 @@ class CommunityPost(Base):
         DateTime(timezone=True), server_default=func.now(), index=True
     )
 
+    # What the model made of this post, written once when it is created.
+    # Stored on the post rather than in a separate table because every post
+    # has exactly one review and the administrator's list sorts by it: a
+    # join would be a join on every row of every page.
+    #
+    # Null means not reviewed - the model was unreachable, or the post
+    # predates review. Not the same as clean, and the admin list says so,
+    # because treating "never looked at" as "looked at and fine" is how
+    # something sits unnoticed for a month.
+    review_finding: Mapped[str] = mapped_column(String, nullable=True, index=True)
+    review_confidence: Mapped[float] = mapped_column(Float, nullable=True)
+    review_why: Mapped[str] = mapped_column(Text, nullable=True)
+    review_severity: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0", index=True
+    )
+    # Set when an administrator has looked and decided to leave it. Keeps a
+    # judged post out of the queue without deleting the finding.
+    reviewed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    reviewed_by: Mapped[str] = mapped_column(String, nullable=True)
+
+    # Set when the author was told. A student is warned once per post, not
+    # once per time somebody opens the page.
+    warned_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    warning_text: Mapped[str] = mapped_column(Text, nullable=True)
+    # Whether the author has seen the warning yet.
+    warning_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # A poll is a post with options, not a separate kind of thing, so it
+    # threads and moderates like everything else.
+    poll_question: Mapped[str] = mapped_column(Text, nullable=True)
+
     user = relationship("User")
+    attachments = relationship(
+        "CommunityAttachment",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        order_by="CommunityAttachment.position",
+    )
+    poll_options = relationship(
+        "CommunityPollOption",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        order_by="CommunityPollOption.position",
+    )
+    reports = relationship(
+        "CommunityReport", back_populates="post", cascade="all, delete-orphan"
+    )
+
+
+class CommunityAttachment(Base):
+    """A photo, voice note or file hanging off a post.
+
+    The bytes live in the bucket; this is the record of what and where. The
+    filename is kept as the student saw it so a download arrives with a name
+    they recognise, and the size so the page can say how big something is
+    before anyone on a slow connection commits to it.
+    """
+
+    __tablename__ = "community_attachments"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    post_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("community_posts.id", ondelete="CASCADE"),
+        index=True,
+    )
+    # image, audio or file: decides how the page shows it
+    kind: Mapped[str] = mapped_column(String)
+    filename: Mapped[str] = mapped_column(String)
+    content_type: Mapped[str] = mapped_column(String)
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    storage_path: Mapped[str] = mapped_column(String)
+    # How long a voice note runs, so the player can say so before it loads
+    duration_seconds: Mapped[int] = mapped_column(Integer, nullable=True)
+    position: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    post = relationship("CommunityPost", back_populates="attachments")
+
+
+class CommunityPollOption(Base):
+    """One answer a student can pick in a poll."""
+
+    __tablename__ = "community_poll_options"
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    post_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("community_posts.id", ondelete="CASCADE"),
+        index=True,
+    )
+    text: Mapped[str] = mapped_column(String)
+    position: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+
+    post = relationship("CommunityPost", back_populates="poll_options")
+    votes = relationship(
+        "CommunityPollVote", back_populates="option", cascade="all, delete-orphan"
+    )
+
+
+class CommunityPollVote(Base):
+    """One student's answer to one poll.
+
+    The unique constraint is on the poll and the student, not the option, so
+    the database itself enforces one vote each. Doing it in code would mean
+    two quick taps could register twice, and a poll that can be stuffed is
+    not a poll.
+    """
+
+    __tablename__ = "community_poll_votes"
+    __table_args__ = (
+        UniqueConstraint("post_id", "user_id", name="uq_community_poll_one_vote"),
+    )
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    post_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("community_posts.id", ondelete="CASCADE"),
+        index=True,
+    )
+    option_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("community_poll_options.id", ondelete="CASCADE"),
+        index=True,
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    option = relationship("CommunityPollOption", back_populates="votes")
+
+
+class CommunityReport(Base):
+    """A student saying a post needs looking at.
+
+    One report per student per post, enforced by the database, so a group
+    cannot be brigaded into looking urgent by one person tapping repeatedly.
+    The count still matters: five students reporting the same post is a
+    stronger signal than the model's opinion.
+    """
+
+    __tablename__ = "community_reports"
+    __table_args__ = (
+        UniqueConstraint("post_id", "user_id", name="uq_community_report_once"),
+    )
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    post_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("community_posts.id", ondelete="CASCADE"),
+        index=True,
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    reason: Mapped[str] = mapped_column(String, nullable=True)
+    note: Mapped[str] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), index=True
+    )
+
+    post = relationship("CommunityPost", back_populates="reports")
