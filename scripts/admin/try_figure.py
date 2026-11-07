@@ -17,6 +17,7 @@ the picture.
 Pass a number to draw only that one.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -25,7 +26,7 @@ for package in ("core", "ai"):
     sys.path.insert(0, str(ROOT / f"src/shared/{package}/src"))
 
 from edu_core.code_run import figure_prompt  # noqa: E402
-from edu_core.storage import StorageService  # noqa: E402
+from edu_core.storage import create_storage  # noqa: E402
 from edu_ai.llm import run_code, supports_code_execution  # noqa: E402
 
 # The first is the question that started this: a student asked for a graph of
@@ -91,7 +92,16 @@ def main() -> int:
             print(f"Pick a figure from 1 to {len(FIGURES)}")
             return 1
 
-    storage = StorageService()
+    # create_storage picks GCS or Supabase from STORAGE_BACKEND, the same way
+    # the API does. Constructing StorageService directly meant Supabase every
+    # time, and with no arguments at all, so this probe died before it reached
+    # the thing it exists to test.
+    storage = create_storage(
+        backend=os.getenv("STORAGE_BACKEND", "gcs"),
+        bucket=os.getenv("STORAGE_BUCKET", ""),
+        supabase_url=os.getenv("SUPABASE_URL", ""),
+        supabase_service_role_key=os.getenv("SUPABASE_SERVICE_ROLE_KEY", ""),
+    )
     drawn = 0
 
     for index, (subject, description, given) in enumerate(wanted, 1):
