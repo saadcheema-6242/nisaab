@@ -24,3 +24,6 @@ class UsageDto(BaseModel):
     document_uploads: UsageLimitDto = Field(
         description="Document upload usage statistics"
     )
+    community_posts: UsageLimitDto = Field(
+        description="Class room posting usage statistics"
+    )

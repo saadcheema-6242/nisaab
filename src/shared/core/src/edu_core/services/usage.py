@@ -72,6 +72,7 @@ class UsageService:
                         quiz_generations_today=0,
                         mindmap_generations_today=0,
                         document_uploads_today=0,
+                        community_posts_today=0,
                         last_reset_date=datetime.now(UTC),
                     )
                     db.add(usage)
@@ -152,6 +153,7 @@ class UsageService:
                         quiz_generations_today=0,
                         mindmap_generations_today=0,
                         document_uploads_today=0,
+                        community_posts_today=0,
                         last_reset_date=datetime.now(UTC),
                     )
                     db.add(usage)
@@ -176,6 +178,10 @@ class UsageService:
                     mindmap_generations=UsageLimitDto(
                         used=usage.mindmap_generations_today,
                         limit=self.max_mindmap_generations_per_day,
+                    ),
+                    community_posts=UsageLimitDto(
+                        used=usage.community_posts_today,
+                        limit=self.max_community_posts_per_day,
                     ),
                     document_uploads=UsageLimitDto(
                         used=usage.document_uploads_today,

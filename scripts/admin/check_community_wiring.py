@@ -167,6 +167,19 @@ check("and so does the upload route",
       router.count('usage_type="community_post"') >= 2,
       "a student could post files without being counted")
 
+# The count shown to the student is read off the DTO, not guessed at with
+# getattr. UsageDto nests every counter in a UsageLimitDto and has no flat
+# community_posts_today, so getattr with a default silently returned zero
+# and the page reported the full allowance no matter how much had been
+# written. A default is exactly what stops that showing up as an error.
+usage_dto = (CORE / "schemas/usage.py").read_text(encoding="utf-8")
+check("the DTO carries the posting counter", "community_posts:" in usage_dto)
+check("the service fills it in", "community_posts=UsageLimitDto(" in usage)
+check("the router reads the real field, not a guessed attribute",
+      ".community_posts" in router and 'getattr(used, "community_posts' not in router)
+check("and subtracts used from limit",
+      "counter.limit - counter.used" in router)
+
 print()
 print("the services are constructed with what they need")
 check("the community service gets storage", "storage=get_storage()" in deps)

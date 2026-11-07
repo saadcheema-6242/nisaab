@@ -43,14 +43,18 @@ class ReportCreate(BaseModel):
 
 
 def _posts_left(usage: UsageService, user_id: str) -> int:
-    """How many more posts today, for the page to show before they run out."""
+    """How many more posts today, for the page to show before they run out.
+
+    UsageDto nests each counter in a UsageLimitDto; it has no flat
+    community_posts_today attribute. Reading one through getattr with a
+    default meant the page always reported the full allowance however much
+    a student had written, so the warning at five remaining never appeared.
+    The limit itself was always enforced - that happens server side in
+    check_and_increment - but a student would have hit it with no notice.
+    """
     try:
-        used = usage.get_usage(user_id)
-        return max(
-            0,
-            usage.max_community_posts_per_day
-            - getattr(used, "community_posts_today", 0),
-        )
+        counter = usage.get_usage(user_id).community_posts
+        return max(0, counter.limit - counter.used)
     except Exception:  # noqa: BLE001 - a counter must never break the room
         return usage.max_community_posts_per_day
 
