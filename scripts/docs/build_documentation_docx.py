@@ -48,7 +48,7 @@ DETAILS = [
     ("Supervisor", "Prof. Mr. Tashfeen Qamar"),
     ("Institution", "Islamabad Model College for Boys G-10/4, Islamabad"),
     ("Competition", "FDE STEM Competition, Group C, 29 October 2026, IMCB F-8/4"),
-    ("Working model", "edu-web-yvi5hrqfda-el.a.run.app"),
+    ("Working model", "nisaab.muhammadsaadcheema.com"),
 ]
 
 NAV = re.compile(r"^\s*(\[←|\*\*?\[?←)|^\s*\[Contents\]")

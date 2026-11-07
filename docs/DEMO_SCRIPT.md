@@ -1,7 +1,7 @@
 # Judging demo script: FSc Tutor (Sunday 5 October 2026)
 
 About 8 minutes live, then questions. Everything runs on the live Google Cloud app:
-https://edu-web-yvi5hrqfda-el.a.run.app
+https://nisaab.muhammadsaadcheema.com
 
 ## Before the demo
 

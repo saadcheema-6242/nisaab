@@ -12,7 +12,7 @@ NISAAB is a monorepo that holds six Python packages and one TypeScript applicati
 
 | Component | Role |
 |---|---|
-| `edu-web` | React 19 single-page application, built into static files and served from a container on Cloud Run. |
+| `edu-web` | React 19 single-page application, built into static files and served by Firebase Hosting on `nisaab.muhammadsaadcheema.com`. |
 | `edu-api` | FastAPI service. Verifies sign-in tokens, reads and writes the database, runs the agent, streams replies and adds long jobs to the queue. |
 | `edu-worker` | Background processor on Cloud Run. Claims jobs from the queue and runs document indexing and content generation. It is private. |
 | PostgreSQL 16 + pgvector | Cloud SQL. Holds all application data, vectors for search and the job queue. |

@@ -340,7 +340,7 @@ The platform work is finished and live (Sept 2026). Everything runs in the Googl
 
 ```text
 Students (browser, mostly Android)
-  ├─► Cloud Run: edu-web (React app) ──► Identity Platform (email + password sign-in)
+  ├─► Firebase Hosting: edu-web (React app) ──► Identity Platform (email + password sign-in)
   └─► Cloud Run: edu-api (FastAPI) ──► Vertex AI Gemini (tutor, generation, marking, embeddings)
                  │   └─► Cloud Storage (uploaded documents, extracted text)
                  ▼

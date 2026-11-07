@@ -4,7 +4,7 @@
 Every question it writes, every paper it sets and every answer it marks is tied to a
 numbered **SLO** — a Student Learning Outcome from the official FBISE curriculum.
 
-Live: **<https://edu-web-yvi5hrqfda-el.a.run.app>**
+Live: **<https://nisaab.muhammadsaadcheema.com>**
 
 | | |
 |---|---|

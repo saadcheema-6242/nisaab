@@ -4,7 +4,7 @@
 
 For students and teachers. No technical knowledge needed.
 
-Open **<https://edu-web-yvi5hrqfda-el.a.run.app>**
+Open **<https://nisaab.muhammadsaadcheema.com>**
 
 ---
 

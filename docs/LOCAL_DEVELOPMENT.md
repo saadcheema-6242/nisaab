@@ -8,7 +8,7 @@ Production runs the same code on Google Cloud; see [deploy/gcp/README.md](../dep
 | Database (Postgres + pgvector), file storage, logins | Supabase CLI in Docker | Supabase project |
 | API (FastAPI) | `uv run`, port 8010 | Cloud Run `edu-api` |
 | Worker (background jobs) | `uv run`, polls the `jobs` table | Cloud Run `edu-worker` |
-| Web (React + Vite) | `pnpm dev`, port 3000 | Cloud Run `edu-web` |
+| Web (React + Vite) | `pnpm dev`, port 3000 | Firebase Hosting |
 | AI | Gemini API (free AI Studio key) | Vertex AI Gemini |
 
 ## Prerequisites

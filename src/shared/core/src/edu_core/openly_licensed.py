@@ -42,8 +42,12 @@ TIMEOUT = 20.0
 # this carried a URL.
 #
 # Settable, because the right contact is wherever this is actually deployed,
-# and a stale address is worse than none.
-CONTACT = os.getenv("MEDIA_SEARCH_CONTACT", "https://edu-web-yvi5hrqfda-el.a.run.app")
+# and a stale address is worse than none. The default is the real domain
+# rather than a Cloud Run URL: the edu-web service that used to serve the
+# site is gone, and a contact URL that 404s is the stale address this
+# warns about - it reads as a client with no owner, which is what the 403
+# was for.
+CONTACT = os.getenv("MEDIA_SEARCH_CONTACT", "https://nisaab.muhammadsaadcheema.com")
 USER_AGENT = f"NISAAB/1.0 ({CONTACT}; FBISE FSc study app) httpx"
 
 # Licences that allow reuse in a product. Commons reports these in a machine

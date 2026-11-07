@@ -16,7 +16,7 @@ def _only_self(user_id: str, current_user: UserDto) -> None:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
 
-@router.get("/{user_id}", response_model=UserDto)
+@router.get("/{user_id}", response_model=UserDto, summary="Get your own account")
 async def get_user(
     user_id: str,
     current_user: UserDto = Depends(get_current_user),
@@ -32,7 +32,7 @@ async def get_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("", response_model=list[UserDto])
+@router.get("", response_model=list[UserDto], summary="Get your own account as a list")
 async def list_users(
     current_user: UserDto = Depends(get_current_user),
     service: UserService = Depends(get_user_service),
@@ -44,7 +44,7 @@ async def list_users(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/{user_id}", status_code=204)
+@router.delete("/{user_id}", status_code=204, summary="Delete your own account")
 async def delete_user(
     user_id: str,
     current_user: UserDto = Depends(get_current_user),

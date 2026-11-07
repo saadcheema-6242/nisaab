@@ -4,7 +4,7 @@
 
 | Resource | Purpose |
 |---|---|
-| Cloud Run: `edu-web` | Serves the built single-page application |
+| Firebase Hosting | Serves the built single-page application on `nisaab.muhammadsaadcheema.com` |
 | Cloud Run: `edu-api` | The HTTP service, publicly reachable |
 | Cloud Run: `edu-worker` | Background processing; private, called only by the scheduler |
 | Cloud SQL: PostgreSQL 16 | Primary database with the pgvector extension |

@@ -11,7 +11,7 @@ Everything runs in **one** Google Cloud project: `fbise-tutor-2026`, region
 
 | Service | Kind | Role |
 |---|---|---|
-| `edu-web` | Cloud Run | nginx serving the built React app |
+| Firebase Hosting | - | the built React app, on `nisaab.muhammadsaadcheema.com` |
 | `edu-api` | Cloud Run | FastAPI, public |
 | `edu-worker` | Cloud Run | background jobs, **private** |
 | `edu-db` | Cloud SQL | PostgreSQL 16 + pgvector, `db-f1-micro` |
@@ -21,19 +21,19 @@ Everything runs in **one** Google Cloud project: `fbise-tutor-2026`, region
 | Secret Manager | — | database URL, API keys, OAuth credentials |
 | Artifact Registry | — | container images |
 | Cloud Scheduler | — | `edu-worker-drain`, wakes the worker when it scales to zero |
-| Cloud Build | — | builds the three images |
+| Cloud Build | — | builds the two server images |
 
 ### Live URLs
 
 ```
-Web     https://edu-web-yvi5hrqfda-el.a.run.app
+Web     https://nisaab.muhammadsaadcheema.com
 API     https://edu-api-yvi5hrqfda-el.a.run.app
 Worker  https://edu-worker-yvi5hrqfda-el.a.run.app   (private)
 ```
 
 ### Service account
 
-All three services run as `edu-agent-run@fbise-tutor-2026.iam.gserviceaccount.com`:
+Both services run as `edu-agent-run@fbise-tutor-2026.iam.gserviceaccount.com`:
 
 | Role | For |
 |---|---|
@@ -52,7 +52,7 @@ One script, `deploy/gcp/deploy.sh`. **Every command is safe to re-run.**
 | Command | Does |
 |---|---|
 | `setup` | Create or update infrastructure: APIs, registry, service account, Cloud SQL, bucket, Identity Platform |
-| `deploy` | Build images → migrate → seed → deploy all three services |
+| `deploy` | Build images → migrate → seed → deploy both services |
 | `deploy --skip-build` | Redeploy the current images, for a settings change only |
 | `web` | Rebuild and deploy the web app only |
 | `migrate` | Run database migrations |
