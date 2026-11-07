@@ -367,10 +367,15 @@ deploy() {
   # This PATCH replaces the whole list, so every domain sign-in must work
   # from has to be named here. A domain added by hand in the console would
   # be wiped by the next deploy and sign-in would start failing on it with
-  # nothing to say why. Set WEB_DOMAIN to your own domain and it is kept.
+  # nothing to say why. WEB_DOMAIN holds the ones to keep, comma separated:
+  # a launch domain and a competition domain are both wanted at once, and
+  # naming only one silently removes the other.
   local domains="\"localhost\",\"$PROJECT_ID.firebaseapp.com\",\"$PROJECT_ID.web.app\",\"${web_url#https://}\""
   if [[ -n "${WEB_DOMAIN:-}" ]]; then
-    domains="$domains,\"$WEB_DOMAIN\""
+    local one
+    for one in $(printf '%s' "$WEB_DOMAIN" | tr ',' ' '); do
+      domains="$domains,\"$one\""
+    done
   fi
   identity_api PATCH "admin/v2/projects/$PROJECT_ID/config?updateMask=authorizedDomains" \
     "{\"authorizedDomains\":[$domains]}" >/dev/null
