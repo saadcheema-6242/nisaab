@@ -13,6 +13,7 @@
 import { useState } from 'react'
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { ShieldIcon, Trash2Icon } from 'lucide-react'
+import { ModerationPanel } from './moderation-panel'
 import type { AdminUser } from '@/data-acess/admin'
 import {
   adminUsersAtom,
@@ -407,6 +408,8 @@ export const AdminPage = () => {
           </CardContent>
         )}
       </Card>
+
+      <ModerationPanel />
 
       <Input
         value={search}

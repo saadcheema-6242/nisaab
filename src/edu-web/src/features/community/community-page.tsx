@@ -5,24 +5,36 @@
  * different papers. There is no room selector: a student is in the one room
  * their grade and group put them in, and the server works that out from their
  * profile rather than taking it from the page.
+ *
+ * Nothing here shows that a post was flagged, how many people reported it, or
+ * what the model thought. A room that displays its own moderation turns into
+ * an argument about the moderation, and a student who can see what gets
+ * flagged can work out how to word things so they are not.
  */
 
 import { useState } from 'react'
-import { Result, useAtomValue, useAtomSet } from '@effect-atom/atom-react'
-import { MessageSquareIcon, Trash2Icon, UsersIcon } from 'lucide-react'
-import type { CommunityPost } from '@/data-acess/community'
+import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import {
-  addPostAtom,
+  HeartIcon,
+  MessageSquareIcon,
+  Trash2Icon,
+  TriangleAlertIcon,
+  UsersIcon,
+  XIcon,
+} from 'lucide-react'
+import { AttachmentList } from './components/attachment-view'
+import { Composer } from './components/composer'
+import { PollView } from './components/poll-view'
+import { ReportDialog } from './components/report-dialog'
+import type { CommunityPost, CommunityWarning } from '@/data-acess/community'
+import {
   communityRoomAtom,
   deletePostAtom,
+  dismissWarningsAtom,
+  voteAtom,
 } from '@/data-acess/community'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-
-const MAX_BODY = 2000
 
 /** When it was said, the way a person would say it. */
 const when = (iso: string) => {
@@ -37,138 +49,155 @@ const when = (iso: string) => {
   return then.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
 }
 
-const Composer = ({
-  parentId,
-  placeholder,
-  onDone,
+/**
+ * A message from moderation, for the author alone.
+ *
+ * Two shapes, and the difference matters more than anything else on this
+ * page. A warning is a telling-off and looks like one. An offer of help to a
+ * student who sounded like they were struggling must not: the first thing
+ * they read should not feel like being in trouble.
+ */
+const WarningBanner = ({
+  warning,
+  onDismiss,
 }: {
-  parentId?: string
-  placeholder: string
-  onDone?: () => void
-}) => {
-  const [body, setBody] = useState('')
-  const [sending, setSending] = useState(false)
-  const addPost = useAtomSet(addPostAtom)
-  const tooLong = body.length > MAX_BODY
-
-  const send = () => {
-    const said = body.trim()
-    if (!said || tooLong || sending) return
-    setSending(true)
-    addPost({ body: said, parentId })
-    setBody('')
-    setSending(false)
-    onDone?.()
-  }
-
-  return (
-    <div className="space-y-2">
-      <Textarea
-        value={body}
-        onChange={(event) => setBody(event.target.value)}
-        placeholder={placeholder}
-        rows={parentId ? 2 : 3}
-        onKeyDown={(event) => {
-          // Enter sends, Shift+Enter breaks the line - a chat, not a form
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault()
-            send()
-          }
-        }}
-      />
-      <div className="flex items-center justify-between gap-2">
-        <span
-          className={cn(
-            'text-xs',
-            tooLong ? 'text-destructive' : 'text-muted-foreground',
-          )}
-        >
-          {tooLong
-            ? `${body.length - MAX_BODY} characters too many`
-            : 'Enter to post, Shift+Enter for a new line'}
-        </span>
-        <Button size="sm" onClick={send} disabled={!body.trim() || tooLong}>
-          {parentId ? 'Reply' : 'Post'}
-        </Button>
-      </div>
-    </div>
-  )
-}
+  warning: CommunityWarning
+  onDismiss: () => void
+}) => (
+  <div
+    role="status"
+    className={cn(
+      'flex items-start gap-3 rounded-lg border p-4',
+      warning.is_support
+        ? 'border-sky-300 bg-sky-50 dark:border-sky-900 dark:bg-sky-950/40'
+        : 'border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40',
+    )}
+  >
+    {warning.is_support ? (
+      <HeartIcon className="mt-0.5 size-4 shrink-0 text-sky-600 dark:text-sky-400" />
+    ) : (
+      <TriangleAlertIcon className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+    )}
+    <p className="flex-1 text-sm">{warning.message}</p>
+    <button
+      type="button"
+      onClick={onDismiss}
+      aria-label="Dismiss"
+      className="text-muted-foreground hover:text-foreground shrink-0"
+    >
+      <XIcon className="size-4" />
+    </button>
+  </div>
+)
 
 const Post = ({ post, depth = 0 }: { post: CommunityPost; depth?: number }) => {
   const [replying, setReplying] = useState(false)
+  const [busy, setBusy] = useState(false)
   const deletePost = useAtomSet(deletePostAtom)
+  const vote = useAtomSet(voteAtom)
+
+  const onVote = async (optionId: string) => {
+    setBusy(true)
+    try {
+      await vote({ postId: post.id, optionId })
+    } finally {
+      setBusy(false)
+    }
+  }
 
   return (
-    <div className={cn(depth > 0 && 'ml-4 border-l pl-4 md:ml-6 md:pl-5')}>
-      <div className="flex items-baseline gap-2 text-sm">
-        <span className="font-medium">{post.author_name}</span>
-        {post.is_mine && (
-          <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
-            you
-          </Badge>
-        )}
-        <span className="text-xs text-muted-foreground">
+    <div>
+      <div className="flex items-baseline gap-2">
+        <span className="text-sm font-medium">{post.author_name}</span>
+        <span className="text-muted-foreground text-xs">
           {when(post.created_at)}
         </span>
-        {post.is_mine && (
+        {post.is_mine ? (
           <button
             type="button"
-            onClick={() => deletePost(post.id)}
-            className="ml-auto text-muted-foreground hover:text-destructive"
+            onClick={() => void deletePost(post.id)}
+            className="text-muted-foreground hover:text-destructive ml-auto"
             aria-label="Delete this post"
           >
             <Trash2Icon className="size-3.5" />
           </button>
-        )}
+        ) : null}
       </div>
 
-      {/* Plain text, deliberately. Anything a student types is shown as what
-          they typed - no markdown, no HTML, nothing that could be made to
-          render as something else in a classmate's browser. */}
-      <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-relaxed">
-        {post.body}
-      </p>
+      {post.body ? (
+        <p className="mt-1 text-sm whitespace-pre-wrap break-words">
+          {post.body}
+        </p>
+      ) : null}
 
-      {depth === 0 && (
-        <div className="mt-1.5">
-          {replying ? (
-            <div className="mt-2">
-              <Composer
-                parentId={post.id}
-                placeholder={`Reply to ${post.author_name}…`}
-                onDone={() => setReplying(false)}
-              />
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setReplying(true)}
-              className="text-xs font-medium text-muted-foreground hover:text-foreground"
-            >
-              Reply
-            </button>
-          )}
+      <AttachmentList files={post.attachments} />
+
+      {post.poll ? (
+        <PollView poll={post.poll} onVote={onVote} busy={busy} />
+      ) : null}
+
+      <div className="mt-2 flex items-center gap-4">
+        {depth === 0 && !replying ? (
+          <button
+            type="button"
+            onClick={() => setReplying(true)}
+            className="text-muted-foreground hover:text-foreground text-xs"
+          >
+            Reply
+          </button>
+        ) : null}
+        {!post.is_mine ? (
+          <ReportDialog postId={post.id} alreadyReported={post.reported_by_me} />
+        ) : null}
+      </div>
+
+      {replying ? (
+        <div className="mt-3">
+          <Composer
+            parentId={post.id}
+            autoFocus
+            placeholder={`Reply to ${post.author_name}…`}
+            onDone={() => setReplying(false)}
+          />
         </div>
-      )}
+      ) : null}
 
-      {post.replies.length > 0 && (
-        <div className="mt-3 space-y-3">
+      {post.replies.length > 0 ? (
+        <ul className="mt-3 space-y-3 border-l pl-4">
           {post.replies.map((reply) => (
-            <Post key={reply.id} post={reply} depth={depth + 1} />
+            <li key={reply.id}>
+              <Post post={reply} depth={depth + 1} />
+            </li>
           ))}
-        </div>
-      )}
+        </ul>
+      ) : null}
     </div>
   )
 }
 
 export const CommunityPage = () => {
   const roomResult = useAtomValue(communityRoomAtom)
+  const dismiss = useAtomSet(dismissWarningsAtom)
+
+  if (Result.isFailure(roomResult)) {
+    return (
+      <div className="mx-auto w-full max-w-3xl p-6">
+        <Card>
+          <CardContent className="py-10 text-center">
+            <p className="text-sm font-medium">Your class room is not ready</p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Finish choosing your class and group, and this is where the rest
+              of your year will be.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (!Result.isSuccess(roomResult)) {
     return (
-      <div className="p-6 text-sm text-muted-foreground">
+      <div className="text-muted-foreground p-6 text-sm">
         Loading your class…
       </div>
     )
@@ -183,7 +212,7 @@ export const CommunityPage = () => {
           <MessageSquareIcon className="size-6" />
           {room.room_name}
         </h1>
-        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
           <UsersIcon className="size-3.5" />
           {room.member_count === 1
             ? 'You are the first one here'
@@ -191,15 +220,32 @@ export const CommunityPage = () => {
         </p>
       </header>
 
+      {room.warnings.map((warning) => (
+        <WarningBanner
+          key={warning.post_id}
+          warning={warning}
+          onDismiss={() => void dismiss()}
+        />
+      ))}
+
       <Card>
         <CardContent className="pt-5">
           <Composer placeholder="Ask your class something, or share what helped you…" />
+          {/* Only shown as it starts to matter. A counter at 40 of 40 is
+              noise; one at 3 left is worth knowing before you type. */}
+          {room.posts_left_today <= 5 ? (
+            <p className="text-muted-foreground mt-2 text-xs">
+              {room.posts_left_today === 0
+                ? 'You have used your posts for today. More tomorrow.'
+                : `${room.posts_left_today} posts left today`}
+            </p>
+          ) : null}
         </CardContent>
       </Card>
 
       {room.posts.length === 0 ? (
         <Card>
-          <CardContent className="py-10 text-center text-sm text-muted-foreground">
+          <CardContent className="text-muted-foreground py-10 text-center text-sm">
             Nothing here yet. Ask the first question.
           </CardContent>
         </Card>
