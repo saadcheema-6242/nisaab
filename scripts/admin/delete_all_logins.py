@@ -20,6 +20,7 @@ import json
 import subprocess
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 PROJECT_ID = "fbise-tutor-2026"
@@ -43,10 +44,17 @@ def token() -> str:
     return value
 
 
-def call(path: str, body: dict, access: str) -> dict:
+def call(path: str, body: dict | None, access: str) -> dict:
+    """One call. A body means POST; no body means GET with a query string."""
+    url = f"{BASE}{path}"
+    data = None
+    if body is None:
+        pass
+    else:
+        data = json.dumps(body).encode()
     request = urllib.request.Request(
-        f"{BASE}{path}",
-        data=json.dumps(body).encode(),
+        url,
+        data=data,
         headers={
             "Authorization": f"Bearer {access}",
             "Content-Type": "application/json",
@@ -57,17 +65,26 @@ def call(path: str, body: dict, access: str) -> dict:
         with urllib.request.urlopen(request, timeout=60) as reply:
             return json.loads(reply.read() or b"{}")
     except urllib.error.HTTPError as error:
-        raise SystemExit(f"{path} failed ({error.code}):\n{error.read().decode()[:400]}")
+        raise SystemExit(
+            f"{path} failed ({error.code}):\n"
+            + error.read().decode()[:400]
+        )
 
 
 def everyone(access: str) -> list[dict]:
-    """Every account, a page at a time."""
+    """Every account, a page at a time.
+
+    accounts:batchGet is a GET, so the paging goes in the query string. Sending
+    it as a POST with a body returns a plain 404 that says nothing about why.
+    """
     found, page = [], None
     while True:
-        body = {"maxResults": 1000}
+        query = {"maxResults": "1000"}
         if page:
-            body["nextPageToken"] = page
-        reply = call("/accounts:batchGet", body, access)
+            query["nextPageToken"] = page
+        reply = call(
+            "/accounts:batchGet?" + urllib.parse.urlencode(query), None, access
+        )
         found += reply.get("users") or []
         page = reply.get("nextPageToken")
         if not page:
