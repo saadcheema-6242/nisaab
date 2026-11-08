@@ -8,16 +8,19 @@
  * It reads the progress endpoint that already exists and adds nothing to it.
  */
 
+import { useEffect, useState } from 'react'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { BarChart3Icon } from 'lucide-react'
+import { BarRows, CoverageBar, Dial, percent } from './charts'
+import { GraphsTab } from './graphs-tab'
 import type { SubjectProgressDto } from '@/integrations/api/client'
+import type { Bar } from './charts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { progressAtom } from '@/data-acess/progress'
 import { SubjectIcon } from '@/lib/subjects'
-import { BarRows, CoverageBar, Dial, percent } from './charts'
-import type { Bar } from './charts'
+import { cn } from '@/lib/utils'
 
 const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
   const domains: Array<Bar> = (subject.domains ?? []).map((domain) => ({
@@ -40,7 +43,9 @@ const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
         <CardTitle className="flex items-center gap-2 text-base">
           <SubjectIcon code={subject.subject_code} className="size-4" />
           {subject.name}
-          {subject.mastery !== null && subject.mastery !== undefined && (
+          {/* The generated client decodes a nullable number to
+              number | undefined, so undefined is the only empty case. */}
+          {subject.mastery !== undefined && (
             <Badge variant="secondary" className="ml-auto tabular-nums">
               {percent(subject.mastery)} mastery
             </Badge>
@@ -99,18 +104,70 @@ const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
   )
 }
 
-export const ProgressPage = () => {
+/**
+ * Where you stand: the tab that opens by default.
+ *
+ * Kept as its own component so the two tabs load independently. The overview
+ * needs no history and appears immediately; the graphs read every answer
+ * ever recorded and fetch only when asked for.
+ */
+const OverviewTab = () => {
   const progressResult = useAtomValue(progressAtom)
+
+  if (Result.isFailure(progressResult)) {
+    return (
+      <Card>
+        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+          Your progress could not be loaded. Try again in a moment.
+        </CardContent>
+      </Card>
+    )
+  }
 
   if (!Result.isSuccess(progressResult)) {
     return (
-      <div className="p-6 text-sm text-muted-foreground">
-        Loading your progress…
-      </div>
+      <p className="p-6 text-sm text-muted-foreground">Loading your progress…</p>
     )
   }
 
   const subjects = progressResult.value.subjects.filter((s) => s.has_slos)
+
+  if (subjects.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+          There is nothing to show yet. Answer a quiz or some flashcards and
+          your progress will appear here.
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {subjects.map((subject) => (
+        <SubjectCard key={subject.project_id} subject={subject} />
+      ))}
+    </div>
+  )
+}
+
+type Tab = 'overview' | 'graphs'
+
+export const ProgressPage = () => {
+  const [tab, setTab] = useState<Tab>('overview')
+  // Latched on the first visit to the graphs tab and never cleared, so
+  // switching back and forth does not refetch every answer the student has
+  // ever given. Without it the panel unmounts and the atom runs again.
+  const [seenGraphs, setSeenGraphs] = useState(false)
+  useEffect(() => {
+    if (tab === 'graphs') setSeenGraphs(true)
+  }, [tab])
+
+  const tabs: Array<{ id: Tab; label: string; hint: string }> = [
+    { id: 'overview', label: 'Where you stand', hint: 'Mastery, chapters and a predicted grade' },
+    { id: 'graphs', label: 'Graphs', hint: 'Over time, by question type, and how often you practise' },
+  ]
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:p-6">
@@ -126,18 +183,52 @@ export const ProgressPage = () => {
         </p>
       </header>
 
-      {subjects.length === 0 ? (
-        <Card>
-          <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            There is nothing to show yet. Answer a quiz or some flashcards and
-            your progress will appear here.
-          </CardContent>
-        </Card>
-      ) : (
-        subjects.map((subject) => (
-          <SubjectCard key={subject.project_id} subject={subject} />
-        ))
-      )}
+      {/* A real tablist, so arrow keys work and a screen reader says which of
+          the two is showing. A pair of styled buttons would look the same and
+          announce nothing. */}
+      <div role="tablist" aria-label="Progress views" className="flex gap-1 border-b">
+        {tabs.map((one) => (
+          <button
+            key={one.id}
+            role="tab"
+            type="button"
+            id={`progress-tab-${one.id}`}
+            aria-selected={tab === one.id}
+            aria-controls={`progress-panel-${one.id}`}
+            title={one.hint}
+            onClick={() => setTab(one.id)}
+            className={cn(
+              '-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+              tab === one.id
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {one.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Both panels stay mounted once opened, hidden rather than unmounted,
+          so switching back does not refetch and redraw everything. */}
+      <div
+        role="tabpanel"
+        id="progress-panel-overview"
+        aria-labelledby="progress-tab-overview"
+        hidden={tab !== 'overview'}
+      >
+        <OverviewTab />
+      </div>
+      <div
+        role="tabpanel"
+        id="progress-panel-graphs"
+        aria-labelledby="progress-tab-graphs"
+        hidden={tab !== 'graphs'}
+      >
+        {/* Mounted only once the tab is first opened, so the heavier query
+            never runs for someone who does not look at it. */}
+        {tab === 'graphs' || seenGraphs ? <GraphsTab /> : null}
+      </div>
     </div>
   )
 }
