@@ -9,6 +9,7 @@ import {
 import { MathText } from '@/components/math-text'
 import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 import { ImageCredit } from '@/components/image-credit'
+import { cn } from '@/lib/utils'
 
 type QuizQuestionCardProps = {
   quizId: string
@@ -110,7 +111,9 @@ export const QuizQuestionCard = ({
                 <figure className="mb-6 w-full max-w-xl mx-auto">
                   <img
                     src={currentQuestion.image_url}
-                    alt={currentQuestion.image_alt ?? 'Diagram for this question'}
+                    alt={
+                      currentQuestion.image_alt ?? 'Diagram for this question'
+                    }
                     className="w-full rounded-lg border bg-white"
                     loading="lazy"
                   />
@@ -148,11 +151,23 @@ export const QuizQuestionCard = ({
                   key={opt.key}
                   onClick={() => handleSelect(opt.key)}
                   disabled={showResults}
-                  className={`text-left p-4 border rounded-lg transition-all ${
+                  className={cn(
+                    'rounded-lg border p-4 text-left',
+                    'transition-all duration-150 ease-out',
+                    'outline-none focus-visible:ring-ring/45 focus-visible:ring-[3px]',
                     showResults
                       ? 'cursor-default'
-                      : 'cursor-pointer hover:shadow-md'
-                  } ${getAnswerClasses(opt.key)}`}
+                      : [
+                          // The most-pressed control in the product, so it
+                          // gets the full affordance: it rises to meet the
+                          // pointer and gives under the press. Answering a
+                          // question should feel like pressing something.
+                          'cursor-pointer hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md',
+                          'active:translate-y-0 active:shadow-xs',
+                          'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+                        ],
+                    getAnswerClasses(opt.key),
+                  )}
                 >
                   <div className="flex gap-3">
                     <span className="font-semibold shrink-0">{opt.key}.</span>

@@ -24,7 +24,8 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     if (!isAuthenticated) return
-    const redirectUrl = search?.redirect || sessionStorage.getItem('auth.redirect')
+    const redirectUrl =
+      search?.redirect || sessionStorage.getItem('auth.redirect')
     if (redirectUrl) {
       sessionStorage.removeItem('auth.redirect')
       navigate({
@@ -54,7 +55,10 @@ export const HomePage = () => {
           {stats.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.08}>
               <div className="text-primary text-4xl font-bold tracking-tight sm:text-5xl">
-                <Counter to={stat.value} suffix={'suffix' in stat ? stat.suffix : ''} />
+                <Counter
+                  to={stat.value}
+                  suffix={'suffix' in stat ? stat.suffix : ''}
+                />
               </div>
               <div className="mt-1.5 font-medium">{stat.label}</div>
               <div className="text-muted-foreground mt-0.5 text-sm text-pretty">
@@ -142,7 +146,7 @@ export const HomePage = () => {
       <section className="bg-primary text-primary-foreground">
         <div className="mx-auto w-full max-w-3xl px-4 py-24 text-center sm:px-6">
           <Reveal>
-            <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+            <h2 className="text-3xl font-semibold text-balance sm:text-4xl">
               Start with the outcome you are weakest on.
             </h2>
             <p className="mt-4 text-lg text-pretty opacity-80">

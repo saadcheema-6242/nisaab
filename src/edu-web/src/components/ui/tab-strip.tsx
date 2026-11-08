@@ -76,7 +76,7 @@ export const TabStrip = <TId extends string>({
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className="flex flex-wrap gap-1 border-b"
+      className="border-border/70 flex flex-wrap gap-1 border-b"
     >
       {tabs.map((tab) => (
         <button
@@ -93,15 +93,35 @@ export const TabStrip = <TId extends string>({
           title={tab.hint}
           onClick={() => onSelect(tab.id)}
           className={cn(
-            '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+            '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2.5',
+            'text-sm font-medium',
+            'transition-[color,border-color,background-color] duration-150 ease-out',
+            // The focus ring is inset and square-topped so it cannot be
+            // mistaken for the selected-tab underline.
+            'rounded-t-md outline-none focus-visible:ring-ring/45 focus-visible:ring-2 focus-visible:ring-inset',
             active === tab.id
               ? 'border-primary text-foreground'
-              : 'border-transparent text-muted-foreground hover:text-foreground',
+              : [
+                  'border-transparent text-muted-foreground',
+                  // The unselected tab warms slightly before it commits to
+                  // the underline, so the row feels answerable rather than
+                  // inert. Only the colour moves; moving the border on hover
+                  // would make it look selected.
+                  'hover:bg-muted/50 hover:text-foreground',
+                ],
           )}
         >
           {tab.label}
           {tab.badge !== undefined && tab.badge > 0 && (
-            <span className="bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-xs tabular-nums">
+            <span
+              className={cn(
+                'inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5',
+                'text-xs font-semibold tabular-nums',
+                active === tab.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground',
+              )}
+            >
               {tab.badge}
             </span>
           )}

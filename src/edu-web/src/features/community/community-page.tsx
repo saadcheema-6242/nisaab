@@ -37,6 +37,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { LoadingLine } from '@/components/ui/loading-line'
+import { PageHeader } from '@/components/ui/page-header'
 
 /** When it was said, the way a person would say it. */
 const when = (iso: string) => {
@@ -160,7 +162,10 @@ const Post = ({ post, depth = 0 }: { post: CommunityPost; depth?: number }) => {
           </button>
         ) : null}
         {!post.is_mine ? (
-          <ReportDialog postId={post.id} alreadyReported={post.reported_by_me} />
+          <ReportDialog
+            postId={post.id}
+            alreadyReported={post.reported_by_me}
+          />
         ) : null}
       </div>
 
@@ -209,29 +214,21 @@ export const CommunityPage = () => {
   }
 
   if (!Result.isSuccess(roomResult)) {
-    return (
-      <div className="text-muted-foreground p-6 text-sm">
-        Loading your class…
-      </div>
-    )
+    return <LoadingLine>Loading your class</LoadingLine>
   }
 
   const room = roomResult.value
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 p-4 md:p-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-2xl font-semibold">
-          <MessageSquareIcon className="size-6" />
-          {room.room_name}
-        </h1>
-        <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
-          <UsersIcon className="size-3.5" />
+      <PageHeader icon={MessageSquareIcon} title={room.room_name}>
+        <span className="flex items-center gap-1.5">
+          <UsersIcon className="size-3.5 shrink-0" />
           {room.member_count === 1
             ? 'You are the first one here'
             : `${room.member_count} students in your grade and group`}
-        </p>
-      </header>
+        </span>
+      </PageHeader>
 
       <RoomSwitcher />
 

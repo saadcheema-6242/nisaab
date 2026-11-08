@@ -15,7 +15,14 @@ import {
   Loader2Icon,
   XCircleIcon,
 } from 'lucide-react'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'sonner'
 import {
   countQuestions,
@@ -84,7 +91,10 @@ const formatTime = (ms: number) => {
 }
 
 const optionText = (item: PaperItemDto, option: string) =>
-  String((item.options as Record<string, unknown> | null | undefined)?.[option] ?? '')
+  String(
+    (item.options as Record<string, unknown> | null | undefined)?.[option] ??
+      '',
+  )
 
 const filled = (value?: string) => Boolean((value ?? '').trim())
 
@@ -123,7 +133,7 @@ const PreparingView = ({
   onCheck: () => void
 }) => (
   <div className="mx-auto max-w-2xl space-y-4 p-4">
-    <h1 className="text-2xl font-bold">{paper.title}</h1>
+    <h1 className="text-2xl font-semibold">{paper.title}</h1>
     <PaperBadges paper={paper} />
     <div className="flex gap-3 rounded-lg bg-muted/60 p-4 text-sm">
       <ThinkingDots className="mt-1.5 shrink-0" label="Setting your paper" />
@@ -147,9 +157,15 @@ const PreparingView = ({
   </div>
 )
 
-const FailedView = ({ paper, projectId }: { paper: PaperDto; projectId: string }) => (
+const FailedView = ({
+  paper,
+  projectId,
+}: {
+  paper: PaperDto
+  projectId: string
+}) => (
   <div className="mx-auto max-w-2xl space-y-4 p-4">
-    <h1 className="text-2xl font-bold">{paper.title}</h1>
+    <h1 className="text-2xl font-semibold">{paper.title}</h1>
     <div className="flex gap-3 rounded-lg border border-destructive/40 p-4 text-sm">
       <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-destructive" />
       <div>
@@ -167,9 +183,15 @@ const FailedView = ({ paper, projectId }: { paper: PaperDto; projectId: string }
 
 // --- Start screen ---
 
-const StartScreen = ({ paper, onStart }: { paper: PaperDto; onStart: () => void }) => (
+const StartScreen = ({
+  paper,
+  onStart,
+}: {
+  paper: PaperDto
+  onStart: () => void
+}) => (
   <div className="mx-auto max-w-2xl space-y-4 p-4">
-    <h1 className="text-2xl font-bold">{paper.title}</h1>
+    <h1 className="text-2xl font-semibold">{paper.title}</h1>
     <PaperBadges paper={paper} />
     <ul className="space-y-1 text-sm">
       {paper.sections.map((section) => {
@@ -192,8 +214,8 @@ const StartScreen = ({ paper, onStart }: { paper: PaperDto; onStart: () => void 
       {hasChoices(paper) &&
         ' In Sections B and C, choose (a) or (b) of each question and answer only that one.'}{' '}
       Your answers are saved as you type, and the paper is submitted
-      automatically when time runs out. Written answers are marked by AI like
-      an examiner (estimated marks).
+      automatically when time runs out. Written answers are marked by AI like an
+      examiner (estimated marks).
     </div>
     <Button size="lg" onClick={onStart}>
       Start paper
@@ -235,7 +257,10 @@ const McqQuestion = ({
     <div className="flex gap-2">
       <span className="font-semibold">{number}.</span>
       <MathText className="flex-1 font-medium">{item.question}</MathText>
-      <CognitiveBadge level={item.cognitive_level} className="mt-1 h-fit shrink-0" />
+      <CognitiveBadge
+        level={item.cognitive_level}
+        className="mt-1 h-fit shrink-0"
+      />
     </div>
     <div className="grid gap-2 sm:grid-cols-2">
       {OPTIONS.map((option) => (
@@ -245,7 +270,8 @@ const McqQuestion = ({
           onClick={() => onChange(option)}
           className={cn(
             'flex gap-2 rounded-lg border p-2 text-left text-sm transition-colors hover:bg-accent/50',
-            value === option && 'border-primary bg-primary/10 ring-1 ring-primary',
+            value === option &&
+              'border-primary bg-primary/10 ring-1 ring-primary',
           )}
         >
           <span className="font-semibold uppercase">{option}.</span>
@@ -271,7 +297,10 @@ const WrittenQuestion = ({
     <div className="flex gap-2">
       <span className="font-semibold">{number}.</span>
       <MathText className="flex-1 font-medium">{item.question}</MathText>
-      <CognitiveBadge level={item.cognitive_level} className="mt-1 h-fit shrink-0" />
+      <CognitiveBadge
+        level={item.cognitive_level}
+        className="mt-1 h-fit shrink-0"
+      />
       <Badge variant="outline" className="h-fit shrink-0">
         {formatMarks(item.marks)} marks
       </Badge>
@@ -326,7 +355,8 @@ const ChoiceQuestion = ({
             aria-pressed={item.id === current.id}
             className={cn(
               'flex w-full gap-2 rounded-lg border p-3 text-left transition-colors hover:bg-accent/50',
-              item.id === current.id && 'border-primary bg-primary/5 ring-1 ring-primary',
+              item.id === current.id &&
+                'border-primary bg-primary/5 ring-1 ring-primary',
             )}
           >
             <span className="font-semibold">({item.choice})</span>
@@ -354,7 +384,9 @@ const ExamView = ({
   projectId: string
 }) => {
   const [answers, setAnswers] = useState<Record<string, string>>(() =>
-    Object.fromEntries(Object.entries(paper.answers ?? {}).map(([k, v]) => [k, String(v)])),
+    Object.fromEntries(
+      Object.entries(paper.answers ?? {}).map(([k, v]) => [k, String(v)]),
+    ),
   )
   const [choices, setChoices] = useState<Record<string, string>>(() =>
     initialChoices(paper, answers),
@@ -375,18 +407,26 @@ const ExamView = ({
       const skipped = new Set(
         blocks.flatMap((block) =>
           block.kind === 'choice'
-            ? block.items.filter((i) => i.choice !== choices[block.group]).map((i) => i.id)
+            ? block.items
+                .filter((i) => i.choice !== choices[block.group])
+                .map((i) => i.id)
             : [],
         ),
       )
-      return Object.fromEntries(Object.entries(all).filter(([id]) => !skipped.has(id)))
+      return Object.fromEntries(
+        Object.entries(all).filter(([id]) => !skipped.has(id)),
+      )
     },
     [blocks, choices],
   )
 
-  const total = blocks.reduce((n, b) => n + (b.kind === 'stimulus' ? b.items.length : 1), 0)
+  const total = blocks.reduce(
+    (n, b) => n + (b.kind === 'stimulus' ? b.items.length : 1),
+    0,
+  )
   const answered = blocks.reduce((n, block) => {
-    if (block.kind === 'single') return n + (filled(answers[block.item.id]) ? 1 : 0)
+    if (block.kind === 'single')
+      return n + (filled(answers[block.item.id]) ? 1 : 0)
     if (block.kind === 'stimulus')
       return n + block.items.filter((i) => filled(answers[i.id])).length
     const current = block.items.find((i) => i.choice === choices[block.group])
@@ -422,7 +462,9 @@ const ExamView = ({
   // Save answers a moment after the student stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
-      void save({ projectId, paperId: paper.id, answers }).catch(() => undefined)
+      void save({ projectId, paperId: paper.id, answers }).catch(
+        () => undefined,
+      )
     }, 2000)
     return () => clearTimeout(timer)
   }, [answers, save, projectId, paper.id])
@@ -451,7 +493,9 @@ const ExamView = ({
         <span
           className={cn(
             'font-mono text-lg font-semibold',
-            remaining < 60_000 ? 'text-red-600' : remaining < 300_000 && 'text-amber-600',
+            remaining < 60_000
+              ? 'text-red-600'
+              : remaining < 300_000 && 'text-amber-600',
           )}
         >
           {formatTime(remaining)}
@@ -459,7 +503,11 @@ const ExamView = ({
         <span className="text-sm text-muted-foreground">
           {answered}/{total} answered
         </span>
-        <Button className="ml-auto" onClick={handleSubmit} disabled={submitting}>
+        <Button
+          className="ml-auto"
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
           {submitting && <Loader2Icon className="size-4 animate-spin" />}
           Submit paper
         </Button>
@@ -516,7 +564,11 @@ const ExamView = ({
             })
             return block.kind === 'stimulus' ? (
               <div key={block.group} className="space-y-3">
-                <StimulusBox stimulus={block.stimulus} from={from} to={number} />
+                <StimulusBox
+                  stimulus={block.stimulus}
+                  from={from}
+                  to={number}
+                />
                 {questions}
               </div>
             ) : (
@@ -526,7 +578,12 @@ const ExamView = ({
         </section>
       ))}
 
-      <Button className="w-full" size="lg" onClick={handleSubmit} disabled={submitting}>
+      <Button
+        className="w-full"
+        size="lg"
+        onClick={handleSubmit}
+        disabled={submitting}
+      >
         Submit paper
       </Button>
     </div>
@@ -587,7 +644,11 @@ const ItemResult = ({
           <span
             className={cn(
               'shrink-0 font-mono font-semibold',
-              full ? 'text-emerald-600' : result.awarded > 0 ? 'text-amber-600' : 'text-red-600',
+              full
+                ? 'text-emerald-600'
+                : result.awarded > 0
+                  ? 'text-amber-600'
+                  : 'text-red-600',
             )}
           >
             {formatMarks(result.awarded)}/{formatMarks(result.marks)}
@@ -615,17 +676,23 @@ const ItemResult = ({
             </div>
           )}
           {result.explanation && (
-            <MathText className="text-muted-foreground">{result.explanation}</MathText>
+            <MathText className="text-muted-foreground">
+              {result.explanation}
+            </MathText>
           )}
         </div>
       ) : alternative ? (
         <div className="pl-5">
-          {result.model_answer && <ModelAnswer text={result.model_answer} open />}
+          {result.model_answer && (
+            <ModelAnswer text={result.model_answer} open />
+          )}
         </div>
       ) : (
         <div className="space-y-2 pl-5">
           <div className="rounded-lg border bg-muted/40 p-2 whitespace-pre-wrap">
-            {result.answer || <span className="text-muted-foreground">Not answered</span>}
+            {result.answer || (
+              <span className="text-muted-foreground">Not answered</span>
+            )}
           </div>
           {result.marking && (
             <>
@@ -636,7 +703,9 @@ const ItemResult = ({
                     <div className="flex-1">
                       <MathText className="font-medium">{`${point.point} (${formatMarks(point.awarded)}/${formatMarks(point.marks)})`}</MathText>
                       {point.comment && (
-                        <MathText className="text-muted-foreground">{point.comment}</MathText>
+                        <MathText className="text-muted-foreground">
+                          {point.comment}
+                        </MathText>
                       )}
                     </div>
                   </li>
@@ -657,7 +726,13 @@ const ItemResult = ({
   )
 }
 
-const ResultView = ({ paper, projectId }: { paper: PaperDto; projectId: string }) => {
+const ResultView = ({
+  paper,
+  projectId,
+}: {
+  paper: PaperDto
+  projectId: string
+}) => {
   const result = paper.result
   if (!result) return null
   const byId = new Map(result.items.map((item) => [item.id, item]))
@@ -670,13 +745,18 @@ const ResultView = ({ paper, projectId }: { paper: PaperDto; projectId: string }
           <span className="text-4xl font-bold">
             {formatMarks(result.score)}/{formatMarks(result.max_score)}
           </span>
-          <span className="text-xl text-muted-foreground">{result.percent}%</span>
+          <span className="text-xl text-muted-foreground">
+            {result.percent}%
+          </span>
           <Badge className="text-base">{result.grade}</Badge>
           <span className="text-muted-foreground">{result.descriptor}</span>
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
           {result.sections.map((section) => (
-            <div key={section.id} className="rounded-lg bg-muted/60 p-2 text-sm">
+            <div
+              key={section.id}
+              className="rounded-lg bg-muted/60 p-2 text-sm"
+            >
               <div className="text-muted-foreground">{section.title}</div>
               <div className="font-semibold">
                 {formatMarks(section.score)}/{formatMarks(section.max_score)}
@@ -703,17 +783,30 @@ const ResultView = ({ paper, projectId }: { paper: PaperDto; projectId: string }
               // The question the student answered (the better one if both), else (a)
               const answered = block.items
                 .filter((i) => byId.get(i.id)?.answer)
-                .sort((x, y) => (byId.get(y.id)?.awarded ?? 0) - (byId.get(x.id)?.awarded ?? 0))
+                .sort(
+                  (x, y) =>
+                    (byId.get(y.id)?.awarded ?? 0) -
+                    (byId.get(x.id)?.awarded ?? 0),
+                )
               const shown = answered.at(0) ?? block.items[0]
               const others = block.items.filter((i) => i.id !== shown.id)
               return (
                 <div key={block.group} className="space-y-2">
-                  <ItemResult item={shown} result={byId.get(shown.id)} number={number} />
+                  <ItemResult
+                    item={shown}
+                    result={byId.get(shown.id)}
+                    number={number}
+                  />
                   {others.map((other) => (
                     <Collapsible key={other.id}>
                       <CollapsibleTrigger asChild>
-                        <Button size="sm" variant="ghost" className="text-muted-foreground">
-                          See the other choice ({other.choice}) and its model answer
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-muted-foreground"
+                        >
+                          See the other choice ({other.choice}) and its model
+                          answer
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="mt-2">
@@ -734,12 +827,21 @@ const ResultView = ({ paper, projectId }: { paper: PaperDto; projectId: string }
             const results = items.map((item) => {
               number += 1
               return (
-                <ItemResult key={item.id} item={item} result={byId.get(item.id)} number={number} />
+                <ItemResult
+                  key={item.id}
+                  item={item}
+                  result={byId.get(item.id)}
+                  number={number}
+                />
               )
             })
             return block.kind === 'stimulus' ? (
               <div key={block.group} className="space-y-3">
-                <StimulusBox stimulus={block.stimulus} from={from} to={number} />
+                <StimulusBox
+                  stimulus={block.stimulus}
+                  from={from}
+                  to={number}
+                />
                 {results}
               </div>
             ) : (
@@ -754,11 +856,19 @@ const ResultView = ({ paper, projectId }: { paper: PaperDto; projectId: string }
 
 // --- Page ---
 
-export const PaperPage = ({ projectId, paperId }: { projectId: string; paperId: string }) => {
+export const PaperPage = ({
+  projectId,
+  paperId,
+}: {
+  projectId: string
+  paperId: string
+}) => {
   const atom = paperAtom(`${projectId}:${paperId}`)
   const paperResult = useAtomValue(atom)
   const refresh = useAtomRefresh(atom)
-  const [startedAt, setStartedAt] = useState<number | null>(() => readStart(paperId))
+  const [startedAt, setStartedAt] = useState<number | null>(() =>
+    readStart(paperId),
+  )
 
   // Board papers are set by the worker; keep checking until they are ready
   const preparing =
@@ -785,7 +895,10 @@ export const PaperPage = ({ projectId, paperId }: { projectId: string; paperId: 
               <span className="sr-only">Back to subject</span>
             </Link>
           </Button>
-          <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
           <span className="font-medium">Practice paper</span>
         </div>
         <div className="flex items-center gap-2 px-3">
@@ -801,17 +914,27 @@ export const PaperPage = ({ projectId, paperId }: { projectId: string; paperId: 
             </div>
           ))
           .onFailure(() => (
-            <p className="p-12 text-center text-destructive">Could not load the paper</p>
+            <p className="p-12 text-center text-destructive">
+              Could not load the paper
+            </p>
           ))
           .onSuccess((paper) =>
             paper.status === 'submitted' ? (
               <ResultView paper={paper} projectId={projectId} />
             ) : paper.status === 'preparing' ? (
-              <PreparingView paper={paper} timedOut={timedOut} onCheck={refresh} />
+              <PreparingView
+                paper={paper}
+                timedOut={timedOut}
+                onCheck={refresh}
+              />
             ) : paper.status === 'failed' ? (
               <FailedView paper={paper} projectId={projectId} />
             ) : startedAt ? (
-              <ExamView paper={paper} startedAt={startedAt} projectId={projectId} />
+              <ExamView
+                paper={paper}
+                startedAt={startedAt}
+                projectId={projectId}
+              />
             ) : (
               <StartScreen paper={paper} onStart={start} />
             ),

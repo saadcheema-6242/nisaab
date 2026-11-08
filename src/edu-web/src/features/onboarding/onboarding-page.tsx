@@ -114,7 +114,8 @@ export const OnboardingPage = () => {
   // and sent the student back here. Leave only once that guard would let us in.
   useEffect(() => {
     if (!finished) return
-    if (Result.isSuccess(profileResult) && !profileResult.value.onboarded) return
+    if (Result.isSuccess(profileResult) && !profileResult.value.onboarded)
+      return
     navigate({ to: '/dashboard', replace: true })
   }, [finished, profileResult, navigate])
 
@@ -123,8 +124,10 @@ export const OnboardingPage = () => {
       <div className="min-h-screen bg-background">
         <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10">
           <div className="mb-8">
-            <div className="text-sm font-semibold text-primary">{brand.name}</div>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight">
+            <div className="text-sm font-semibold text-primary">
+              {brand.name}
+            </div>
+            <h1 className="mt-2 text-2xl font-semibold">
               Welcome. Who are you?
             </h1>
             <p className="mt-1 text-muted-foreground">
@@ -155,8 +158,10 @@ export const OnboardingPage = () => {
       <div className="min-h-screen bg-background">
         <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-10">
           <div className="mb-8">
-            <div className="text-sm font-semibold text-primary">{brand.name}</div>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight">
+            <div className="text-sm font-semibold text-primary">
+              {brand.name}
+            </div>
+            <h1 className="mt-2 text-2xl font-semibold">
               Tell us what you teach
             </h1>
             <p className="mt-1 text-muted-foreground">
@@ -174,7 +179,7 @@ export const OnboardingPage = () => {
       <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-10">
         <div className="mb-8">
           <div className="text-sm font-semibold text-primary">{brand.name}</div>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight">
+          <h1 className="mt-2 text-2xl font-semibold">
             Set up your FSc subjects
           </h1>
           <p className="mt-1 text-muted-foreground">

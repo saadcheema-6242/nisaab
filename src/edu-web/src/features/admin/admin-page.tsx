@@ -28,13 +28,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  TabPanel,
-  TabStrip,
-  useFirstOpened,
-} from '@/components/ui/tab-strip'
+import { TabPanel, TabStrip, useFirstOpened } from '@/components/ui/tab-strip'
 import { auth } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
+import { LoadingLine } from '@/components/ui/loading-line'
+import { PageHeader } from '@/components/ui/page-header'
 
 /** Who this browser is signed in as, for the refusal message. */
 const currentEmail = () => auth.currentUser?.email ?? null
@@ -46,9 +44,13 @@ const GROUPS: Record<string, string> = {
 }
 
 const day = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString(undefined, {
-    day: 'numeric', month: 'short', year: 'numeric',
-  }) : ''
+  iso
+    ? new Date(iso).toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : ''
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="rounded-lg border p-3">
@@ -69,7 +71,8 @@ const Actions = ({ user }: { user: AdminUser }) => {
 
   const suspended = user.ban_state !== 'active'
   const emailMatches =
-    confirmEmail.trim().toLowerCase() === (user.email ?? '').trim().toLowerCase()
+    confirmEmail.trim().toLowerCase() ===
+    (user.email ?? '').trim().toLowerCase()
 
   return (
     <div className="space-y-3 border-t pt-3">
@@ -82,10 +85,16 @@ const Actions = ({ user }: { user: AdminUser }) => {
                 : `Suspended until ${day(user.banned_until)}`}
             </span>
             {user.ban_reason && (
-              <span className="text-muted-foreground"> · {user.ban_reason}</span>
+              <span className="text-muted-foreground">
+                {' '}
+                · {user.ban_reason}
+              </span>
             )}
             {user.banned_by && (
-              <span className="text-muted-foreground"> · by {user.banned_by}</span>
+              <span className="text-muted-foreground">
+                {' '}
+                · by {user.banned_by}
+              </span>
             )}
           </p>
           <Button size="sm" variant="outline" onClick={() => unban(user.id)}>
@@ -195,7 +204,9 @@ const UserRow = ({ user }: { user: AdminUser }) => {
     user.usage.document_uploads
 
   return (
-    <Card className={cn(user.ban_state !== 'active' && 'border-destructive/40')}>
+    <Card
+      className={cn(user.ban_state !== 'active' && 'border-destructive/40')}
+    >
       <CardContent className="space-y-2 pt-4">
         <button
           type="button"
@@ -234,7 +245,10 @@ const UserRow = ({ user }: { user: AdminUser }) => {
             <div className="grid grid-cols-2 gap-2 pt-1 text-xs sm:grid-cols-5">
               <Stat label="Chat today" value={user.usage.chat_messages} />
               <Stat label="Quizzes today" value={user.usage.quiz_generations} />
-              <Stat label="Cards today" value={user.usage.flashcard_generations} />
+              <Stat
+                label="Cards today"
+                value={user.usage.flashcard_generations}
+              />
               <Stat label="Maps today" value={user.usage.mindmap_generations} />
               <Stat label="Uploads today" value={user.usage.document_uploads} />
             </div>
@@ -245,7 +259,6 @@ const UserRow = ({ user }: { user: AdminUser }) => {
     </Card>
   )
 }
-
 
 const WIPE_PHRASE = 'DELETE ALL USERS'
 
@@ -335,7 +348,11 @@ const TABS: Array<{ id: AdminTab; label: string; hint: string }> = [
   { id: 'accounts', label: 'Accounts', hint: 'Who is on the system' },
   { id: 'teachers', label: 'Teachers', hint: 'Approve teacher accounts' },
   { id: 'moderation', label: 'Moderation', hint: 'Posts the reviewer flagged' },
-  { id: 'sessions', label: 'Sessions', hint: 'Schedule and cancel weekly classes' },
+  {
+    id: 'sessions',
+    label: 'Sessions',
+    hint: 'Schedule and cancel weekly classes',
+  },
   { id: 'danger', label: 'Danger zone', hint: 'Irreversible things' },
 ]
 
@@ -378,7 +395,7 @@ export const AdminPage = () => {
   }
 
   if (!Result.isSuccess(result)) {
-    return <div className="p-6 text-sm text-muted-foreground">Loading accounts…</div>
+    return <LoadingLine>Loading accounts</LoadingLine>
   }
 
   const { overview, users } = result.value
@@ -393,16 +410,10 @@ export const AdminPage = () => {
 
   return (
     <div className="mx-auto w-full max-w-5xl space-y-4 p-4 md:p-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-2xl font-semibold">
-          <ShieldIcon className="size-6" />
-          Accounts
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Counts, not contents. Reading a student's own work is a different
-          decision and is not what this screen is for.
-        </p>
-      </header>
+      <PageHeader icon={ShieldIcon} title="Accounts">
+        Counts, not contents. Reading a student&apos;s own work is a different
+        decision and is not what this screen is for.
+      </PageHeader>
 
       <Card>
         <CardHeader className="pb-2">
@@ -438,7 +449,11 @@ export const AdminPage = () => {
         onSelect={setTab}
       />
 
-      <TabPanel id="accounts" active={tab === 'accounts'} opened={opened.has('accounts')}>
+      <TabPanel
+        id="accounts"
+        active={tab === 'accounts'}
+        opened={opened.has('accounts')}
+      >
         <div className="space-y-4">
           <Input
             value={search}
@@ -463,19 +478,35 @@ export const AdminPage = () => {
         </div>
       </TabPanel>
 
-      <TabPanel id="teachers" active={tab === 'teachers'} opened={opened.has('teachers')}>
+      <TabPanel
+        id="teachers"
+        active={tab === 'teachers'}
+        opened={opened.has('teachers')}
+      >
         <TeachersPanel />
       </TabPanel>
 
-      <TabPanel id="moderation" active={tab === 'moderation'} opened={opened.has('moderation')}>
+      <TabPanel
+        id="moderation"
+        active={tab === 'moderation'}
+        opened={opened.has('moderation')}
+      >
         <ModerationPanel />
       </TabPanel>
 
-      <TabPanel id="sessions" active={tab === 'sessions'} opened={opened.has('sessions')}>
+      <TabPanel
+        id="sessions"
+        active={tab === 'sessions'}
+        opened={opened.has('sessions')}
+      >
         <SessionsPanel />
       </TabPanel>
 
-      <TabPanel id="danger" active={tab === 'danger'} opened={opened.has('danger')}>
+      <TabPanel
+        id="danger"
+        active={tab === 'danger'}
+        opened={opened.has('danger')}
+      >
         <WipeEverything others={Math.max(0, overview.total_users - 1)} />
       </TabPanel>
     </div>

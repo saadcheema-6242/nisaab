@@ -18,13 +18,10 @@ import type { SubjectProgressDto } from '@/integrations/api/client'
 import type { Bar } from './charts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  TabPanel,
-  TabStrip,
-  useFirstOpened,
-} from '@/components/ui/tab-strip'
+import { TabPanel, TabStrip, useFirstOpened } from '@/components/ui/tab-strip'
 import { progressAtom } from '@/data-acess/progress'
 import { SubjectIcon } from '@/lib/subjects'
+import { PageHeader } from '@/components/ui/page-header'
 
 const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
   const domains: Array<Bar> = (subject.domains ?? []).map((domain) => ({
@@ -36,10 +33,12 @@ const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
         : `${percent(domain.mastery)} · ${domain.practised_count}/${domain.examined_count}`,
   }))
 
-  const weakest: Array<Bar> = (subject.weakest ?? []).slice(0, 6).map((slo) => ({
-    label: `${slo.code} · ${slo.description}`,
-    value: slo.mastery ?? null,
-  }))
+  const weakest: Array<Bar> = (subject.weakest ?? [])
+    .slice(0, 6)
+    .map((slo) => ({
+      label: `${slo.code} · ${slo.description}`,
+      value: slo.mastery ?? null,
+    }))
 
   return (
     <Card>
@@ -130,7 +129,9 @@ const OverviewTab = () => {
 
   if (!Result.isSuccess(progressResult)) {
     return (
-      <p className="p-6 text-sm text-muted-foreground">Loading your progress…</p>
+      <p className="p-6 text-sm text-muted-foreground">
+        Loading your progress…
+      </p>
     )
   }
 
@@ -179,24 +180,31 @@ export const ProgressPage = () => {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:p-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-2 text-2xl font-semibold">
-          <BarChart3Icon className="size-6" />
-          Progress
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Worked out from the questions you have actually answered. An outcome
-          you have never attempted is not counted as a weakness — it is just
-          not counted.
-        </p>
-      </header>
+      <PageHeader icon={BarChart3Icon} title="Progress">
+        Worked out from the questions you have actually answered. An outcome you
+        have never attempted is not counted as a weakness — it is just not
+        counted.
+      </PageHeader>
 
-      <TabStrip label="Progress views" tabs={TABS} active={tab} onSelect={setTab} />
+      <TabStrip
+        label="Progress views"
+        tabs={TABS}
+        active={tab}
+        onSelect={setTab}
+      />
 
-      <TabPanel id="overview" active={tab === 'overview'} opened={opened.has('overview')}>
+      <TabPanel
+        id="overview"
+        active={tab === 'overview'}
+        opened={opened.has('overview')}
+      >
         <OverviewTab />
       </TabPanel>
-      <TabPanel id="graphs" active={tab === 'graphs'} opened={opened.has('graphs')}>
+      <TabPanel
+        id="graphs"
+        active={tab === 'graphs'}
+        opened={opened.has('graphs')}
+      >
         <GraphsTab />
       </TabPanel>
     </div>

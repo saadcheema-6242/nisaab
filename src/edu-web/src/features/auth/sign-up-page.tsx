@@ -1,9 +1,17 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { CheckIcon, MailIcon } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Spinner } from '@/components/ui/spinner'
+import {
+  AuthError,
+  AuthShell,
+  GoogleMark,
+  OrRule,
+} from '@/components/auth/auth-shell'
 
 export const SignUpPage = () => {
   const { signUp, signInWithGoogle, isLoading, signUpError, isAuthenticated } =
@@ -99,152 +107,171 @@ export const SignUpPage = () => {
     signUp({ email, password })
   }
 
+  // Said as soon as both fields have something in them, rather than held
+  // back until submit. Learning the passwords differ after pressing the
+  // button means retyping both; learning it while typing means fixing one
+  // character.
+  const mismatch =
+    confirmPassword.length > 0 && password !== confirmPassword
+      ? 'Those do not match yet.'
+      : null
+  const matched =
+    confirmPassword.length > 0 &&
+    password === confirmPassword &&
+    password.length >= 6
+
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Check your email
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              We've sent a confirmation link to <strong>{email}</strong>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Please click the link in the email to verify your account and
-              complete sign up.
-            </p>
-            <div className="pt-4">
-              <Link
-                to="/sign-in"
-                className="text-sm text-primary hover:underline"
-              >
-                Back to sign in
-              </Link>
-            </div>
+      <AuthShell
+        title="Check your email"
+        blurb="Your account is made. One more step to prove the address is yours."
+        footer={
+          <Link
+            to="/sign-in"
+            className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+          >
+            Back to sign in
+          </Link>
+        }
+      >
+        <div className="space-y-4 text-center">
+          <div className="bg-accent text-accent-foreground mx-auto grid size-12 place-items-center rounded-full">
+            <MailIcon className="size-5" />
           </div>
+          <p className="text-sm">
+            We sent a confirmation link to{' '}
+            <strong className="text-foreground font-medium">{email}</strong>
+          </p>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            Open it to verify your account and finish signing up. If it is not
+            there in a minute, check the spam folder.
+          </p>
         </div>
-      </div>
+      </AuthShell>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Create an account
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Enter your email and password to create your account
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="you@example.com"
-              autoComplete="email"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="At least 6 characters"
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              placeholder="Confirm your password"
-              autoComplete="new-password"
-              disabled={isLoading}
-            />
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading || !email || !password || !confirmPassword}
-          >
-            {isLoading ? 'Creating account...' : 'Create account'}
-          </Button>
-
-          <div className="relative py-1">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
-          </div>
-
-          {/* Google has already confirmed the address, so this route never
-              meets the email confirmation step. It is also the way back in
-              for a student who mistyped their email on sign-up. */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={isLoading}
-            onClick={() => signInWithGoogle()}
-          >
-            Continue with Google
-          </Button>
-
-          <div className="text-center text-xs text-muted-foreground">
-            By creating an account, you agree to our{' '}
-            <a
-              href="/privacy.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Privacy Policy
-            </a>
-          </div>
-
-          <div className="text-center text-sm text-muted-foreground">
+    <AuthShell
+      title="Create an account"
+      blurb="Free, and it takes a minute."
+      footer={
+        <>
+          <p className="text-muted-foreground text-sm">
             Already have an account?{' '}
             <Link
               to="/sign-in"
               search={
                 search?.redirect ? { redirect: search.redirect } : undefined
               }
-              className="text-primary hover:underline"
+              className="text-primary font-medium underline-offset-4 hover:underline"
             >
               Sign in
             </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+          </p>
+          <p className="text-muted-foreground text-xs">
+            By creating an account you agree to our{' '}
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              Privacy Policy
+            </a>
+          </p>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="you@example.com"
+            autoComplete="email"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="At least 6 characters"
+            autoComplete="new-password"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm password</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            placeholder="Type it again"
+            autoComplete="new-password"
+            disabled={isLoading}
+            aria-invalid={mismatch !== null}
+            aria-describedby="confirm-hint"
+          />
+          {/* The row is always present, so the form does not jump by a line
+              the moment someone starts typing in it. */}
+          <p id="confirm-hint" aria-live="polite" className="min-h-4 text-xs">
+            {mismatch ? (
+              <span className="text-destructive">{mismatch}</span>
+            ) : matched ? (
+              <span className="text-accent-foreground inline-flex items-center gap-1">
+                <CheckIcon className="size-3" /> Passwords match
+              </span>
+            ) : null}
+          </p>
+        </div>
+
+        {error && <AuthError>{error}</AuthError>}
+
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Spinner /> Creating account
+            </>
+          ) : (
+            'Create account'
+          )}
+        </Button>
+
+        <OrRule />
+
+        {/* Google has already confirmed the address, so this route never
+            meets the email confirmation step. It is also the way back in
+            for a student who mistyped their email on sign-up. */}
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => signInWithGoogle()}
+        >
+          <GoogleMark /> Continue with Google
+        </Button>
+      </form>
+    </AuthShell>
   )
 }

@@ -118,7 +118,7 @@ export const SectionHeading = ({
         {eyebrow}
       </div>
     )}
-    <h2 className="mt-2 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+    <h2 className="mt-2 text-3xl font-semibold text-balance sm:text-4xl">
       {title}
     </h2>
     {blurb && (

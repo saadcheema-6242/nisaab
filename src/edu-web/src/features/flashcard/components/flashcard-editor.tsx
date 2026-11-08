@@ -79,7 +79,7 @@ export const FlashcardEditor = ({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="hover:shadow-md transition-shadow gap-0">
+      <Card interactive className="gap-0">
         <CollapsibleTrigger asChild>
           <CardHeader className="pt-2 cursor-pointer hover:bg-muted/50 transition-colors">
             <div className="flex items-center justify-between w-full">

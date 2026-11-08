@@ -12,6 +12,7 @@ import { CalendarDaysIcon, GraduationCapIcon } from 'lucide-react'
 import { SessionCard } from './session-card'
 import { Card, CardContent } from '@/components/ui/card'
 import { mySessionsAtom, teachingAtom } from '@/data-acess/sessions'
+import { PageHeader } from '@/components/ui/page-header'
 
 const Empty = ({ children }: { children: React.ReactNode }) => (
   <Card>
@@ -37,8 +38,8 @@ const TeachingSection = () => {
       </div>
       <p className="text-muted-foreground text-sm">
         {teacher.name}, you are taking {sessions.length}{' '}
-        {sessions.length === 1 ? 'class' : 'classes'}. The join link is here
-        the whole time so you can start early.
+        {sessions.length === 1 ? 'class' : 'classes'}. The join link is here the
+        whole time so you can start early.
       </p>
       <div className="space-y-3">
         {sessions.map((one) => (
@@ -58,9 +59,7 @@ const StudentSection = () => {
 
   if (Result.isFailure(result)) {
     return (
-      <Empty>
-        Your sessions could not be loaded. Try again in a moment.
-      </Empty>
+      <Empty>Your sessions could not be loaded. Try again in a moment.</Empty>
     )
   }
   if (!Result.isSuccess(result)) {
@@ -88,16 +87,10 @@ const StudentSection = () => {
 
 export const SessionsPage = () => (
   <div className="mx-auto w-full max-w-3xl space-y-6 p-4 md:p-6">
-    <header className="space-y-1">
-      <h1 className="flex items-center gap-2 text-2xl font-semibold">
-        <CalendarDaysIcon className="size-6" />
-        Weekly sessions
-      </h1>
-      <p className="text-muted-foreground text-sm">
-        Live classes with a teacher. A session is for a subject, so everyone
-        studying it joins the same one, whichever group they are in.
-      </p>
-    </header>
+    <PageHeader icon={CalendarDaysIcon} title="Weekly sessions">
+      Live classes with a teacher. A session is for a subject, so everyone
+      studying it joins the same one, whichever group they are in.
+    </PageHeader>
 
     <TeachingSection />
     <StudentSection />

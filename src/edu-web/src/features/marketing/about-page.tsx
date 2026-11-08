@@ -40,36 +40,38 @@ export const AboutPage = () => (
     <section className="border-y">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
         <Reveal>
-          <h2 className="text-2xl font-bold tracking-tight text-balance">
+          <h2 className="text-2xl font-semibold text-balance">
             The gap we kept falling into
           </h2>
           <div className="text-muted-foreground mt-5 space-y-4 text-pretty">
             <p>
-              An FSc student revises from a textbook written for the syllabus, then
-              sits a paper written from the learning outcomes. Those are not the same
-              document, and the distance between them is where marks go missing.
+              An FSc student revises from a textbook written for the syllabus,
+              then sits a paper written from the learning outcomes. Those are
+              not the same document, and the distance between them is where
+              marks go missing.
             </p>
             <p>
               Past papers help, but only after the fact. What was missing was
-              something that knew the outcomes up front and could teach, test and mark
-              against them — in the language the student actually thinks in.
+              something that knew the outcomes up front and could teach, test
+              and mark against them — in the language the student actually
+              thinks in.
             </p>
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <h2 className="text-2xl font-bold tracking-tight text-balance">
+          <h2 className="text-2xl font-semibold text-balance">
             What we made instead
           </h2>
           <div className="text-muted-foreground mt-5 space-y-4 text-pretty">
             <p>
-              NISAAB — <span dir="rtl">نصاب</span>, Urdu for syllabus — holds the whole
-              FSc Part 1 curriculum for all three groups, outcome by outcome, and works
-              only from it.
+              NISAAB — <span dir="rtl">نصاب</span>, Urdu for syllabus — holds
+              the whole FSc Part 1 curriculum for all three groups, outcome by
+              outcome, and works only from it.
             </p>
             <p>
-              It explains in English, Roman Urdu or Urdu while keeping formulas and
-              technical terms in English, because that is how the paper has to be
-              answered.
+              It explains in English, Roman Urdu or Urdu while keeping formulas
+              and technical terms in English, because that is how the paper has
+              to be answered.
             </p>
           </div>
         </Reveal>
@@ -102,7 +104,10 @@ export const AboutPage = () => (
         {stats.map((stat, i) => (
           <Reveal key={stat.label} delay={i * 0.08}>
             <div className="text-primary text-4xl font-bold tracking-tight">
-              <Counter to={stat.value} suffix={'suffix' in stat ? stat.suffix : ''} />
+              <Counter
+                to={stat.value}
+                suffix={'suffix' in stat ? stat.suffix : ''}
+              />
             </div>
             <div className="mt-1.5 font-medium">{stat.label}</div>
             <div className="text-muted-foreground mt-0.5 text-sm text-pretty">
@@ -128,8 +133,12 @@ export const AboutPage = () => (
               <span className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-xl">
                 <NisaabMark className="size-6" />
               </span>
-              <div className="mt-4 font-semibold text-balance">{person.name}</div>
-              <div className="text-muted-foreground mt-0.5 text-sm">{person.role}</div>
+              <div className="mt-4 font-semibold text-balance">
+                {person.name}
+              </div>
+              <div className="text-muted-foreground mt-0.5 text-sm">
+                {person.role}
+              </div>
             </div>
           </Reveal>
         ))}
@@ -145,10 +154,12 @@ export const AboutPage = () => (
     <section className="bg-primary text-primary-foreground">
       <div className="mx-auto w-full max-w-3xl px-4 py-24 text-center sm:px-6">
         <Reveal>
-          <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+          <h2 className="text-3xl font-semibold text-balance sm:text-4xl">
             The syllabus is already in there.
           </h2>
-          <p className="mt-4 text-lg opacity-80">Pick your class and group to begin.</p>
+          <p className="mt-4 text-lg opacity-80">
+            Pick your class and group to begin.
+          </p>
           <Button size="lg" variant="secondary" className="mt-8" asChild>
             <Link to="/sign-up">
               Start free <ArrowRightIcon className="size-4" />

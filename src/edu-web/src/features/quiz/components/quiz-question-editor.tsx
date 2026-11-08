@@ -95,7 +95,7 @@ export const QuizQuestionEditor = ({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="hover:shadow-md transition-shadow gap-0">
+      <Card interactive className="gap-0">
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pt-2">
             <div className="flex items-center justify-between w-full">

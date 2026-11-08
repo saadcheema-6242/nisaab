@@ -1,5 +1,18 @@
 @import 'tailwindcss';
 
+/* Inter for the interface, Source Serif 4 for page titles.
+ *
+ * Self-hosted rather than fetched from Google. The app is shown at an
+ * exhibition where the venue network may be slow or absent, and a first
+ * impression should never wait on a third party; a blocked font request
+ * also means a flash of the fallback, which is the exact moment a judge
+ * forms their view.
+ *
+ * Variable weights, so the whole range costs one file per family instead
+ * of one per weight. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/source-serif-4';
+
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
@@ -8,11 +21,28 @@
 
 body {
   @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Inter's defaults leave the digits proportional, so a column of numbers
+     wanders. Lining tabular figures keep mastery percentages and streak
+     counts aligned wherever they appear. */
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Page titles only, not every heading.
+ *
+ * The serif is there to say "this is a considered thing", which it does at
+ * 24px and above and stops doing at 14px, where it just looks like a
+ * different font by mistake. Card headings and section labels stay in
+ * Inter. */
+h1,
+h2,
+.font-display {
+  font-family: var(--font-serif);
+  /* Large type looks loose at its default spacing; pulling it in slightly
+     is most of the difference between "set" and "typed". */
+  letter-spacing: -0.014em;
 }
 
 code {
@@ -32,7 +62,10 @@ code {
   --secondary: oklch(0.9401 0.0092 150.6862); /* #E7EDE8 */
   --secondary-foreground: oklch(0.3331 0.0232 159.7857); /* #2C3A32 */
   --muted: oklch(0.9484 0.0074 132.4163); /* #ECEFEA */
-  --muted-foreground: oklch(0.5127 0.0220 162.3116); /* #5C6B63 */
+  /* Was 0.5127, which sits at about 4.0:1 on this background: under AA,
+   * and it reads as faded rather than calm. 0.4480 clears 5.5:1 and
+   * still reads as secondary text. */
+  --muted-foreground: oklch(0.4480 0.0220 162.3116);
   --accent: oklch(0.9291 0.0158 160.6074); /* #DFEBE4 */
   --accent-foreground: oklch(0.4725 0.0914 160.6173); /* #1F6B4A */
   --destructive: oklch(0.5013 0.1783 28.7047); /* #B3261E */
@@ -54,10 +87,12 @@ code {
   --sidebar-border: oklch(0.9057 0.0110 149.8482); /* #DBE2DC */
   --sidebar-ring: oklch(0.4725 0.0914 160.6173); /* #1F6B4A */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-serif:
+    'Source Serif 4 Variable', ui-serif, Georgia, Cambria, 'Times New Roman',
+    Times, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
@@ -68,18 +103,30 @@ code {
   --shadow-spread: 0px;
   --shadow-opacity: 0.1;
   --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  /* Elevation that means something.
+   *
+   * Every one of these used to begin "0 1px 3px", so a dialog and a resting
+   * card cast the same shadow and the interface read as flat however the
+   * levels were used. Four distinct steps now: hairline, resting, raised,
+   * floating.
+   *
+   * Tinted with the brand's green rather than pure black. A neutral shadow
+   * on a warm cream surface goes grey and muddy; carrying a little of the
+   * surface hue into the shadow is what makes it look like light falling on
+   * paper instead of a drop shadow stuck underneath. */
+  --shadow-2xs: 0 1px 2px -1px hsl(160 18% 12% / 0.04);
+  --shadow-xs: 0 1px 2px -1px hsl(160 18% 12% / 0.06);
   --shadow-sm:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    0 1px 2px -1px hsl(160 18% 12% / 0.06), 0 2px 6px -2px hsl(160 18% 12% / 0.07);
+  --shadow:
+    0 1px 2px -1px hsl(160 18% 12% / 0.07), 0 4px 10px -3px hsl(160 18% 12% / 0.09);
   --shadow-md:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    0 2px 4px -2px hsl(160 18% 12% / 0.08), 0 8px 18px -5px hsl(160 18% 12% / 0.11);
   --shadow-lg:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    0 4px 8px -3px hsl(160 18% 12% / 0.09), 0 16px 32px -8px hsl(160 18% 12% / 0.14);
   --shadow-xl:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    0 8px 16px -6px hsl(160 18% 12% / 0.10), 0 28px 56px -12px hsl(160 18% 12% / 0.18);
+  --shadow-2xl: 0 32px 64px -16px hsl(160 18% 12% / 0.24);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
@@ -132,18 +179,31 @@ code {
   --shadow-spread: 0px;
   --shadow-opacity: 0.1;
   --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  /* The same four steps as the light theme, re-tuned rather than reused.
+   *
+   * A shadow is a dark patch, and on a dark surface there is little left to
+   * darken, so the light values would make every level look identical again.
+   * Dark mode therefore leans on opacity and reach instead of hue: close to
+   * opaque black, spread wide, so the separation is still readable. A faint
+   * light edge along the top is what actually reads as "raised" here, the
+   * way the shadow does in daylight. */
+  --shadow-2xs: 0 1px 2px -1px hsl(160 30% 2% / 0.30);
+  --shadow-xs: 0 1px 2px -1px hsl(160 30% 2% / 0.40);
   --shadow-sm:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    0 1px 2px -1px hsl(160 30% 2% / 0.40), 0 2px 6px -2px hsl(160 30% 2% / 0.45);
+  --shadow:
+    inset 0 1px 0 0 hsl(150 20% 90% / 0.04),
+    0 1px 2px -1px hsl(160 30% 2% / 0.45), 0 4px 10px -3px hsl(160 30% 2% / 0.50);
   --shadow-md:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    inset 0 1px 0 0 hsl(150 20% 90% / 0.05),
+    0 2px 4px -2px hsl(160 30% 2% / 0.50), 0 8px 18px -5px hsl(160 30% 2% / 0.55);
   --shadow-lg:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    inset 0 1px 0 0 hsl(150 20% 90% / 0.06),
+    0 4px 8px -3px hsl(160 30% 2% / 0.55), 0 16px 32px -8px hsl(160 30% 2% / 0.60);
   --shadow-xl:
-    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    inset 0 1px 0 0 hsl(150 20% 90% / 0.07),
+    0 8px 16px -6px hsl(160 30% 2% / 0.60), 0 28px 56px -12px hsl(160 30% 2% / 0.65);
+  --shadow-2xl: 0 32px 64px -16px hsl(160 30% 2% / 0.75);
 }
 
 @theme inline {

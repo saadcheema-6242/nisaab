@@ -396,9 +396,7 @@ export const FlashcardEditPage = ({
           <div className="max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  Edit Flashcards
-                </h1>
+                <h1 className="text-3xl font-semibold">Edit Flashcards</h1>
                 <p className="text-muted-foreground mt-2">
                   Add, edit, and reorder your flashcards. Click "Save All" when
                   done.

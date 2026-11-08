@@ -2,6 +2,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 import { useAtom, useAtomValue } from '@effect-atom/atom-react'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
+import { AuthError, AuthShell } from '@/components/auth/auth-shell'
 import { authAtom, signOutAtom } from '@/data-acess/auth'
 import { reloadUser, resendVerification } from '@/lib/auth-client'
 
@@ -86,62 +88,9 @@ export const VerifyEmailPage = () => {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md space-y-6 text-center">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Confirm your email</h1>
-          <p className="text-muted-foreground text-sm">
-            We sent a link to{' '}
-            <span className="text-foreground font-medium break-all">
-              {email || 'your email address'}
-            </span>
-            . Open it and this page will carry on by itself.
-          </p>
-        </div>
-
-        <div className="bg-muted/40 text-muted-foreground rounded-lg border p-4 text-left text-sm">
-          <p className="mb-2 font-medium">Not arrived?</p>
-          <ul className="list-disc space-y-1 pl-5">
-            <li>It can take a minute.</li>
-            <li>Check the spam or promotions folder.</li>
-            <li>
-              If the address above is wrong, sign out and sign up again, or use
-              Continue with Google.
-            </li>
-          </ul>
-        </div>
-
-        {notYet && (
-          <p className="text-sm text-amber-600 dark:text-amber-500">
-            Not confirmed yet. Open the link in the email, then press this
-            again.
-          </p>
-        )}
-        {sentAt !== null && !error && (
-          <p className="text-sm text-emerald-600 dark:text-emerald-500">
-            Sent again. Have another look in your inbox.
-          </p>
-        )}
-        {error && <p className="text-destructive text-sm">{error}</p>}
-
-        <div className="space-y-2">
-          <Button
-            className="w-full"
-            onClick={() => void check(true)}
-            disabled={checking}
-          >
-            {checking ? 'Checking...' : "I've confirmed it"}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => void resend()}
-            disabled={sending}
-          >
-            {sending ? 'Sending...' : 'Send the email again'}
-          </Button>
-        </div>
-
+    <AuthShell
+      title="Confirm your email"
+      footer={
         <button
           type="button"
           className="text-muted-foreground hover:text-foreground text-sm underline underline-offset-4"
@@ -152,7 +101,78 @@ export const VerifyEmailPage = () => {
         >
           Use a different account
         </button>
+      }
+    >
+      <div className="space-y-5">
+        <p className="text-muted-foreground text-center text-sm leading-relaxed">
+          We sent a link to{' '}
+          <span className="text-foreground font-medium break-all">
+            {email || 'your email address'}
+          </span>
+          . Open it and this page will carry on by itself.
+        </p>
+
+        {/* A live region, so the poll finding nothing does not silently
+            replace the one thing a screen reader was told. */}
+        <div aria-live="polite" className="space-y-2 empty:hidden">
+          {notYet && (
+            <p className="rounded-lg border border-amber-500/25 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+              Not confirmed yet. Open the link in the email, then press this
+              again.
+            </p>
+          )}
+          {sentAt !== null && !error && (
+            <p className="border-accent-foreground/20 bg-accent text-accent-foreground rounded-lg border p-3 text-sm">
+              Sent again. Have another look in your inbox.
+            </p>
+          )}
+          {error && <AuthError>{error}</AuthError>}
+        </div>
+
+        <div className="space-y-2">
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={() => void check(true)}
+            disabled={checking}
+          >
+            {checking ? (
+              <>
+                <Spinner /> Checking
+              </>
+            ) : (
+              "I've confirmed it"
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full"
+            onClick={() => void resend()}
+            disabled={sending}
+          >
+            {sending ? (
+              <>
+                <Spinner /> Sending
+              </>
+            ) : (
+              'Send the email again'
+            )}
+          </Button>
+        </div>
+
+        <div className="bg-muted/40 border-border/70 text-muted-foreground rounded-lg border p-4 text-sm">
+          <p className="text-foreground mb-2 font-medium">Not arrived?</p>
+          <ul className="list-disc space-y-1 pl-5 leading-relaxed">
+            <li>It can take a minute.</li>
+            <li>Check the spam or promotions folder.</li>
+            <li>
+              If the address above is wrong, sign out and sign up again, or use
+              Continue with Google.
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </AuthShell>
   )
 }

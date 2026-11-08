@@ -48,7 +48,7 @@ const CompletionHeader = ({ total }: CompletionHeaderProps) => (
   <div className="text-center space-y-2">
     <div className="flex items-center justify-center gap-2 mb-2">
       <Trophy className="h-8 w-8 text-yellow-500" />
-      <h2 className="text-3xl font-bold">Quiz Complete!</h2>
+      <h2 className="text-3xl font-semibold">Quiz Complete!</h2>
     </div>
     <p className="text-muted-foreground">
       You've completed all {total} questions

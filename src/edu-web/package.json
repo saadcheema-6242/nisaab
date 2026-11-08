@@ -16,6 +16,8 @@
     "@effect-atom/atom-react": "^0.3.4",
     "@effect/platform": "^0.92.1",
     "@effect/platform-browser": "^0.72.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.12",

@@ -6,6 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
+  AuthError,
+  AuthShell,
+  GoogleMark,
+  OrRule,
+} from '@/components/auth/auth-shell'
+import { Spinner } from '@/components/ui/spinner'
+import {
   isAuthenticatedAtom,
   signInAtom,
   signInWithGoogleAtom,
@@ -58,113 +65,112 @@ export const SignInPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Sign in
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Enter your email and password to access your account
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="you@example.com"
-              autoComplete="email"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              disabled={isLoading}
-            />
-          </div>
-
-          {signInResult._tag === 'Failure' && (
-            <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
-              <p className="text-sm text-destructive">
-                {(() => {
-                  const error = Cause.squash(signInResult.cause)
-                  return error instanceof Error ? error.message : 'Sign in failed'
-                })()}
-              </p>
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading || !email || !password}
-          >
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </Button>
-
-          <div className="relative py-1">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
-          </div>
-
-          {/* Google has already confirmed the address, so this route never
-              meets the email confirmation step. It is also the way back in
-              for a student who mistyped their email on sign-up. */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={isLoading}
-            onClick={() => signInWithGoogle()}
-          >
-            Continue with Google
-          </Button>
-
-          <div className="text-center text-xs text-muted-foreground">
-            By signing in, you agree to our{' '}
-            <a
-              href="/privacy.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Privacy Policy
-            </a>
-          </div>
-
-          <div className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
+    <AuthShell
+      title="Welcome back"
+      blurb="Sign in to pick up where you left off."
+      footer={
+        <>
+          <p className="text-muted-foreground text-sm">
+            Don&apos;t have an account?{' '}
             <Link
               to="/sign-up"
               search={
                 search?.redirect ? { redirect: search.redirect } : undefined
               }
-              className="text-primary hover:underline"
+              className="text-primary font-medium underline-offset-4 hover:underline"
             >
               Sign up
             </Link>
+          </p>
+          <p className="text-muted-foreground text-xs">
+            By signing in you agree to our{' '}
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              Privacy Policy
+            </a>
+          </p>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="you@example.com"
+            autoComplete="email"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
+            <Label htmlFor="password">Password</Label>
           </div>
-        </form>
-      </div>
-    </div>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="Your password"
+            autoComplete="current-password"
+            disabled={isLoading}
+          />
+        </div>
+
+        {signInResult._tag === 'Failure' && (
+          <AuthError>
+            {(() => {
+              const thrown: unknown = Cause.squash(signInResult.cause)
+              return thrown instanceof Error && thrown.message
+                ? thrown.message
+                : 'Sign in failed'
+            })()}
+          </AuthError>
+        )}
+
+        {/* The label changes rather than the button emptying out, so the
+            width does not jump and the spinner has something to sit beside. */}
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Spinner /> Signing in
+            </>
+          ) : (
+            'Sign in'
+          )}
+        </Button>
+
+        <OrRule />
+
+        {/* Google has already confirmed the address, so this route never
+            meets the email confirmation step. It is also the way back in
+            for a student who mistyped their email on sign-up. */}
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => signInWithGoogle()}
+        >
+          <GoogleMark /> Continue with Google
+        </Button>
+      </form>
+    </AuthShell>
   )
 }

@@ -1,13 +1,53 @@
+/**
+ * The card.
+ *
+ * Almost every surface in the app is a grid of these, so a card that reads
+ * as a bordered rectangle makes the whole product read as a bordered
+ * rectangle. Two changes:
+ *
+ * The resting shadow moved from shadow-sm to shadow-xs, and the border
+ * lightened. A card does not need both a hard line and a shadow to be
+ * separate from the page; using both is what makes an interface look
+ * boxed-in. The shadow now does the separating and the border only keeps
+ * the edge crisp.
+ *
+ * And a card may now be interactive. Pass `interactive` to a card that is
+ * a link or a button and it lifts under the pointer, which is the only
+ * honest way to say "this is clickable" without printing the word.
+ *
+ * The title is deliberately left in the sans face. The serif is for page
+ * titles; applying it here would put it at 16px, where it stops looking
+ * considered and starts looking like a mistake.
+ */
+
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
+function Card({
+  className,
+  interactive = false,
+  ...props
+}: React.ComponentProps<'div'> & {
+  /** Set on a card that is itself a link or a button. */
+  interactive?: boolean
+}) {
   return (
     <div
       data-slot="card"
+      data-interactive={interactive || undefined}
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl py-6',
+        'border-border/70 border shadow-xs',
+        interactive && [
+          'cursor-pointer transition-all duration-200 ease-out',
+          'hover:border-border hover:-translate-y-0.5 hover:shadow-md',
+          // A card is large, so it needs a focus ring of its own; the
+          // shadow change alone is invisible to a keyboard user.
+          'focus-visible:ring-ring/45 focus-visible:outline-none focus-visible:ring-[3px]',
+          'active:translate-y-0 active:shadow-sm',
+          'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        ],
         className,
       )}
       {...props}
@@ -32,7 +72,10 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(
+        'font-semibold leading-tight tracking-[-0.006em]',
+        className,
+      )}
       {...props}
     />
   )
@@ -42,7 +85,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn('text-muted-foreground text-sm leading-relaxed', className)}
       {...props}
     />
   )

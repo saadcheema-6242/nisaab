@@ -32,17 +32,31 @@ const ChalkIntro = () => {
       <defs>
         {/* roughens the edges so the strokes read as chalk, not vector */}
         <filter id="chalky">
-          <feTurbulence baseFrequency="0.9" numOctaves="3" seed="7" result="noise" />
+          <feTurbulence
+            baseFrequency="0.9"
+            numOctaves="3"
+            seed="7"
+            result="noise"
+          />
           <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" />
         </filter>
       </defs>
 
       {[
         { d: 'M150 68 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0', delay: 0 },
-        { d: 'M150 68 m-54 0 a54 22 0 1 0 108 0 a54 22 0 1 0 -108 0', delay: 0.3 },
-        { d: 'M150 68 m-40 -36 a54 22 -58 1 0 80 72 a54 22 -58 1 0 -80 -72', delay: 0.55 },
+        {
+          d: 'M150 68 m-54 0 a54 22 0 1 0 108 0 a54 22 0 1 0 -108 0',
+          delay: 0.3,
+        },
+        {
+          d: 'M150 68 m-40 -36 a54 22 -58 1 0 80 72 a54 22 -58 1 0 -80 -72',
+          delay: 0.55,
+        },
         { d: 'M96 132 L204 132', delay: 0.95 },
-        { d: 'M104 150 L128 150 M136 150 L150 150 M158 150 L196 150', delay: 1.15 },
+        {
+          d: 'M104 150 L128 150 M136 150 L150 150 M158 150 L196 150',
+          delay: 1.15,
+        },
       ].map((path) => (
         <motion.path
           key={path.d}
@@ -84,16 +98,18 @@ export const Hero = () => {
           Aligned to the FBISE 2026 paper pattern
         </div>
 
-        <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+        <h1 className="text-4xl font-semibold text-balance sm:text-6xl">
           The whole FBISE syllabus,
           <br className="hidden sm:block" /> one outcome at a time.
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-pretty text-white/70 sm:text-xl">
           Every star above is one of the{' '}
-          <span className="font-semibold text-white">{totalSlos} learning outcomes</span>{' '}
-          in FSc Part 1. NISAAB teaches, tests and marks you against each one — in
-          English, Roman Urdu or اردو.
+          <span className="font-semibold text-white">
+            {totalSlos} learning outcomes
+          </span>{' '}
+          in FSc Part 1. NISAAB teaches, tests and marks you against each one —
+          in English, Roman Urdu or اردو.
         </p>
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -120,10 +136,15 @@ export const Hero = () => {
             >
               <span
                 className="size-2 rounded-full"
-                style={{ backgroundColor: subject.colour, boxShadow: `0 0 10px ${subject.colour}` }}
+                style={{
+                  backgroundColor: subject.colour,
+                  boxShadow: `0 0 10px ${subject.colour}`,
+                }}
               />
               {subject.name}
-              <span className="font-mono text-xs text-white/35">{subject.slos}</span>
+              <span className="font-mono text-xs text-white/35">
+                {subject.slos}
+              </span>
             </div>
           ))}
         </div>

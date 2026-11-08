@@ -38,6 +38,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { LoadingLine } from '@/components/ui/loading-line'
 
 const when = (iso: string) =>
   new Date(iso).toLocaleString(undefined, {
@@ -141,11 +142,15 @@ const Item = ({ item }: { item: ModerationItem }) => {
         {/* The post in full. An administrator deciding whether to suspend
             somebody cannot work from an excerpt. */}
         <p className="bg-muted/40 rounded-md border p-3 text-sm whitespace-pre-wrap break-words">
-          {item.body || <em className="text-muted-foreground">No text, attachments only</em>}
+          {item.body || (
+            <em className="text-muted-foreground">No text, attachments only</em>
+          )}
         </p>
 
         <div className="text-muted-foreground text-xs">
-          <span className="text-foreground font-medium">{item.author_name}</span>
+          <span className="text-foreground font-medium">
+            {item.author_name}
+          </span>
           {item.author_email ? ` · ${item.author_email}` : null}
           {item.confidence !== null && item.finding
             ? ` · model ${Math.round(item.confidence * 100)}% sure`
@@ -171,8 +176,8 @@ const Item = ({ item }: { item: ModerationItem }) => {
         {distress ? (
           <p className="rounded-md border border-sky-300 bg-sky-50 p-3 text-xs dark:border-sky-900 dark:bg-sky-950/40">
             This post was not hidden and the student was not warned. They were
-            sent a message asking them to talk to someone. Contact them or
-            their class teacher today.
+            sent a message asking them to talk to someone. Contact them or their
+            class teacher today.
           </p>
         ) : null}
 
@@ -234,8 +239,8 @@ export const ModerationPanel = () => {
   if (!Result.isSuccess(result)) {
     return (
       <Card>
-        <CardContent className="text-muted-foreground py-8 text-center text-sm">
-          Loading the class rooms…
+        <CardContent>
+          <LoadingLine>Loading the class rooms</LoadingLine>
         </CardContent>
       </Card>
     )
@@ -250,7 +255,11 @@ export const ModerationPanel = () => {
           <CardTitle className="text-base">Class rooms</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Stat label="Need attention today" value={queue.urgent_count} tone="urgent" />
+          <Stat
+            label="Need attention today"
+            value={queue.urgent_count}
+            tone="urgent"
+          />
           <Stat label="Flagged by review" value={queue.flagged_count} />
           <Stat label="Reported by students" value={queue.reported_count} />
           <Stat label="Not reviewed" value={queue.unreviewed_count} />

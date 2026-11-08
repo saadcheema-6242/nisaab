@@ -74,7 +74,7 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
         <div className="container mx-auto max-w-5xl py-8 space-y-8">
           <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+              <h1 className="text-3xl font-semibold flex items-center gap-2">
                 <BrainCircuit className="h-8 w-8 text-primary" />
                 Personalized Study Plan
               </h1>
@@ -184,53 +184,55 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
                               Action Items
                             </h3>
                             <div className="grid gap-2">
-                              {displayedPlan.content.action_items.map((item, i) => {
-                                const isQuiz = item.type === 'quiz'
-                                return (
-                                  <Link
-                                    key={i}
-                                    to={
-                                      isQuiz
-                                        ? '/dashboard/p/$projectId/q/$quizId'
-                                        : '/dashboard/p/$projectId/f/$flashcardGroupId'
-                                    }
-                                    params={
-                                      isQuiz
-                                        ? {
-                                            projectId,
-                                            quizId: item.parent_id || item.id,
-                                          }
-                                        : {
-                                            projectId,
-                                            flashcardGroupId:
-                                              item.parent_id || item.id,
-                                          }
-                                    }
-                                    className="block"
-                                  >
-                                    <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 hover:bg-muted transition-colors border">
-                                      {isQuiz ? (
-                                        <BrainCircuit className="h-4 w-4 text-blue-500" />
-                                      ) : (
-                                        <Sparkles className="h-4 w-4 text-amber-500" />
-                                      )}
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">
-                                          {item.title}
-                                        </div>
-                                        {item.description && (
-                                          <div className="text-xs text-muted-foreground">
-                                            {item.description}
-                                          </div>
+                              {displayedPlan.content.action_items.map(
+                                (item, i) => {
+                                  const isQuiz = item.type === 'quiz'
+                                  return (
+                                    <Link
+                                      key={i}
+                                      to={
+                                        isQuiz
+                                          ? '/dashboard/p/$projectId/q/$quizId'
+                                          : '/dashboard/p/$projectId/f/$flashcardGroupId'
+                                      }
+                                      params={
+                                        isQuiz
+                                          ? {
+                                              projectId,
+                                              quizId: item.parent_id || item.id,
+                                            }
+                                          : {
+                                              projectId,
+                                              flashcardGroupId:
+                                                item.parent_id || item.id,
+                                            }
+                                      }
+                                      className="block"
+                                    >
+                                      <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 hover:bg-muted transition-colors border">
+                                        {isQuiz ? (
+                                          <BrainCircuit className="h-4 w-4 text-blue-500" />
+                                        ) : (
+                                          <Sparkles className="h-4 w-4 text-amber-500" />
                                         )}
+                                        <div className="flex-1">
+                                          <div className="font-medium text-sm">
+                                            {item.title}
+                                          </div>
+                                          {item.description && (
+                                            <div className="text-xs text-muted-foreground">
+                                              {item.description}
+                                            </div>
+                                          )}
+                                        </div>
+                                        <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground opacity-70 border px-1.5 py-0.5 rounded">
+                                          {item.type}
+                                        </span>
                                       </div>
-                                      <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground opacity-70 border px-1.5 py-0.5 rounded">
-                                        {item.type}
-                                      </span>
-                                    </div>
-                                  </Link>
-                                )
-                              })}
+                                    </Link>
+                                  )
+                                },
+                              )}
                             </div>
                           </div>
 
