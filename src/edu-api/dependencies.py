@@ -7,6 +7,7 @@ from edu_core.services import (
     AdminService,
     AttemptService,
     ChatService,
+    ClassSessionService,
     CommunityService,
     ContentService,
     CurriculumService,
@@ -147,6 +148,11 @@ def get_moderation_queue_service() -> ModerationQueueService:
 def get_admin_service() -> AdminService:
     """Get AdminService instance."""
     return AdminService()
+
+
+def get_class_session_service() -> ClassSessionService:
+    """Get ClassSessionService instance (weekly classes)."""
+    return ClassSessionService()
 
 
 def get_paper_service(

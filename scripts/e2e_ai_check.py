@@ -72,6 +72,10 @@ ROOM_A, ROOM_B, ROOM_C = (
 )
 # A student with ten weeks of practice behind them, for the graphs.
 GRAPH_USER = "e2e-graphs"
+# Two students in different groups and one teacher, for the weekly classes.
+SESSION_MED, SESSION_ICS, SESSION_TEACHER = (
+    "e2e-sess-med", "e2e-sess-ics", "e2e-sess-teacher",
+)
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -160,11 +164,18 @@ def sample_docx() -> bytes:
 def cleanup() -> None:
     with Session() as db:
         users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN, ROOM_A, ROOM_B,
-                 ROOM_C, GRAPH_USER]
+                 ROOM_C, GRAPH_USER, SESSION_MED, SESSION_ICS, SESSION_TEACHER]
         project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
             db.execute(text("DELETE FROM jobs WHERE payload->>'project_id' = :pid"), {"pid": pid})
+        # Class sessions are not owned by a student, and the ones created
+        # with only a teacher's name have no user to cascade from at all, so
+        # they would survive every run and pile up on the real timetable.
+        db.execute(
+            text("DELETE FROM class_sessions WHERE created_by = 'e2e-admin'")
+        )
+
         # Community files hang off posts, not projects, so they are not
         # covered by the project sweep above. The rows cascade with the
         # user; the bytes do not.
@@ -1226,6 +1237,222 @@ async def run_progress_graphs() -> None:
           "progress leaked between accounts")
 
 
+async def run_sessions() -> None:
+    """Weekly class sessions, against the real database.
+
+    The arithmetic is checked without a database in
+    scripts/admin/check_weekly_session.py. What only the real thing can show
+    is that the right people see the right classes and, above all, that the
+    join link is genuinely absent from a student's response until the class
+    opens. That claim is the whole security of the feature and it cannot be
+    proved by reading the page: the test has to look at what the service
+    actually returns.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from edu_core.services.class_sessions import ClassSessionService
+    from edu_core.weekly_session import SessionError
+    from edu_db.models import ClassSession, User
+
+    print("14. Weekly class sessions")
+    service = ClassSessionService()
+    now = datetime.now(timezone.utc)
+
+    # A Pre-Medical student and an ICS student, so the subject rule can be
+    # seen working rather than asserted.
+    UserService().get_or_create_user_from_token(
+        user_id=SESSION_MED, email="e2e-sess-med@local.test", name="Med Student"
+    )
+    ProfileService().complete_onboarding(
+        user_id=SESSION_MED, grade=11, group_code="PRE_MED", explanation_language="en"
+    )
+    UserService().get_or_create_user_from_token(
+        user_id=SESSION_ICS, email="e2e-sess-ics@local.test", name="ICS Student"
+    )
+    ProfileService().complete_onboarding(
+        user_id=SESSION_ICS, grade=11, group_code="ICS", explanation_language="en"
+    )
+    UserService().get_or_create_user_from_token(
+        user_id=SESSION_TEACHER, email="e2e-sess-teacher@local.test", name="Mr Teacher"
+    )
+
+    print("14a. Nothing scheduled")
+    check("a student with no classes has an empty timetable",
+          service.for_student(SESSION_MED).sessions == [])
+    board = service.for_teacher(SESSION_TEACHER)
+    check("and a teacher with none has no next class", board.next_session is None)
+
+    print("14b. An account becomes a teacher")
+    service.set_role(SESSION_TEACHER, "teacher", "MSc Physics, 12 years")
+    offered = {t.id for t in service.for_admin().teachers}
+    check("they can now be put in front of a class", SESSION_TEACHER in offered)
+    check("and their credentials came with them",
+          any(t.headline == "MSc Physics, 12 years"
+              for t in service.for_admin().teachers if t.id == SESSION_TEACHER))
+    check("a student is not offered as a teacher", SESSION_MED not in offered,
+          "anyone could be timetabled to teach")
+
+    print("14c. A class that has not started yet")
+    LINK = "https://meet.google.com/e2e-test-link"
+    later = service.create(
+        created_by="e2e-admin", title="Waves revision", subject_code="PHY", grade=11,
+        starts_at=now + timedelta(days=2), duration_minutes=60,
+        join_url=LINK, teacher_id=SESSION_TEACHER,
+    )
+    check("it was scheduled", later.id is not None)
+    check("the administrator can see the link", later.join_url == LINK,
+          "they have to be able to check it")
+    check("it says which groups it serves",
+          sorted(later.groups) == ["ICS", "PRE_ENG", "PRE_MED"], str(later.groups))
+
+    med = service.for_student(SESSION_MED).sessions
+    check("the Pre-Medical student sees it", len(med) == 1, str(len(med)))
+    # The one that matters most in this whole section.
+    check("but the link is NOT in their response",
+          med[0].join_url is None,
+          "a link three days early can be collected and passed around")
+    check("they are told when instead", med[0].state == "upcoming")
+    check("and who is taking it", med[0].teacher.name == "Mr Teacher")
+    check("with the teacher's credentials",
+          med[0].teacher.headline == "MSc Physics, 12 years")
+
+    ics = service.for_student(SESSION_ICS).sessions
+    check("the ICS student sees the same Physics class", len(ics) == 1,
+          "one session, every group that studies the subject")
+
+    print("14d. A class that is open right now")
+    live = service.create(
+        created_by="e2e-admin", title="Live now", subject_code="PHY", grade=11,
+        starts_at=now - timedelta(minutes=5), duration_minutes=60,
+        join_url=LINK, teacher_id=SESSION_TEACHER,
+    )
+    med = service.for_student(SESSION_MED).sessions
+    open_one = next(s for s in med if s.id == live.id)
+    check("it is open", open_one.state == "open", open_one.state)
+    check("and NOW the student is given the link", open_one.join_url == LINK)
+    still = next(s for s in med if s.id == later.id)
+    check("while the one in two days still is not", still.join_url is None,
+          "one open class must not unlock the others")
+
+    print("14e. A class that has finished")
+    done = service.create(
+        created_by="e2e-admin", title="Already over", subject_code="PHY", grade=11,
+        starts_at=now - timedelta(days=1), duration_minutes=60,
+        join_url=LINK, teacher_name="Someone",
+    )
+    ids = {s.id for s in service.for_student(SESSION_MED).sessions}
+    check("it has left the timetable", done.id not in ids,
+          "a list of classes that already happened is not a timetable")
+    check("but the administrator still sees it",
+          done.id in {s.id for s in service.for_admin().sessions})
+
+    print("14f. Who is shown what")
+    service.create(
+        created_by="e2e-admin", title="Biology only", subject_code="BIO", grade=11,
+        starts_at=now + timedelta(days=1), duration_minutes=60,
+        join_url=LINK, teacher_name="Bio Teacher",
+    )
+    service.create(
+        created_by="e2e-admin", title="Second year physics", subject_code="PHY",
+        grade=12, starts_at=now + timedelta(days=1), duration_minutes=60,
+        join_url=LINK, teacher_name="Another",
+    )
+    med_titles = {s.title for s in service.for_student(SESSION_MED).sessions}
+    ics_titles = {s.title for s in service.for_student(SESSION_ICS).sessions}
+    check("the Pre-Medical student gets Biology", "Biology only" in med_titles)
+    check("the ICS student does not, because they do not study it",
+          "Biology only" not in ics_titles, str(ics_titles))
+    check("neither is shown the second year class",
+          "Second year physics" not in med_titles | ics_titles,
+          "grade has to match as well as subject")
+
+    print("14g. The teacher's dashboard")
+    board = service.for_teacher(SESSION_TEACHER)
+    check("they see their own classes", len(board.sessions) >= 2, str(len(board.sessions)))
+    check("every one is theirs",
+          all(s.title in ("Waves revision", "Live now") for s in board.sessions),
+          str([s.title for s in board.sessions]))
+    check("the class running now is the next one",
+          board.next_session.title == "Live now", board.next_session.title)
+    check("the teacher always has the link, open or not",
+          all(s.join_url == LINK for s in board.sessions),
+          "a teacher who cannot open the room cannot teach")
+    check("and sees who the class is for",
+          sorted(board.next_session.groups) == ["ICS", "PRE_ENG", "PRE_MED"])
+
+    print("14h. Links that must be refused")
+    for bad, why in (
+        ("http://meet.google.com/x", "not https"),
+        ("https://bit.ly/x", "an unknown host"),
+        ("https://meet.google.com@elsewhere.example/x", "the credentials trick"),
+        ("", "nothing at all"),
+    ):
+        try:
+            service.create(
+                created_by="e2e-admin", title="Bad link", subject_code="PHY",
+                grade=11, starts_at=now + timedelta(days=1), duration_minutes=60,
+                join_url=bad, teacher_name="X",
+            )
+            check(f"{why} is refused", False, "it was accepted")
+        except SessionError:
+            check(f"{why} is refused", True)
+
+    print("14i. The rest of what cannot be scheduled")
+    def refused(label, **kwargs):
+        base = dict(
+            created_by="e2e-admin", title="X", subject_code="PHY", grade=11,
+            starts_at=now + timedelta(days=1), duration_minutes=60,
+            join_url=LINK, teacher_name="X",
+        )
+        base.update(kwargs)
+        try:
+            service.create(**base)
+            check(label, False, "it was accepted")
+        except (SessionError, Exception) as exc:   # NotFoundError counts too
+            check(label, isinstance(exc, Exception), type(exc).__name__)
+
+    refused("a subject nobody studies", subject_code="URDU")
+    refused("a grade that does not exist", grade=9)
+    refused("five minutes", duration_minutes=5)
+    refused("no teacher at all", teacher_name=None, teacher_id=None)
+    refused("an account that is not a teacher", teacher_id=SESSION_MED, teacher_name=None)
+    refused("a teacher who does not exist", teacher_id="nobody", teacher_name=None)
+
+    print("14j. Cancelling")
+    service.cancel(later.id)
+    after = {s.id for s in service.for_student(SESSION_MED).sessions}
+    check("a cancelled class leaves the student's timetable", later.id not in after)
+    check("and the teacher's",
+          later.id not in {s.id for s in service.for_teacher(SESSION_TEACHER).sessions})
+    admin_rows = {s.id: s for s in service.for_admin().sessions}
+    check("but the record of it remains", later.id in admin_rows)
+    check("marked as cancelled, not deleted",
+          admin_rows[later.id].cancelled_at is not None,
+          "a gap in next week should say whether it was called off or never set")
+
+    print("14k. A teacher can be scheduled before signing up")
+    early = service.create(
+        created_by="e2e-admin", title="Not signed up yet", subject_code="CHEM",
+        grade=11, starts_at=now + timedelta(days=3), duration_minutes=45,
+        join_url=LINK, teacher_name="Prof Someone New",
+    )
+    check("the class is scheduled with only a name", early.teacher.name == "Prof Someone New")
+    check("and it reaches the student",
+          "Not signed up yet" in {s.title for s in service.for_student(SESSION_MED).sessions})
+
+    print("14l. Deleting a teacher does not delete their classes")
+    db_get(lambda db: db.query(User).filter(User.id == SESSION_TEACHER).delete())
+    with Session() as db:
+        db.commit()
+    survivor = db_get(
+        lambda db: db.query(ClassSession).filter(ClassSession.id == live.id).one_or_none()
+    )
+    check("the class is still there", survivor is not None,
+          "a week of timetable would vanish with one account")
+    check("and still says who was taking it",
+          survivor is not None and survivor.teacher_name == "Mr Teacher")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pdf", type=Path, help="Test with this PDF instead of the sample document")
@@ -1242,6 +1469,7 @@ def main() -> None:
         asyncio.run(run_fbise())
         asyncio.run(run_community())
         asyncio.run(run_progress_graphs())
+        asyncio.run(run_sessions())
     finally:
         if not args.keep:
             cleanup()

@@ -12,6 +12,7 @@ from .profile import router as profile_router
 from .admin import router as admin_router
 from .community import router as community_router
 from .progress import router as progress_router
+from .sessions import router as sessions_router
 from .projects import router as projects_router
 from .quizzes import router as quizzes_router
 from .review import router as review_router
@@ -35,6 +36,7 @@ __all__ = [
     "admin_router",
     "community_router",
     "progress_router",
+    "sessions_router",
     "projects_router",
     "quizzes_router",
     "review_router",

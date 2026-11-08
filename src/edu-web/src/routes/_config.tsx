@@ -99,6 +99,11 @@ const ProgressPage = lazy(() =>
     default: m.ProgressPage,
   })),
 )
+const SessionsPage = lazy(() =>
+  import('@/features/sessions/sessions-page').then((m) => ({
+    default: m.SessionsPage,
+  })),
+)
 const ReviewPage = lazy(() =>
   import('@/features/review/review-page').then((m) => ({
     default: m.ReviewPage,
@@ -394,6 +399,16 @@ export const communityRoute = createRoute({
   ),
 })
 
+export const sessionsRoute = createRoute({
+  path: '/sessions',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <SessionsPage />
+    </Suspense>
+  ),
+})
+
 export const progressRoute = createRoute({
   path: '/progress',
   getParentRoute: () => dashboardRoute,
@@ -472,6 +487,7 @@ export const routeTree = rootRoute.addChildren([
     communityRoute,
     adminRoute,
     progressRoute,
+    sessionsRoute,
 
     studyPlanRoute,
     settingsRoute,

@@ -49,6 +49,20 @@ class User(Base):
     ban_reason: Mapped[str] = mapped_column(Text, nullable=True)
     banned_by: Mapped[str] = mapped_column(String, nullable=True)
 
+    # 'student' or 'teacher'. Set from the admin page, never by the account
+    # itself, and deliberately not an environment variable: ADMIN_EMAILS is
+    # one, a deploy wiped it, and the admin was locked out of their own admin
+    # page. A list of teachers grows, so it belongs in the database where
+    # adding one does not mean a redeploy.
+    #
+    # Administrators stay on the email list. There are two of them and they
+    # need to work before any row exists.
+    role: Mapped[str] = mapped_column(String, nullable=False, default="student",
+                                      server_default="student")
+    # Shown under a teacher's name on the session card: "MSc Physics, 12
+    # years at FG College". Nullable, because most accounts are students.
+    headline: Mapped[str] = mapped_column(String, nullable=True)
+
     # Relationships
     projects = relationship(
         "Project", back_populates="owner", cascade="all, delete-orphan"
@@ -1120,3 +1134,65 @@ class CommunityReport(Base):
     )
 
     post = relationship("CommunityPost", back_populates="reports")
+
+
+class ClassSession(Base):
+    """A weekly class an administrator schedules and students join.
+
+    Deliberately not called a study session: `study_sessions` already exists
+    and means a student's own practice sitting. Two things called a session
+    in one schema is how the wrong one gets queried.
+
+    A session is a grade and a subject, never a group. Physics is taught to
+    all three groups, so one Physics XI class serves Pre-Medical,
+    Pre-Engineering and ICS together. Carrying a group here would have meant
+    scheduling the same class three times and splitting students who belong
+    in it together. Who may attend is worked out from the subject, by
+    edu_core.weekly_session.can_join.
+    """
+
+    __tablename__ = "class_sessions"
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    title: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+
+    subject_code: Mapped[str] = mapped_column(String, index=True)  # PHY, CHEM, ...
+    grade: Mapped[int] = mapped_column(Integer, index=True)        # 11 or 12
+
+    teacher_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    # Kept alongside the id so a session still reads correctly if the teacher's
+    # account is removed, and so next week's timetable can be written before
+    # the teacher has signed up.
+    teacher_name: Mapped[str] = mapped_column(String, nullable=True)
+
+    starts_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), index=True
+    )
+    duration_minutes: Mapped[int] = mapped_column(Integer, default=60)
+
+    # The link, however it got there. 'manual' is an administrator pasting
+    # one; 'google_meet' is the Calendar API creating it, which needs a
+    # Workspace account or a stored user refresh token and is deliberately
+    # left until after the exhibition.
+    join_url: Mapped[str] = mapped_column(String, nullable=True)
+    meeting_source: Mapped[str] = mapped_column(
+        String, nullable=False, default="manual", server_default="manual"
+    )
+
+    cancelled_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_by: Mapped[str] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    teacher = relationship("User", foreign_keys=[teacher_id])

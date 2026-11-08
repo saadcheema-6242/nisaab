@@ -1,5 +1,6 @@
 import {
   BarChart3Icon,
+  CalendarDaysIcon,
   ClipboardCheckIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
@@ -67,6 +68,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               title: 'Progress',
               url: '/dashboard/progress',
               icon: BarChart3Icon,
+            },
+            {
+              title: 'Sessions',
+              url: '/dashboard/sessions',
+              icon: CalendarDaysIcon,
             },
             {
               title: 'Community',
