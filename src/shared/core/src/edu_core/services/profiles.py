@@ -41,11 +41,19 @@ class ProfileService:
         group_code: str,
         explanation_language: str,
         exam_year: int | None = None,
+        all_cohorts: bool = False,
     ) -> OnboardingResultDto:
         """Save the profile and create the missing subject workspaces.
 
         Running it again (e.g. after moving to grade XII) keeps existing
         workspaces and adds the ones for the new grade or group.
+
+        all_cohorts is for an administrator, who is a student of everything:
+        every FSc subject in both years rather than one group's three. They
+        still carry a grade and a group, because the class room and the
+        timetable are per cohort and something has to be chosen, but their
+        subjects are not limited to it. Nothing is archived for them either,
+        since there is no group they have left.
         """
         with self._get_db_session() as db:
             profile = db.get(StudentProfile, user_id)
@@ -58,28 +66,37 @@ class ProfileService:
             profile.exam_year = exam_year
             profile.onboarding_completed_at = datetime.now(timezone.utc)
 
-            # Subjects this group does not study are hidden first, so a
-            # student who switches group stops carrying the old one's papers
-            # into their mastery and their study plans.
-            self._archive_dropped(db, user_id, grade, group_code)
+            if not all_cohorts:
+                # Subjects this group does not study are hidden first, so a
+                # student who switches group stops carrying the old one's
+                # papers into their mastery and their study plans.
+                self._archive_dropped(db, user_id, grade, group_code)
 
-            codes = GROUP_SUBJECTS[group_code]
+            if all_cohorts:
+                codes = sorted({c for subs in GROUP_SUBJECTS.values() for c in subs})
+                grades = [11, 12]
+            else:
+                codes = GROUP_SUBJECTS[group_code]
+                grades = [grade]
+
             grade_subjects = (
                 db.query(GradeSubject)
                 .join(Subject)
                 .options(joinedload(GradeSubject.subject))
                 .filter(
-                    GradeSubject.grade == grade,
+                    GradeSubject.grade.in_(grades),
                     GradeSubject.scheme == SCHEME,
                     Subject.code.in_(codes),
                 )
                 .all()
             )
-            if len(grade_subjects) != len(codes):
+            if len(grade_subjects) < len(codes):
                 raise NotFoundError(
                     "The FBISE curriculum is not loaded yet (run the seed job)"
                 )
-            grade_subjects.sort(key=lambda gs: codes.index(gs.subject.code))
+            grade_subjects.sort(
+                key=lambda gs: (gs.grade, codes.index(gs.subject.code))
+            )
 
             existing = {
                 project.grade_subject_id: project

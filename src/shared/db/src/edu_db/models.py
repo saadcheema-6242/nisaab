@@ -63,6 +63,18 @@ class User(Base):
     # years at FG College". Nullable, because most accounts are students.
     headline: Mapped[str] = mapped_column(String, nullable=True)
 
+    # When an administrator approved the teacher claim. NULL while waiting.
+    #
+    # A date rather than a flag, for the reason stated above the ban columns:
+    # the date is the whole state. Anyone can tick "teacher" at signup, so
+    # role alone means only that they asked. Every question about what a
+    # teacher may do has to read both, and edu_core.roles.can_teach is the
+    # one place that does.
+    teacher_approved_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    teacher_approved_by: Mapped[str] = mapped_column(String, nullable=True)
+
     # Relationships
     projects = relationship(
         "Project", back_populates="owner", cascade="all, delete-orphan"
@@ -1196,3 +1208,37 @@ class ClassSession(Base):
     )
 
     teacher = relationship("User", foreign_keys=[teacher_id])
+
+
+class TeacherProfile(Base):
+    """What a teacher said about themselves when they signed up.
+
+    The mirror of StudentProfile: a student says which year and group they
+    are in, a teacher says which subjects and years they teach. Both are
+    filled in at onboarding and both decide what that account then sees.
+
+    Subjects and years are stored as JSON lists rather than join tables.
+    There are five subjects and two years in all of FSc, the lists are always
+    read whole, and nothing queries across them; two more tables would buy
+    nothing and cost a join on every page.
+    """
+
+    __tablename__ = "teacher_profiles"
+
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    subjects: Mapped[list] = mapped_column(JSON, default=list)   # ["PHY", "CHEM"]
+    grades: Mapped[list] = mapped_column(JSON, default=list)     # [11, 12]
+    school: Mapped[str] = mapped_column(String, nullable=True)
+    # Why they should be approved, in their own words. An administrator
+    # approving a name alone is approving nothing they can judge.
+    about: Mapped[str] = mapped_column(Text, nullable=True)
+    applied_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user = relationship("User")

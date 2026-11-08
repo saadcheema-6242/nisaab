@@ -61,6 +61,7 @@ from edu_core.community_review import (
     read_review,
     review_prompt,
 )
+from edu_core.roles import is_approved_teacher
 from edu_core.community_rules import (
     MAX_REPLIES,
     PAGE_SIZE,
@@ -94,17 +95,28 @@ DEFAULT_DAILY_POSTS = 40
 class CommunityService:
     """Reading and writing in a student's own class room."""
 
-    def __init__(self, storage=None, reviewer=None, daily_posts: int = DEFAULT_DAILY_POSTS):
+    def __init__(
+        self,
+        storage=None,
+        reviewer=None,
+        daily_posts: int = DEFAULT_DAILY_POSTS,
+        admin_emails: set[str] | None = None,
+    ):
         """
         storage: where attachments live. Optional, so a room with no
             attachments works in a setup without a bucket.
         reviewer: what reads each post. Injected so the service can be
             exercised without a model, and so a failing model is one
             argument rather than a network stub.
+        admin_emails: who gets the Admin badge on a post. Handed in rather
+            than read from a column, because that is deliberately how an
+            administrator is identified everywhere else: a flag in the
+            database can be set by anything that can write to it.
         """
         self.storage = storage
         self.reviewer = reviewer
         self.daily_posts = daily_posts
+        self.admin_emails = {e.lower() for e in (admin_emails or set())}
 
     @contextmanager
     def _session(self):
@@ -141,10 +153,22 @@ class CommunityService:
 
     # ---- reading --------------------------------------------------------
 
-    def get_room(self, user_id: str, posts_left: int = 0) -> CommunityRoomDto:
-        """The student's room, newest posts first, each with its replies."""
+    def get_room(
+        self,
+        user_id: str,
+        posts_left: int = 0,
+        as_room: tuple[int, str] | None = None,
+    ) -> CommunityRoomDto:
+        """The student's room, newest posts first, each with its replies.
+
+        as_room lets an administrator look into any room. It is honoured
+        only when the caller has already established that right: the
+        parameter is never filled from the request body, because _room_of
+        exists precisely so that a student cannot change a field and read
+        another class's room.
+        """
         with self._session() as db:
-            grade, group_code = self._room_of(db, user_id)
+            grade, group_code = as_room or self._room_of(db, user_id)
 
             members = (
                 db.query(StudentProfile)
@@ -690,6 +714,25 @@ class CommunityService:
             has_voted=mine is not None,
         )
 
+    def _badge(self, user: User | None) -> str | None:
+        """What to show beside an author's name, if anything.
+
+        A badge rather than a different name. Replacing the name with
+        "Admin" would hide who actually wrote the post, and a student could
+        then call themselves that and be indistinguishable.
+        """
+        if user is None:
+            return None
+        email = (getattr(user, "email", "") or "").lower()
+        if email and email in self.admin_emails:
+            return "admin"
+        if is_approved_teacher(
+            getattr(user, "role", "student"),
+            getattr(user, "teacher_approved_at", None),
+        ):
+            return "teacher"
+        return None
+
     def _as_dto(
         self,
         post: CommunityPost,
@@ -706,6 +749,7 @@ class CommunityService:
             author_name=display_name(
                 getattr(user, "name", None), getattr(user, "email", None)
             ),
+            author_role=self._badge(user),
             is_mine=post.user_id == reader_id,
             created_at=post.created_at,
             attachments=[

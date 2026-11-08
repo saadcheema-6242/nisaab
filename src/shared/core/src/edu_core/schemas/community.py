@@ -54,6 +54,15 @@ class CommunityPostDto(BaseModel):
     id: str = Field(..., description="ID of the post")
     body: str = Field(..., description="What was written")
     author_name: str = Field(..., description="Who wrote it, as they are known")
+    author_role: str | None = Field(
+        None,
+        description=(
+            "'admin' or 'teacher' when the author is one, else null. A "
+            "badge beside the real name rather than a replacement for it: "
+            "renaming the author to 'Admin' would hide who actually posted, "
+            "and any student could then call themselves that."
+        ),
+    )
     is_mine: bool = Field(False, description="Whether the reader wrote it")
     created_at: datetime = Field(..., description="When it was posted")
     attachments: list[CommunityAttachmentDto] = Field(default_factory=list)

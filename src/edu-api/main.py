@@ -35,6 +35,7 @@ from routers import (
     quizzes_router,
     review_router,
     sessions_router,
+    teachers_router,
     srq_router,
     study_plans_router,
     usage_router,
@@ -116,6 +117,7 @@ class Api:
         self.app.include_router(progress_router)
         self.app.include_router(community_router)
         self.app.include_router(sessions_router)
+        self.app.include_router(teachers_router)
         self.app.include_router(admin_router)
         self.app.include_router(curriculum_router)
         self.app.include_router(projects_router)

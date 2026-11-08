@@ -15,6 +15,7 @@ import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { ShieldIcon, Trash2Icon } from 'lucide-react'
 import { ModerationPanel } from './moderation-panel'
 import { SessionsPanel } from './sessions-panel'
+import { TeachersPanel } from './teachers-panel'
 import type { AdminUser } from '@/data-acess/admin'
 import {
   adminUsersAtom,
@@ -328,10 +329,11 @@ const WipeEverything = ({ others }: { others: number }) => {
   )
 }
 
-type AdminTab = 'accounts' | 'moderation' | 'sessions' | 'danger'
+type AdminTab = 'accounts' | 'teachers' | 'moderation' | 'sessions' | 'danger'
 
 const TABS: Array<{ id: AdminTab; label: string; hint: string }> = [
   { id: 'accounts', label: 'Accounts', hint: 'Who is on the system' },
+  { id: 'teachers', label: 'Teachers', hint: 'Approve teacher accounts' },
   { id: 'moderation', label: 'Moderation', hint: 'Posts the reviewer flagged' },
   { id: 'sessions', label: 'Sessions', hint: 'Schedule and cancel weekly classes' },
   { id: 'danger', label: 'Danger zone', hint: 'Irreversible things' },
@@ -459,6 +461,10 @@ export const AdminPage = () => {
             </ul>
           )}
         </div>
+      </TabPanel>
+
+      <TabPanel id="teachers" active={tab === 'teachers'} opened={opened.has('teachers')}>
+        <TeachersPanel />
       </TabPanel>
 
       <TabPanel id="moderation" active={tab === 'moderation'} opened={opened.has('moderation')}>

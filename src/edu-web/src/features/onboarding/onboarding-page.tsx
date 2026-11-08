@@ -2,10 +2,12 @@ import { Result, useAtom, useAtomValue } from '@effect-atom/atom-react'
 import { useNavigate } from '@tanstack/react-router'
 import { CheckIcon, Loader2Icon } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { TeacherSignup } from './teacher-signup'
 import type { ReactNode } from 'react'
 import type { ExplanationLanguage } from '@/lib/languages'
 import { Button } from '@/components/ui/button'
 import { completeOnboardingAtom, profileAtom } from '@/data-acess/profile'
+import { accountStateAtom } from '@/data-acess/teachers'
 import { brand } from '@/lib/brand'
 import { explanationLanguages } from '@/lib/languages'
 import { grades, groups } from '@/lib/subjects'
@@ -64,6 +66,16 @@ export const OnboardingPage = () => {
     mode: 'promise',
   })
 
+  // Who is signing up. Null until answered, except for an administrator,
+  // who is a student of every cohort as well as a teacher and goes straight
+  // to picking a starting cohort. Asking them would be a question with no
+  // meaningful answer.
+  const accountResult = useAtomValue(accountStateAtom)
+  const isAdmin =
+    Result.isSuccess(accountResult) && accountResult.value.is_admin
+  const [kind, setKind] = useState<'student' | 'teacher' | null>(null)
+  const who = isAdmin ? 'student' : kind
+
   const [step, setStep] = useState(0)
   const [grade, setGrade] = useState<Grade | null>(null)
   const [group, setGroup] = useState<Group | null>(null)
@@ -105,6 +117,57 @@ export const OnboardingPage = () => {
     if (Result.isSuccess(profileResult) && !profileResult.value.onboarded) return
     navigate({ to: '/dashboard', replace: true })
   }, [finished, profileResult, navigate])
+
+  if (who === null) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10">
+          <div className="mb-8">
+            <div className="text-sm font-semibold text-primary">{brand.name}</div>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight">
+              Welcome. Who are you?
+            </h1>
+            <p className="mt-1 text-muted-foreground">
+              This decides what NISAAB sets up for you.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <Choice
+              selected={false}
+              onClick={() => setKind('student')}
+              title="I am a student"
+              detail="Studying FSc. You will pick your class and group next."
+            />
+            <Choice
+              selected={false}
+              onClick={() => setKind('teacher')}
+              title="I am a teacher"
+              detail="You will take weekly sessions. An administrator approves teacher accounts before they are activated."
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (who === 'teacher') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-10">
+          <div className="mb-8">
+            <div className="text-sm font-semibold text-primary">{brand.name}</div>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight">
+              Tell us what you teach
+            </h1>
+            <p className="mt-1 text-muted-foreground">
+              An administrator reads this and approves your account.
+            </p>
+          </div>
+          <TeacherSignup onBack={() => setKind(null)} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

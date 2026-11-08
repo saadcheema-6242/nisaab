@@ -39,6 +39,10 @@ const onboarded = Result.success({
 })
 
 const answerEveryStep = () => {
+  // Onboarding now asks who you are first. Everything after it is the
+  // student path exactly as it was, which is what the rest of this walk
+  // through is checking.
+  fireEvent.click(screen.getByText('I am a student'))
   fireEvent.click(screen.getByText('Class XI'))
   fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
   fireEvent.click(screen.getByText('Pre-Medical'))

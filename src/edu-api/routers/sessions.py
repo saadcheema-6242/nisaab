@@ -71,8 +71,12 @@ def my_timetable(
     current_user: UserDto = Depends(get_current_user),
     service: ClassSessionService = Depends(get_class_session_service),
 ):
-    """The classes this student may attend."""
-    return service.for_student(current_user.id)
+    """The classes this student may attend.
+
+    An administrator gets all of them: they belong to no cohort, so there is
+    nothing to filter them to.
+    """
+    return service.for_student(current_user.id, is_admin=is_admin(current_user))
 
 
 @router.get("/teaching", response_model=TeacherDashboardDto)

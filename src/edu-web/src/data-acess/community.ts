@@ -1,4 +1,4 @@
-import { Registry } from '@effect-atom/atom-react'
+import { Atom, Registry } from '@effect-atom/atom-react'
 import { HttpBody } from '@effect/platform'
 import { Data, Effect } from 'effect'
 import { runtime } from './runtime'
@@ -100,6 +100,8 @@ export type CommunityPost = {
   id: string
   body: string
   author_name: string
+  /** 'admin' or 'teacher' when the author is one. A badge, not a name. */
+  author_role: 'admin' | 'teacher' | null
   is_mine: boolean
   created_at: string
   attachments: Array<CommunityAttachment>
@@ -125,10 +127,27 @@ export type CommunityRoom = {
   warnings: Array<CommunityWarning>
 }
 
+/**
+ * Which room to look at, for an administrator only.
+ *
+ * Null means "mine", which is what it is for everyone else: the server
+ * reads the room from the profile and ignores these entirely unless the
+ * caller is on the admin list. Setting it here cannot let a student into
+ * another class's room; it only changes what an administrator asks for.
+ */
+export const viewingRoomAtom = Atom.make<{
+  grade: number
+  group_code: string
+} | null>(null)
+
 export const communityRoomAtom = runtime.atom(
-  Effect.fn(function* () {
+  Effect.fn(function* (get) {
     const { httpClient } = yield* ApiClientService
-    const response = yield* httpClient.get('/api/v1/community')
+    const viewing = get(viewingRoomAtom)
+    const path = viewing
+      ? `/api/v1/community?grade=${viewing.grade}&group_code=${viewing.group_code}`
+      : '/api/v1/community'
+    const response = yield* httpClient.get(path)
     return yield* expectOk<CommunityRoom>(response)
   }),
 )

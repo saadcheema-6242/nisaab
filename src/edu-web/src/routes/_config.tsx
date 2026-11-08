@@ -99,6 +99,11 @@ const ProgressPage = lazy(() =>
     default: m.ProgressPage,
   })),
 )
+const AwaitingApprovalPage = lazy(() =>
+  import('@/features/onboarding/awaiting-approval-page').then((m) => ({
+    default: m.AwaitingApprovalPage,
+  })),
+)
 const SessionsPage = lazy(() =>
   import('@/features/sessions/sessions-page').then((m) => ({
     default: m.SessionsPage,
@@ -228,6 +233,17 @@ export const contactRoute = createRoute({
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <ContactPage />
+    </Suspense>
+  ),
+})
+
+export const awaitingApprovalRoute = createRoute({
+  path: '/awaiting-approval',
+  getParentRoute: () => rootRoute,
+  beforeLoad: requireAuth,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <AwaitingApprovalPage />
     </Suspense>
   ),
 })
@@ -497,6 +513,7 @@ export const routeTree = rootRoute.addChildren([
   aboutRoute,
   contactRoute,
   onboardingRoute,
+  awaitingApprovalRoute,
   signInRoute,
   signUpRoute,
   verifyEmailRoute,

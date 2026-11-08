@@ -76,6 +76,9 @@ GRAPH_USER = "e2e-graphs"
 SESSION_MED, SESSION_ICS, SESSION_TEACHER = (
     "e2e-sess-med", "e2e-sess-ics", "e2e-sess-teacher",
 )
+# One account that applies to teach and one that never does, for approval.
+ROLE_APPLICANT, ROLE_STUDENT = "e2e-role-applicant", "e2e-role-student"
+ROLE_ADMIN = "e2e-role-admin"
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -164,7 +167,8 @@ def sample_docx() -> bytes:
 def cleanup() -> None:
     with Session() as db:
         users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN, ROOM_A, ROOM_B,
-                 ROOM_C, GRAPH_USER, SESSION_MED, SESSION_ICS, SESSION_TEACHER]
+                 ROOM_C, GRAPH_USER, SESSION_MED, SESSION_ICS, SESSION_TEACHER,
+                 ROLE_APPLICANT, ROLE_STUDENT, ROLE_ADMIN]
         project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
@@ -1453,6 +1457,193 @@ async def run_sessions() -> None:
           survivor is not None and survivor.teacher_name == "Mr Teacher")
 
 
+async def run_roles() -> None:
+    """Teacher accounts and approval, against the real database.
+
+    One question matters more than all the others here: can an account that
+    merely ticked "teacher" at signup be put in front of a class? Everything
+    below is arranged around asking that in every way it could be asked,
+    because the answer has to be no in all of them, and a single yes is a
+    stranger teaching real students.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from edu_core.roles import RoleError
+    from edu_core.services.class_sessions import ClassSessionService
+    from edu_core.services.teachers import TeacherService
+    from edu_db.models import ClassSession, TeacherProfile, User
+
+    print("15. Teacher accounts and approval")
+    teachers = TeacherService()
+    sessions = ClassSessionService()
+
+    for uid, name in (
+        (ROLE_APPLICANT, "Hopeful Teacher"),
+        (ROLE_STUDENT, "Ordinary Student"),
+    ):
+        UserService().get_or_create_user_from_token(
+            user_id=uid, email=f"e2e-{uid}@local.test", name=name
+        )
+
+    print("15a. An ordinary account is a student")
+    state = teachers.get_account(ROLE_STUDENT)
+    check("not approved", state.approved is False)
+    check("and has no teacher application", state.profile is None)
+    check("it is not in the teacher queue",
+          ROLE_STUDENT not in {t.id for t in teachers.queue().waiting})
+
+    print("15b. Applying to be a teacher")
+    applied = teachers.apply(
+        user_id=ROLE_APPLICANT, subjects=["PHY", "phy", "CHEM"], grades=[11, 11, 12],
+        school="IMCB G-10/4", headline="MSc Physics", about="I teach FSc Physics.",
+    )
+    check("the application is stored", applied.profile is not None)
+    check("duplicate subjects are stored once",
+          applied.profile.subjects == ["PHY", "CHEM"], str(applied.profile.subjects))
+    check("years are sorted and deduplicated",
+          applied.profile.grades == [11, 12], str(applied.profile.grades))
+    check("the title is kept", applied.headline == "MSc Physics")
+    # The heart of it.
+    check("applying does NOT approve them", applied.approved is False,
+          "ticking a box would be enough to teach")
+
+    print("15c. An unapproved teacher cannot be given a class")
+    offered = {t.id for t in sessions.for_admin().teachers}
+    check("they are not offered in the scheduling list",
+          ROLE_APPLICANT not in offered,
+          "a stranger would be assignable from the admin page")
+    try:
+        sessions.create(
+            created_by="e2e-admin", title="Should not happen", subject_code="PHY",
+            grade=11, starts_at=datetime.now(timezone.utc) + timedelta(days=1),
+            duration_minutes=60, join_url="https://meet.google.com/e2e-roles",
+            teacher_id=ROLE_APPLICANT,
+        )
+        check("and cannot be assigned even by id", False, "the class was created")
+    except Exception as exc:
+        check("and cannot be assigned even by id", True, type(exc).__name__)
+
+    print("15d. They are in the queue, waiting")
+    queue = teachers.queue()
+    check("waiting lists them", ROLE_APPLICANT in {t.id for t in queue.waiting})
+    check("approved does not", ROLE_APPLICANT not in {t.id for t in queue.approved})
+    waiting = next(t for t in queue.waiting if t.id == ROLE_APPLICANT)
+    check("the administrator sees what they said",
+          waiting.profile.about == "I teach FSc Physics.")
+    check("and where they teach", waiting.profile.school == "IMCB G-10/4")
+
+    print("15e. Re-applying before a decision")
+    again = teachers.apply(
+        user_id=ROLE_APPLICANT, subjects=["BIO"], grades=[12], headline="MSc Biology"
+    )
+    check("the application is replaced, not duplicated",
+          again.profile.subjects == ["BIO"], str(again.profile.subjects))
+    check("there is still exactly one of them",
+          len([t for t in teachers.queue().waiting if t.id == ROLE_APPLICANT]) == 1)
+    check("and they are still not approved", again.approved is False)
+
+    print("15f. Approval")
+    decided = teachers.decide(user_id=ROLE_APPLICANT, approve=True, by="e2e-admin")
+    check("now they are approved", decided.approved is True)
+    check("and it is recorded when", decided.approved_at is not None)
+    check("they move out of the waiting list",
+          ROLE_APPLICANT not in {t.id for t in teachers.queue().waiting})
+    check("and into the approved one",
+          ROLE_APPLICANT in {t.id for t in teachers.queue().approved})
+    check("now the administrator can schedule them",
+          ROLE_APPLICANT in {t.id for t in sessions.for_admin().teachers})
+
+    made = sessions.create(
+        created_by="e2e-admin", title="A real class", subject_code="BIO", grade=12,
+        starts_at=datetime.now(timezone.utc) + timedelta(days=1), duration_minutes=60,
+        join_url="https://meet.google.com/e2e-roles", teacher_id=ROLE_APPLICANT,
+    )
+    check("and the class is created", made.id is not None)
+
+    print("15g. Refusing puts them back to being a student")
+    teachers.decide(user_id=ROLE_APPLICANT, approve=False, by="e2e-admin")
+    after = teachers.get_account(ROLE_APPLICANT)
+    check("they are no longer approved", after.approved is False)
+    check("the application is gone", after.profile is None)
+    check("they are out of the queue entirely",
+          ROLE_APPLICANT not in {t.id for t in teachers.queue().waiting}
+          | {t.id for t in teachers.queue().approved})
+    check("and no longer assignable",
+          ROLE_APPLICANT not in {t.id for t in sessions.for_admin().teachers})
+    kept = db_get(lambda db: db.query(ClassSession).filter(
+        ClassSession.id == made.id).one_or_none())
+    check("but the class they were down for survives", kept is not None,
+          "removing a teacher must not delete the timetable")
+
+    print("15h. Withdrawing yourself, the way off the waiting page")
+    teachers.apply(user_id=ROLE_APPLICANT, subjects=["PHY"], grades=[11])
+    check("they are waiting again",
+          ROLE_APPLICANT in {t.id for t in teachers.queue().waiting})
+    teachers.withdraw(ROLE_APPLICANT)
+    back = teachers.get_account(ROLE_APPLICANT)
+    check("and can take themselves out", back.profile is None,
+          "a mistaken tap would strand the account for ever")
+    check("the row is really gone",
+          db_get(lambda db: db.get(TeacherProfile, ROLE_APPLICANT)) is None)
+
+    print("15i. What cannot be applied for")
+    def refused(label, **kwargs):
+        base = dict(user_id=ROLE_STUDENT, subjects=["PHY"], grades=[11])
+        base.update(kwargs)
+        try:
+            teachers.apply(**base)
+            check(label, False, "it was accepted")
+        except RoleError:
+            check(label, True)
+
+    refused("a subject that is not on the FSc list", subjects=["URDU"])
+    refused("no subjects", subjects=[])
+    refused("no years", grades=[])
+    refused("a year FSc does not have", grades=[9])
+    refused("an absurd title", headline="x" * 300)
+
+    print("15j. Approving someone who never applied")
+    try:
+        teachers.decide(user_id=ROLE_STUDENT, approve=True, by="e2e-admin")
+        check("is refused", False, "a student was made a teacher with no application")
+    except Exception as exc:
+        check("is refused", True, type(exc).__name__)
+    check("and they are still a student",
+          teachers.get_account(ROLE_STUDENT).approved is False)
+
+    print("15l. An administrator is a student of everything")
+    # Not one group's three subjects but all five, in both years. Tested on
+    # the service rather than through the route, because who counts as an
+    # administrator is an email list the end-to-end user is not on.
+    UserService().get_or_create_user_from_token(
+        user_id=ROLE_ADMIN, email="e2e-role-admin@local.test", name="Admin"
+    )
+    everything = ProfileService().complete_onboarding(
+        user_id=ROLE_ADMIN, grade=11, group_code="PRE_MED",
+        explanation_language="en", all_cohorts=True,
+    )
+    codes = {p.name for p in everything.projects}
+    check(f"they get {len(everything.projects)} workspaces, not three",
+          len(everything.projects) == 10, str(sorted(codes)))
+    joined = " ".join(codes)
+    for subject in ("Physics", "Chemistry", "Biology", "Math", "Computer"):
+        check(f"{subject} is there", subject in joined, joined[:80])
+    check("both years are there",
+          "XI" in joined and "XII" in joined, joined[:80])
+    # An ordinary student must still get three, or this change broke everyone.
+    normal = ProfileService().complete_onboarding(
+        user_id=ROLE_STUDENT, grade=11, group_code="ICS", explanation_language="en",
+    )
+    check("while an ordinary student still gets three",
+          len(normal.projects) == 3, str(len(normal.projects)))
+
+    print("15k. The role column agrees with the approval date")
+    row = db_get(lambda db: db.get(User, ROLE_APPLICANT))
+    check("a withdrawn teacher is a student again", row.role == "student", row.role)
+    check("with no approval date left over", row.teacher_approved_at is None,
+          "a stale date plus a later role change is how a hole opens")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pdf", type=Path, help="Test with this PDF instead of the sample document")
@@ -1470,6 +1661,7 @@ def main() -> None:
         asyncio.run(run_community())
         asyncio.run(run_progress_graphs())
         asyncio.run(run_sessions())
+        asyncio.run(run_roles())
     finally:
         if not args.keep:
             cleanup()

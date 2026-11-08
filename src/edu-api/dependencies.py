@@ -26,6 +26,7 @@ from edu_core.services import (
     SearchService,
     SrqService,
     StudyPlanService,
+    TeacherService,
     UsageService,
     UserService,
 )
@@ -120,6 +121,7 @@ def get_community_service(
         storage=get_storage(),
         reviewer=_community_reviewer(),
         daily_posts=settings.max_community_posts_per_day,
+        admin_emails=set(settings.admins),
     )
 
 
@@ -153,6 +155,11 @@ def get_admin_service() -> AdminService:
 def get_class_session_service() -> ClassSessionService:
     """Get ClassSessionService instance (weekly classes)."""
     return ClassSessionService()
+
+
+def get_teacher_service() -> TeacherService:
+    """Get TeacherService instance (teacher accounts and approval)."""
+    return TeacherService()
 
 
 def get_paper_service(

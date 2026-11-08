@@ -26,6 +26,7 @@ import { AttachmentList } from './components/attachment-view'
 import { Composer } from './components/composer'
 import { PollView } from './components/poll-view'
 import { ReportDialog } from './components/report-dialog'
+import { RoomSwitcher } from './components/room-switcher'
 import type { CommunityPost, CommunityWarning } from '@/data-acess/community'
 import {
   communityRoomAtom,
@@ -33,6 +34,7 @@ import {
   dismissWarningsAtom,
   voteAtom,
 } from '@/data-acess/community'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
@@ -109,6 +111,17 @@ const Post = ({ post, depth = 0 }: { post: CommunityPost; depth?: number }) => {
     <div>
       <div className="flex items-baseline gap-2">
         <span className="text-sm font-medium">{post.author_name}</span>
+        {/* Beside the name, never instead of it. Replacing the name would
+            hide who actually wrote the post, and any student could then
+            call themselves Admin and be indistinguishable from one. */}
+        {post.author_role && (
+          <Badge
+            variant={post.author_role === 'admin' ? 'default' : 'secondary'}
+            className="h-5 px-1.5 text-[11px] capitalize"
+          >
+            {post.author_role}
+          </Badge>
+        )}
         <span className="text-muted-foreground text-xs">
           {when(post.created_at)}
         </span>
@@ -219,6 +232,8 @@ export const CommunityPage = () => {
             : `${room.member_count} students in your grade and group`}
         </p>
       </header>
+
+      <RoomSwitcher />
 
       {room.warnings.map((warning) => (
         <WarningBanner

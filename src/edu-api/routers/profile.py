@@ -1,6 +1,7 @@
 """Router for the student profile and onboarding."""
 
 from auth import get_current_user
+from config import get_settings
 from dependencies import get_profile_service
 from edu_core.exceptions import NotFoundError
 from edu_core.schemas.profiles import (
@@ -48,13 +49,22 @@ async def complete_onboarding(
     current_user: UserDto = Depends(get_current_user),
     service: ProfileService = Depends(get_profile_service),
 ):
-    """Save grade, group and language, and create the subject workspaces."""
+    """Save grade, group and language, and create the subject workspaces.
+
+    An administrator gets every FSc subject in both years rather than one
+    group's three: they are a student of all of it, as well as a teacher and
+    an administrator. Decided here from the email list, not from anything
+    the request says, so claiming to be an administrator in the body buys
+    nothing.
+    """
+    admin = bool(current_user.email) and current_user.email.lower() in get_settings().admins
     return service.complete_onboarding(
         user_id=current_user.id,
         grade=onboarding.grade,
         group_code=onboarding.group_code,
         explanation_language=onboarding.explanation_language,
         exam_year=onboarding.exam_year,
+        all_cohorts=admin,
     )
 
 

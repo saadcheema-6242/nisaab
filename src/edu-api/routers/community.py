@@ -3,6 +3,7 @@
 import json
 
 from auth import get_current_user
+from config import get_settings
 from dependencies import get_community_service, get_usage_service
 from edu_core.community_media import MAX_ATTACHMENTS
 from edu_core.exceptions import NotFoundError
@@ -61,15 +62,32 @@ def _posts_left(usage: UsageService, user_id: str) -> int:
 
 @router.get("", response_model=CommunityRoomDto)
 async def get_room(
+    grade: int | None = None,
+    group_code: str | None = None,
     current_user: UserDto = Depends(get_current_user),
     service: CommunityService = Depends(get_community_service),
     usage: UsageService = Depends(get_usage_service),
 ):
-    """The student's own class room: who is in it and what has been said."""
+    """The student's own class room: who is in it and what has been said.
+
+    grade and group_code are honoured for an administrator only, who
+    belongs to no cohort and has every room to look after. For anyone else
+    they are ignored outright rather than refused: a student passing them
+    is not an error to report back, it is simply not how their room is
+    decided.
+    """
+    settings = get_settings()
+    is_admin = bool(current_user.email) and current_user.email.lower() in settings.admins
+    as_room = (
+        (grade, group_code.upper())
+        if is_admin and grade in (11, 12) and group_code
+        else None
+    )
     try:
         return service.get_room(
             user_id=current_user.id,
             posts_left=_posts_left(usage, current_user.id),
+            as_room=as_room,
         )
     except NotFoundError as error:
         raise HTTPException(status_code=404, detail=str(error))

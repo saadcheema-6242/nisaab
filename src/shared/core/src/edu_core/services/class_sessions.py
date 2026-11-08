@@ -22,6 +22,7 @@ from sqlalchemy.orm import joinedload
 
 from edu_core.exceptions import NotFoundError
 from edu_core.group_change import GROUP_SUBJECTS
+from edu_core.roles import is_approved_teacher
 from edu_core.schemas.sessions import (
     AdminSessionDto,
     AdminSessionListDto,
@@ -108,37 +109,43 @@ class ClassSessionService:
 
     # ---- the student's timetable -----------------------------------------
 
-    def for_student(self, user_id: str, limit: int = 20) -> SessionListDto:
+    def for_student(
+        self, user_id: str, limit: int = 20, is_admin: bool = False
+    ) -> SessionListDto:
         """Sessions this student may attend, soonest first.
 
         Filtered by grade and by whether their group studies the subject, so
         an ICS student is shown Physics and Maths and never Biology. A
         student with no profile yet has no timetable rather than everyone's.
+
+        An administrator is not a member of a cohort, so filtering them into
+        one would be answering a question nobody asked: they see every class
+        in the school. The join window still applies to them, because the
+        link opening early is about the link, not about who is reading it.
         """
         now = datetime.now(timezone.utc)
         with self._session() as db:
-            profile = (
-                db.query(StudentProfile)
-                .filter(StudentProfile.user_id == user_id)
-                .one_or_none()
-            )
-            if profile is None:
-                return SessionListDto(sessions=[])
+            query = self._rows(db).filter(ClassSession.cancelled_at.is_(None))
 
-            studies = GROUP_SUBJECTS.get((profile.group_code or "").upper(), [])
-            if not studies:
-                return SessionListDto(sessions=[])
+            if not is_admin:
+                profile = (
+                    db.query(StudentProfile)
+                    .filter(StudentProfile.user_id == user_id)
+                    .one_or_none()
+                )
+                if profile is None:
+                    return SessionListDto(sessions=[])
 
-            rows = (
-                self._rows(db)
-                .filter(
+                studies = GROUP_SUBJECTS.get((profile.group_code or "").upper(), [])
+                if not studies:
+                    return SessionListDto(sessions=[])
+
+                query = query.filter(
                     ClassSession.grade == profile.grade,
                     ClassSession.subject_code.in_(studies),
-                    ClassSession.cancelled_at.is_(None),
                 )
-                .order_by(ClassSession.starts_at)
-                .all()
-            )
+
+            rows = query.order_by(ClassSession.starts_at).all()
             names = self._subject_names(db)
 
             out = []
@@ -239,9 +246,15 @@ class ClassSessionService:
 
     @staticmethod
     def _teachers(db) -> list[TeacherOptionDto]:
+        """Who may actually be put in front of a class.
+
+        Approved teachers only. Filtering on the role alone would list every
+        account that ticked "teacher" at signup, unreviewed, as assignable to
+        real students - which is the whole reason approval exists.
+        """
         rows = (
             db.query(User)
-            .filter(User.role == "teacher")
+            .filter(User.role == "teacher", User.teacher_approved_at.isnot(None))
             .order_by(User.name)
             .all()
         )
@@ -290,9 +303,10 @@ class ClassSessionService:
                 teacher = db.query(User).filter(User.id == teacher_id).one_or_none()
                 if teacher is None:
                     raise NotFoundError("No such teacher")
-                if teacher.role != "teacher":
+                if not is_approved_teacher(teacher.role, teacher.teacher_approved_at):
                     raise SessionError(
-                        "That account is not a teacher. Make them one first."
+                        "That account is not an approved teacher. Approve it "
+                        "from the Teachers tab first."
                     )
                 name = name or teacher.name
             if not teacher_id and not name:
@@ -355,8 +369,17 @@ class ClassSessionService:
             user.role = role
             if headline is not None:
                 user.headline = headline.strip() or None
-            if role == "student":
+            if role == "teacher":
+                # An administrator naming someone a teacher is the approval.
+                # Leaving the date unset here would mark them a teacher who
+                # can never be scheduled, which reads as a bug rather than a
+                # decision. An existing approval is left as it was.
+                if user.teacher_approved_at is None:
+                    user.teacher_approved_at = datetime.now(timezone.utc)
+            else:
                 # A former teacher keeps their classes in the record, but
                 # stops being offered for new ones.
                 user.headline = None
+                user.teacher_approved_at = None
+                user.teacher_approved_by = None
             db.commit()
