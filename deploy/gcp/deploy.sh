@@ -316,6 +316,28 @@ deploy() {
       --substitutions "_REGISTRY=$REGISTRY,_TAG=$TAG"
   fi
 
+  # Prove the images exist before anything depends on them.
+  #
+  # On 8 Nov the build above uploaded its source and then returned success
+  # without creating a build at all. Nothing noticed, so the run carried on
+  # and the first sign of trouble was the migrate job refusing to deploy over
+  # a missing tag - an error that reads like a registry fault, three steps
+  # downstream of the real one. Checking here costs a second and makes the
+  # failure say what actually happened.
+  local image
+  for image in "$REGISTRY/edu-api:$IMAGE_TAG" "$REGISTRY/edu-worker:$IMAGE_TAG"; do
+    if ! gc artifacts docker images describe "$image" >/dev/null 2>&1; then
+      echo "Image not in the registry: $image" >&2
+      if $SKIP_BUILD; then
+        echo "Nothing has been built yet. Re-run without --skip-build." >&2
+      else
+        echo "The build reported success but produced no image." >&2
+        echo "Nothing has been changed. Run the same command again." >&2
+      fi
+      exit 1
+    fi
+  done
+
   migrate
   seed
 

@@ -17,3 +17,4 @@ deploy/gcp/deploy.env
 deploy/azure/
 docs/
 src/eduagent-vibecode/
+qr/
