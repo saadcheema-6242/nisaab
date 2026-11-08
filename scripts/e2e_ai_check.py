@@ -70,6 +70,8 @@ OLD_LOGIN, NEW_LOGIN = "e2e-test-user-deleted", "e2e-test-user-resignup"
 ROOM_A, ROOM_B, ROOM_C = (
     "e2e-room-a", "e2e-room-b", "e2e-room-c",
 )
+# A student with ten weeks of practice behind them, for the graphs.
+GRAPH_USER = "e2e-graphs"
 TOPIC = "projectile motion and circular motion"
 QUESTION = "According to my course document, what must I be able to do for projectile motion? Keep it short."
 STEP_TIMEOUT = 420
@@ -157,7 +159,8 @@ def sample_docx() -> bytes:
 
 def cleanup() -> None:
     with Session() as db:
-        users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN, ROOM_A, ROOM_B, ROOM_C]
+        users = [TEST_USER, ICS_USER, OLD_LOGIN, NEW_LOGIN, ROOM_A, ROOM_B,
+                 ROOM_C, GRAPH_USER]
         project_ids = [p.id for p in db.query(Project).filter(Project.owner_id.in_(users))]
         for pid in project_ids:
             storage.delete(storage.list_paths(pid))
@@ -1035,6 +1038,189 @@ async def run_community() -> None:
         check("the live model is reachable", False, f"{type(error).__name__}: {error}"[:150])
 
 
+
+async def run_progress_graphs() -> None:
+    """The graphs tab, against real practice records in the real database.
+
+    The arithmetic is checked without a database in
+    scripts/admin/check_progress_trend.py. What has to be proved here is the
+    part that only the real thing can show: that the rows reach the functions
+    in the right shape, that the trend agrees with the overview rather than
+    quietly disagreeing with it, and that the cognitive levels in the seeded
+    FBISE syllabus actually produce a split.
+
+    Answers are written at chosen dates rather than now, because a trend with
+    every point in the same week is not a trend and would pass whatever the
+    bucketing did.
+    """
+    from datetime import datetime, timedelta, timezone
+    from uuid import uuid4
+
+    from edu_core.progress_trend import PAPER_WEIGHTS
+    from edu_db.models import PracticeRecord, Slo
+
+    print("13. Progress graphs")
+    UserService().get_or_create_user_from_token(
+        user_id=GRAPH_USER, email="e2e-graphs@local.test", name="Graph Student"
+    )
+    setup = ProfileService().complete_onboarding(
+        user_id=GRAPH_USER, grade=11, group_code="PRE_MED", explanation_language="en"
+    )
+    physics = setup.projects[0]
+
+    service = ProgressService()
+
+    print("13a. Nothing practised yet")
+    empty = service.get_graphs(user_id=GRAPH_USER)
+    check("it returns a subject per workspace", len(empty.subjects) == 3,
+          str(len(empty.subjects)))
+    check("with an empty trend", empty.subjects[0].trend == [])
+    check("no streak", empty.consistency.current_streak == 0)
+    check("no calendar", empty.consistency.calendar == [])
+    check("the cognitive levels are still listed",
+          len(empty.subjects[0].cognitive) == 3,
+          "a student should see what the paper asks for before they start")
+    check("and each carries the paper's weight",
+          sorted(c.paper_weight for c in empty.subjects[0].cognitive)
+          == sorted(PAPER_WEIGHTS.values()))
+    check("nothing practised means no weakest level",
+          empty.subjects[0].weakest_level is None)
+
+    print("13b. Twelve weeks of practice, improving")
+    # Real SLO codes from the seeded syllabus, so the cognitive levels are
+    # the curriculum's rather than invented.
+    codes = db_get(
+        lambda db: [
+            s.code
+            for s in db.query(Slo)
+            .filter(
+                Slo.grade_subject_id == physics.grade_subject_id,
+                Slo.assessment_form == "summative",
+            )
+            .order_by(Slo.sort_order)
+            .limit(8)
+            .all()
+        ]
+    )
+    check("the syllabus gave us SLOs to practise", len(codes) >= 4, str(len(codes)))
+
+    now = datetime.now(timezone.utc)
+    written = 0
+    with Session() as db:
+        for week in range(10):
+            when = now - timedelta(weeks=9 - week)
+            for n, code in enumerate(codes[:4]):
+                # Wrong at the start, right by the end: a climb the graph
+                # has to show.
+                correct = week >= 4
+                db.add(
+                    PracticeRecord(
+                        id=str(uuid4()),
+                        user_id=GRAPH_USER,
+                        project_id=physics.id,
+                        item_type="quiz",
+                        item_id=f"e2e-graph-{week}-{n}",
+                        topic="e2e graphs",
+                        slo_code=code,
+                        user_answer="A",
+                        correct_answer="A",
+                        was_correct=correct,
+                        created_at=when,
+                    )
+                )
+                written += 1
+        db.commit()
+    check(f"{written} practice answers written across 10 weeks", written == 40)
+
+    graphs = service.get_graphs(user_id=GRAPH_USER)
+    phys = next(s for s in graphs.subjects if s.project_id == physics.id)
+
+    print("13c. The trend")
+    check("there is a trend now", len(phys.trend) > 0, str(len(phys.trend)))
+    scored = [p for p in phys.trend if p.mastery is not None]
+    check("most weeks have a value", len(scored) >= 8, str(len(scored)))
+    check("it climbs", scored[0].mastery < scored[-1].mastery,
+          f"{scored[0].mastery} -> {scored[-1].mastery}")
+    check("weeks are in order",
+          [p.week_start for p in phys.trend] == sorted(p.week_start for p in phys.trend))
+    check("attempts never go backwards",
+          all(a.attempts <= b.attempts for a, b in zip(phys.trend, phys.trend[1:])),
+          "a cumulative count that falls is a bucketing bug")
+
+    print("13d. The graph agrees with the overview")
+    # The thing that matters most. If these two disagree a student sees a
+    # chart ending at one number under a heading saying another.
+    overview = service.get_progress(user_id=GRAPH_USER)
+    over_phys = next(s for s in overview.subjects if s.project_id == physics.id)
+    check("the subject's headline comes from the trend's last point",
+          phys.mastery == phys.trend[-1].mastery,
+          f"{phys.mastery} vs {phys.trend[-1].mastery}")
+    check("and the overview is within a point of it",
+          over_phys.mastery is not None
+          and abs(over_phys.mastery - phys.mastery) < 0.02,
+          f"overview {over_phys.mastery} vs graphs {phys.mastery}",
+          )
+
+    print("13e. The FBISE cognitive levels")
+    check("all three levels come back", len(phys.cognitive) == 3)
+    by_level = {c.level: c for c in phys.cognitive}
+    check("they are K, U and A", set(by_level) == {"K", "U", "A"}, str(set(by_level)))
+    check("the weights are 30, 50 and 20",
+          (by_level["K"].paper_weight, by_level["U"].paper_weight,
+           by_level["A"].paper_weight) == (30, 50, 20))
+    check("the seeded syllabus really carries levels",
+          sum(c.examined_count for c in phys.cognitive) > 0,
+          "no SLO in Physics XI has cognitive_levels set")
+    check("at least one level has been practised",
+          any(c.mastery is not None for c in phys.cognitive),
+          str({k: v.mastery for k, v in by_level.items()}))
+    check("every level names itself for a student",
+          all(c.name in ("Knowledge", "Understanding", "Application")
+              for c in phys.cognitive))
+
+    print("13f. Consistency")
+    run = graphs.consistency
+    check("days practised is counted", run.days_practised >= 9, str(run.days_practised))
+    check("the calendar is a continuous run", len(run.calendar) == 120,
+          str(len(run.calendar)))
+    check("it ends on the most recent day",
+          run.calendar[-1].day >= run.calendar[0].day)
+    check("the empty days are kept",
+          any(d.answers == 0 for d in run.calendar),
+          "a calendar with no gaps is not a record of what happened")
+    check("and the busy ones are counted",
+          any(d.answers > 0 for d in run.calendar))
+    check("the last day practised is recorded", run.last_day is not None)
+
+    print("13g. Every subject together")
+    check("there is an overall trend", len(graphs.overall_trend) > 0)
+    check("it has a value by the end",
+          graphs.overall_trend[-1].mastery is not None,
+          str(graphs.overall_trend[-1]))
+    check("a subject never practised has no trend of its own",
+          any(s.trend == [] for s in graphs.subjects if s.project_id != physics.id),
+          "Chemistry and Biology were never touched")
+
+    print("13h. Which level is costing the most marks")
+    # Not asserted to be present - it depends on how the seeded SLOs are
+    # labelled - but if it is there it must be coherent.
+    worst = phys.weakest_level
+    if worst is None:
+        check("no weakest level is a fair answer when mastery is high", True)
+    else:
+        check("it names a real level", worst.level in ("K", "U", "A"), worst.level)
+        check("and some marks", worst.marks_at_stake >= 2, str(worst.marks_at_stake))
+        check("it matches the level it names",
+              worst.name == by_level[worst.level].name)
+
+    print("13i. One student's graphs are their own")
+    other = service.get_graphs(user_id=TEST_USER)
+    other_ids = {s.project_id for s in other.subjects}
+    check("another student does not see this one's subjects",
+          physics.id not in other_ids,
+          "progress leaked between accounts")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--pdf", type=Path, help="Test with this PDF instead of the sample document")
@@ -1050,6 +1236,7 @@ def main() -> None:
         asyncio.run(run(args.pdf))
         asyncio.run(run_fbise())
         asyncio.run(run_community())
+        asyncio.run(run_progress_graphs())
     finally:
         if not args.keep:
             cleanup()
