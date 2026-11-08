@@ -83,11 +83,11 @@ print("the trend")
 check("no answers, no graph", trend([]) == [])
 
 answers = [
-    (at(2026, 9, 7), 0.0, 1.0),
-    (at(2026, 9, 9), 1.0, 1.0),
-    (at(2026, 9, 21), 1.0, 1.0),
-    (at(2026, 10, 5), 1.0, 1.0),
-    (at(2026, 11, 2), 1.0, 1.0),
+    (at(2026, 9, 7), "P-1", 0.0, 1.0),
+    (at(2026, 9, 9), "P-1", 1.0, 1.0),
+    (at(2026, 9, 21), "P-1", 1.0, 1.0),
+    (at(2026, 10, 5), "P-1", 1.0, 1.0),
+    (at(2026, 11, 2), "P-1", 1.0, 1.0),
 ]
 points = trend(answers, today=date(2026, 11, 9))
 check(f"it returns {TREND_WEEKS} weeks", len(points) == TREND_WEEKS, str(len(points)))
@@ -99,14 +99,51 @@ check("weeks are in order",
       [p["week_start"] for p in points] == sorted(p["week_start"] for p in points))
 
 # The whole point: the last point must equal what the rest of the page says.
-_, headline = estimate([(s, w) for _, s, w in answers])
+_, headline = estimate([(s, w) for _, _code, s, w in answers])
 check("the last point equals the headline mastery",
       points[-1]["mastery"] == headline,
       f"graph {points[-1]['mastery']} vs page {headline}")
 
 print()
+print("several outcomes: the graph must agree with the overview")
+# This is the failure the end-to-end run caught and this file did not. Every
+# case above uses a single outcome, where pooling the answers and estimating
+# each outcome separately give the same number. With four outcomes they
+# diverge, because the estimator's weight depends on how many answers it has
+# seen: forty pooled answers forget the early mistakes that ten per outcome
+# still remember.
+start = datetime(2026, 9, 7, 12, tzinfo=UTC)
+codes = ["P-1", "P-2", "P-3", "P-4"]
+many = [
+    (start + timedelta(weeks=n), code, 0.0 if n < 4 else 1.0, 1.0)
+    for n in range(10)
+    for code in codes
+]
+multi = trend(many, today=date(2026, 11, 9))
+
+# What the overview would print: estimate each outcome, then average.
+per_code = {
+    code: estimate([(s, w) for _, c, s, w in sorted(many) if c == code])[1]
+    for code in codes
+}
+overview = round(sum(per_code.values()) / len(per_code), 3)
+check("the last point equals the overview's average over outcomes",
+      multi[-1]["mastery"] == overview,
+      f"graph {multi[-1]['mastery']} vs page {overview}")
+
+pooled = estimate([(s, w) for _, _c, s, w in sorted(many)])[1]
+check("and pooling every outcome together would have been wrong",
+      pooled != overview,
+      f"pooled {pooled} happens to equal {overview}, so this case proves nothing")
+
+check("attempts still count every answer", multi[-1]["attempts"] == 40,
+      str(multi[-1]["attempts"]))
+check("it still climbs",
+      [p["mastery"] for p in multi if p["mastery"] is not None][0] < multi[-1]["mastery"])
+
+print()
 print("a quiet week holds its value rather than vanishing")
-sparse = [(at(2026, 10, 5), 1.0, 1.0)]
+sparse = [(at(2026, 10, 5), "P-1", 1.0, 1.0)]
 held = trend(sparse, today=date(2026, 11, 9))
 after = [p for p in held if p["week_start"] >= "2026-10-05"]
 check("every week after the last answer is present", len(after) >= 5, str(len(after)))
@@ -116,7 +153,7 @@ check("and they all hold the same value",
 
 print()
 print("practice from before the window still counts")
-old = [(at(2026, 1, 5), 1.0, 1.0), (at(2026, 11, 2), 1.0, 1.0)]
+old = [(at(2026, 1, 5), "P-1", 1.0, 1.0), (at(2026, 11, 2), "P-1", 1.0, 1.0)]
 early = trend(old, today=date(2026, 11, 9))
 check("the first point is not empty, because the student already knew it",
       early[0]["mastery"] is not None, str(early[0]))
@@ -126,7 +163,7 @@ print()
 print("improvement actually shows as improvement")
 first = datetime(2026, 9, 7, 12, tzinfo=UTC)
 climbing = [
-    (first + timedelta(weeks=n), 0.0 if n < 3 else 1.0, 1.0) for n in range(9)
+    (first + timedelta(weeks=n), "P-1", 0.0 if n < 3 else 1.0, 1.0) for n in range(9)
 ]
 rising = trend(climbing, today=date(2026, 11, 9))
 scored = [p["mastery"] for p in rising if p["mastery"] is not None]

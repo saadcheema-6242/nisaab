@@ -190,6 +190,30 @@ class ProgressService:
                 .all()
             )
 
+            # The outcomes the overview counts: summative only. The trend has
+            # to be built from the same answers or the two numbers disagree
+            # again for a different reason - a student who has practised
+            # formative material would see it in the graph and not in the
+            # heading above it.
+            subject_ids = [
+                project.grade_subject_id
+                for project in workspaces
+                if project.grade_subject_id is not None
+            ]
+            examined_codes = (
+                {
+                    code
+                    for (code,) in db.query(Slo.code)
+                    .filter(
+                        Slo.grade_subject_id.in_(subject_ids),
+                        Slo.assessment_form == "summative",
+                    )
+                    .all()
+                }
+                if subject_ids
+                else set()
+            )
+
             # Every answer once, for the whole page. Asking per subject would
             # be one query per workspace plus one for the calendar.
             rows = (
@@ -209,15 +233,24 @@ class ProgressService:
             by_project: dict[str, list[tuple]] = {}
             everything: list[tuple] = []
             moments: list = []
-            for created, project_id, correct, score, item_type, _ in rows:
+            for created, project_id, correct, score, item_type, slo_code in rows:
                 if created is None:
                     continue
+                # Every answer counts towards the streak and the calendar,
+                # examined or not: the student turned up and did the work,
+                # and that is what those two measure.
+                moments.append(created)
+
+                if not slo_code or slo_code not in examined_codes:
+                    continue
+
                 value = score if score is not None else (1.0 if correct else 0.0)
                 factor = SELF_RATED_WEIGHT if item_type == "flashcard" else 1.0
-                answer = (created, float(value), factor)
+                # slo_code carried through so the trend can estimate per
+                # outcome and average, the way the overview does.
+                answer = (created, slo_code, float(value), factor)
                 by_project.setdefault(project_id, []).append(answer)
                 everything.append(answer)
-                moments.append(created)
 
             subjects = [
                 self._subject_graphs(db, user_id, project, by_project)

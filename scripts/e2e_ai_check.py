@@ -1155,9 +1155,14 @@ async def run_progress_graphs() -> None:
     check("the subject's headline comes from the trend's last point",
           phys.mastery == phys.trend[-1].mastery,
           f"{phys.mastery} vs {phys.trend[-1].mastery}")
-    check("and the overview is within a point of it",
-          over_phys.mastery is not None
-          and abs(over_phys.mastery - phys.mastery) < 0.02,
+    # Equal, not close. A tolerance here is how the first version of this
+    # passed while the graph ended at 100% under a heading reading 88%: both
+    # numbers are the same quantity computed by two code paths, so any gap at
+    # all means the paths have drifted, and a student sees two answers to one
+    # question. The 0.02 tolerance this check started with would have hidden
+    # a smaller instance of exactly the bug it caught.
+    check("and the overview prints the identical number",
+          over_phys.mastery == phys.mastery,
           f"overview {over_phys.mastery} vs graphs {phys.mastery}",
           )
 

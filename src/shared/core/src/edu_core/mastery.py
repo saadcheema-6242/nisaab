@@ -17,6 +17,23 @@ MIN_WEIGHT = 0.3
 SELF_RATED_WEIGHT = 0.5  # flashcards: the student marks "knew it" themselves
 
 
+def advance(
+    attempts: int, mastery: float, score: float, factor: float = 1.0
+) -> tuple[int, float]:
+    """One answer's effect on a running estimate.
+
+    The single definition of the step. The trend graph has to replay this
+    answer by answer while the overview folds it in one go, and when the two
+    held separate copies of the arithmetic they drifted apart: the graph
+    ended at 100% under a heading that said 88%. Both go through here now, so
+    they cannot disagree.
+    """
+    attempts += 1
+    # The first answer sets the starting point rather than moving it.
+    weight = 1.0 if attempts == 1 else min(1.0, max(1 / attempts, MIN_WEIGHT) * factor)
+    return attempts, mastery + weight * (score - mastery)
+
+
 def estimate(results: Iterable[float | tuple[float, float]]) -> tuple[int, float | None]:
     """Return (attempts, mastery) for answers in chronological order.
 
@@ -27,11 +44,7 @@ def estimate(results: Iterable[float | tuple[float, float]]) -> tuple[int, float
     mastery = 0.0
     for result in results:
         score, factor = result if isinstance(result, tuple) else (result, 1.0)
-        attempts += 1
-        weight = min(1.0, max(1 / attempts, MIN_WEIGHT) * factor)
-        if attempts == 1:
-            weight = 1.0  # the first answer sets the starting point
-        mastery += weight * (score - mastery)
+        attempts, mastery = advance(attempts, mastery, score, factor)
     return attempts, (round(mastery, 3) if attempts else None)
 
 

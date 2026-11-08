@@ -27,7 +27,7 @@ Knowledge and Understanding at once - can be checked without a database.
 
 from datetime import date, datetime, timedelta, timezone
 
-from edu_core.mastery import estimate
+from edu_core.mastery import advance
 
 # Where the students are. A streak has to be counted in the day the student
 # lived through, not the one the server was in: at 9pm in Lahore it is
@@ -75,19 +75,23 @@ def week_start(day: date) -> date:
 
 
 def trend(
-    answers: list[tuple[datetime, float, float]],
+    answers: list[tuple[datetime, str, float, float]],
     weeks: int = TREND_WEEKS,
     today: date | None = None,
     offset_hours: int = PAKISTAN_OFFSET_HOURS,
 ) -> list[dict]:
     """Mastery as it stood at the end of each week.
 
-    answers are (when, score, weight) in any order; they are sorted here.
+    answers are (when, slo_code, score, weight) in any order; sorted here.
 
-    The estimate is replayed cumulatively with the same function the headline
-    mastery uses, so the final point equals the number printed above the
-    graph. Computing it any other way produces a chart that quietly disagrees
-    with the rest of the page.
+    Mastery is estimated per outcome and then averaged, which is what the
+    overview does, and the slo_code is in the tuple for no other reason.
+    Pooling every subject's answers into one stream instead looks equivalent
+    and is not: the estimator weights by how many answers it has seen, so
+    forty pooled answers drive the weight to its floor and forget the early
+    mistakes, while ten answers per outcome still remember them. That is not
+    a rounding difference. It read 100% against the overview's 88%, and the
+    end-to-end check caught it only because it compares the two.
 
     Weeks with no practice still appear, holding the previous value. Dropping
     them would compress a quiet fortnight into a single step and make a flat
@@ -104,11 +108,18 @@ def trend(
     # Replay every answer in order, remembering where the estimate stood at
     # the end of each week. Answers from before the window still count - they
     # are what the student knew when the window opened.
-    seen: list[tuple[float, float]] = []
+    #
+    # The per-outcome states are carried forward rather than recomputed from
+    # scratch at each week, so this stays one pass over the answers however
+    # long the student has been practising.
+    state: dict[str, tuple[int, float]] = {}
     at_week: dict[date, tuple[int, float | None]] = {}
-    for when, score, weight in ordered:
-        seen.append((score, weight))
-        at_week[week_start(local_day(when, offset_hours))] = estimate(seen)
+    for when, code, score, weight in ordered:
+        attempts, mastery = state.get(code, (0, 0.0))
+        state[code] = advance(attempts, mastery, score, weight)
+        total = sum(a for a, _ in state.values())
+        mean = sum(m for _, m in state.values()) / len(state)
+        at_week[week_start(local_day(when, offset_hours))] = (total, round(mean, 3))
 
     points = []
     carried: tuple[int, float | None] = (0, None)

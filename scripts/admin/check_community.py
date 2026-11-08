@@ -125,8 +125,15 @@ fields = {
 }
 check("the request body carries no grade", "grade" not in fields, str(fields))
 check("the request body carries no group", "group_code" not in fields, str(fields))
+# Everything a student types into the composer, and nothing else. The point
+# is not the exact list, it is that the client cannot smuggle in a grade, a
+# group or a user id and be believed - those are read from the profile. The
+# poll fields joined this list when polls were added; the check was not
+# updated with them, so it has been failing since.
 check("it carries only what a student actually types",
-      fields == {"body", "parent_id"}, str(fields))
+      fields == {"body", "parent_id", "poll_question", "poll_options"}, str(fields))
+check("and never anything the server should decide",
+      not ({"grade", "group_code", "user_id", "room", "flagged"} & fields), str(fields))
 check("a reply must be in the reader's own room",
       "That post is not in your room" in service)
 check("only your own post can be deleted",
