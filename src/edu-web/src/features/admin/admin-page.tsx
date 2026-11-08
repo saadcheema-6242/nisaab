@@ -27,6 +27,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  TabPanel,
+  TabStrip,
+  useFirstOpened,
+} from '@/components/ui/tab-strip'
 import { auth } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 
@@ -323,8 +328,22 @@ const WipeEverything = ({ others }: { others: number }) => {
   )
 }
 
+type AdminTab = 'accounts' | 'moderation' | 'sessions' | 'danger'
+
+const TABS: Array<{ id: AdminTab; label: string; hint: string }> = [
+  { id: 'accounts', label: 'Accounts', hint: 'Who is on the system' },
+  { id: 'moderation', label: 'Moderation', hint: 'Posts the reviewer flagged' },
+  { id: 'sessions', label: 'Sessions', hint: 'Schedule and cancel weekly classes' },
+  { id: 'danger', label: 'Danger zone', hint: 'Irreversible things' },
+]
+
 export const AdminPage = () => {
   const [search, setSearch] = useState('')
+  // Each panel loads the first time its tab is opened, not on page load.
+  // Before this the page fetched the accounts, the moderation queue and the
+  // whole timetable at once, every time anyone opened it.
+  const [tab, setTab] = useState<AdminTab>('accounts')
+  const opened = useFirstOpened(tab)
   const result = useAtomValue(adminUsersAtom)
 
   // Three states, not two. Waiting and refused look identical if you only ask
@@ -410,35 +429,49 @@ export const AdminPage = () => {
         )}
       </Card>
 
-      <ModerationPanel />
-
-      <SessionsPanel />
-
-      <Input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by name or email…"
+      <TabStrip
+        label="Administration"
+        tabs={TABS}
+        active={tab}
+        onSelect={setTab}
       />
 
-      {shown.length === 0 ? (
-        <Card>
-          <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No accounts match that.
-          </CardContent>
-        </Card>
-      ) : (
-        <ul className="space-y-2">
-          {shown.map((user) => (
-            <li key={user.id}>
-              <UserRow user={user} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <TabPanel id="accounts" active={tab === 'accounts'} opened={opened.has('accounts')}>
+        <div className="space-y-4">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or email…"
+          />
+          {shown.length === 0 ? (
+            <Card>
+              <CardContent className="py-10 text-center text-sm text-muted-foreground">
+                No accounts match that.
+              </CardContent>
+            </Card>
+          ) : (
+            <ul className="space-y-2">
+              {shown.map((user) => (
+                <li key={user.id}>
+                  <UserRow user={user} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </TabPanel>
 
-      <div className="pt-6">
+      <TabPanel id="moderation" active={tab === 'moderation'} opened={opened.has('moderation')}>
+        <ModerationPanel />
+      </TabPanel>
+
+      <TabPanel id="sessions" active={tab === 'sessions'} opened={opened.has('sessions')}>
+        <SessionsPanel />
+      </TabPanel>
+
+      <TabPanel id="danger" active={tab === 'danger'} opened={opened.has('danger')}>
         <WipeEverything others={Math.max(0, overview.total_users - 1)} />
-      </div>
+      </TabPanel>
     </div>
   )
 }

@@ -8,7 +8,7 @@
  * It reads the progress endpoint that already exists and adds nothing to it.
  */
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { BarChart3Icon } from 'lucide-react'
@@ -18,9 +18,13 @@ import type { SubjectProgressDto } from '@/integrations/api/client'
 import type { Bar } from './charts'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  TabPanel,
+  TabStrip,
+  useFirstOpened,
+} from '@/components/ui/tab-strip'
 import { progressAtom } from '@/data-acess/progress'
 import { SubjectIcon } from '@/lib/subjects'
-import { cn } from '@/lib/utils'
 
 const SubjectCard = ({ subject }: { subject: SubjectProgressDto }) => {
   const domains: Array<Bar> = (subject.domains ?? []).map((domain) => ({
@@ -154,20 +158,24 @@ const OverviewTab = () => {
 
 type Tab = 'overview' | 'graphs'
 
+const TABS: Array<{ id: Tab; label: string; hint: string }> = [
+  {
+    id: 'overview',
+    label: 'Where you stand',
+    hint: 'Mastery, chapters and a predicted grade',
+  },
+  {
+    id: 'graphs',
+    label: 'Graphs',
+    hint: 'Over time, by question type, and how often you practise',
+  },
+]
+
 export const ProgressPage = () => {
   const [tab, setTab] = useState<Tab>('overview')
-  // Latched on the first visit to the graphs tab and never cleared, so
-  // switching back and forth does not refetch every answer the student has
-  // ever given. Without it the panel unmounts and the atom runs again.
-  const [seenGraphs, setSeenGraphs] = useState(false)
-  useEffect(() => {
-    if (tab === 'graphs') setSeenGraphs(true)
-  }, [tab])
-
-  const tabs: Array<{ id: Tab; label: string; hint: string }> = [
-    { id: 'overview', label: 'Where you stand', hint: 'Mastery, chapters and a predicted grade' },
-    { id: 'graphs', label: 'Graphs', hint: 'Over time, by question type, and how often you practise' },
-  ]
+  // The graphs panel reads every answer the student has ever given, so it is
+  // mounted the first time that tab is opened and kept after.
+  const opened = useFirstOpened(tab)
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-4 p-4 md:p-6">
@@ -183,52 +191,14 @@ export const ProgressPage = () => {
         </p>
       </header>
 
-      {/* A real tablist, so arrow keys work and a screen reader says which of
-          the two is showing. A pair of styled buttons would look the same and
-          announce nothing. */}
-      <div role="tablist" aria-label="Progress views" className="flex gap-1 border-b">
-        {tabs.map((one) => (
-          <button
-            key={one.id}
-            role="tab"
-            type="button"
-            id={`progress-tab-${one.id}`}
-            aria-selected={tab === one.id}
-            aria-controls={`progress-panel-${one.id}`}
-            title={one.hint}
-            onClick={() => setTab(one.id)}
-            className={cn(
-              '-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors',
-              tab === one.id
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground',
-            )}
-          >
-            {one.label}
-          </button>
-        ))}
-      </div>
+      <TabStrip label="Progress views" tabs={TABS} active={tab} onSelect={setTab} />
 
-      {/* Both panels stay mounted once opened, hidden rather than unmounted,
-          so switching back does not refetch and redraw everything. */}
-      <div
-        role="tabpanel"
-        id="progress-panel-overview"
-        aria-labelledby="progress-tab-overview"
-        hidden={tab !== 'overview'}
-      >
+      <TabPanel id="overview" active={tab === 'overview'} opened={opened.has('overview')}>
         <OverviewTab />
-      </div>
-      <div
-        role="tabpanel"
-        id="progress-panel-graphs"
-        aria-labelledby="progress-tab-graphs"
-        hidden={tab !== 'graphs'}
-      >
-        {/* Mounted only once the tab is first opened, so the heavier query
-            never runs for someone who does not look at it. */}
-        {tab === 'graphs' || seenGraphs ? <GraphsTab /> : null}
-      </div>
+      </TabPanel>
+      <TabPanel id="graphs" active={tab === 'graphs'} opened={opened.has('graphs')}>
+        <GraphsTab />
+      </TabPanel>
     </div>
   )
 }
