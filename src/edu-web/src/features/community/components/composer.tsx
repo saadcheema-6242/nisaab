@@ -42,7 +42,11 @@ const MAX_POLL_OPTIONS = 6
 
 /** What the file picker offers, matching what the server will accept. */
 const ACCEPT = [
-  'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/heic',
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -50,7 +54,8 @@ const ACCEPT = [
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain', 'text/csv',
+  'text/plain',
+  'text/csv',
 ].join(',')
 
 type Picked = { file: File; duration: number | null }
@@ -189,7 +194,9 @@ export const Composer = ({
         value={body}
         autoFocus={autoFocus}
         onChange={(e) => setBody(e.target.value)}
-        placeholder={polling ? 'Say something about the poll (optional)…' : placeholder}
+        placeholder={
+          polling ? 'Say something about the poll (optional)…' : placeholder
+        }
         className="min-h-20 resize-none"
         maxLength={MAX_BODY + 200}
         onKeyDown={(e) => {
@@ -258,7 +265,9 @@ export const Composer = ({
               key={`${picked.file.name}-${index}`}
               className="bg-muted/40 flex items-center gap-2 rounded-md border px-3 py-2 text-sm"
             >
-              <span className="min-w-0 flex-1 truncate">{picked.file.name}</span>
+              <span className="min-w-0 flex-1 truncate">
+                {picked.file.name}
+              </span>
               <span className="text-muted-foreground shrink-0 text-xs">
                 {readableSize(picked.file.size)}
               </span>
@@ -345,7 +354,12 @@ export const Composer = ({
           </Button>
         ) : null}
 
-        <Button type="button" size="sm" disabled={!canSend} onClick={() => void send()}>
+        <Button
+          type="button"
+          size="sm"
+          disabled={!canSend}
+          onClick={() => void send()}
+        >
           <SendIcon className="size-3.5" />
           <span className="ml-1.5">{parentId ? 'Reply' : 'Post'}</span>
         </Button>

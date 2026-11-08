@@ -242,7 +242,9 @@ const SyllabusContent = ({
       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
         {(['none', 'weak', 'developing', 'strong'] as const).map((level) => (
           <span key={level} className="flex items-center gap-1.5">
-            <span className={cn('size-2 rounded-full', masteryStyles[level].dot)} />
+            <span
+              className={cn('size-2 rounded-full', masteryStyles[level].dot)}
+            />
             {masteryStyles[level].label}
           </span>
         ))}

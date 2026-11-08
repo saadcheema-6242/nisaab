@@ -37,7 +37,10 @@ export const SessionCard = ({
     <Card className={cn(open && 'border-primary')}>
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start gap-3">
-          <SubjectIcon code={session.subject_code} className="mt-0.5 size-5 shrink-0" />
+          <SubjectIcon
+            code={session.subject_code}
+            className="mt-0.5 size-5 shrink-0"
+          />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-medium">{session.title}</h3>

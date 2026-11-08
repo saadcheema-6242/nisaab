@@ -87,9 +87,14 @@ export const StudyPlanSteps = ({
                   {item.tasks.length > 0 && (
                     <ul className="mt-1 space-y-0.5">
                       {item.tasks.map((task, i) => (
-                        <li key={i} className="flex gap-1.5 text-xs text-muted-foreground">
+                        <li
+                          key={i}
+                          className="flex gap-1.5 text-xs text-muted-foreground"
+                        >
                           <span aria-hidden>·</span>
-                          <MathText className="leading-relaxed">{task}</MathText>
+                          <MathText className="leading-relaxed">
+                            {task}
+                          </MathText>
                         </li>
                       ))}
                     </ul>

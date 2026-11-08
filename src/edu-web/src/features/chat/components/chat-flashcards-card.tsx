@@ -50,7 +50,9 @@ const FlipCard = ({
           Question
         </div>
         <MathText className="text-base font-medium">{card.question}</MathText>
-        <div className="mt-2 text-xs text-muted-foreground">Tap to see the answer</div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          Tap to see the answer
+        </div>
       </div>
       <div className="col-start-1 row-start-1 flex min-h-36 flex-col justify-center rounded-xl border border-primary/40 bg-primary/5 p-4 [backface-visibility:hidden] [transform:rotateY(180deg)]">
         <div className="mb-1 text-xs font-medium uppercase text-muted-foreground">
@@ -96,7 +98,11 @@ const Deck = ({
         </span>
         <span>{Object.values(knew).filter(Boolean).length} known so far</span>
       </div>
-      <FlipCard card={card} flipped={flipped} onFlip={() => setFlipped(!flipped)} />
+      <FlipCard
+        card={card}
+        flipped={flipped}
+        onFlip={() => setFlipped(!flipped)}
+      />
       {flipped ? (
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" disabled={busy} onClick={() => rate(false)}>
@@ -113,7 +119,11 @@ const Deck = ({
           </Button>
         </div>
       ) : (
-        <Button variant="outline" className="w-full" onClick={() => setFlipped(true)}>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => setFlipped(true)}
+        >
           Show answer
         </Button>
       )}
@@ -178,7 +188,9 @@ export const ChatFlashcardsCard = ({
           </Badge>
         )}
         {cards && (
-          <span className="text-xs text-muted-foreground">{cards.length} cards</span>
+          <span className="text-xs text-muted-foreground">
+            {cards.length} cards
+          </span>
         )}
         <div className="ml-auto">
           <FlashcardsDownload projectId={projectId} groupId={groupId} />
@@ -200,7 +212,12 @@ export const ChatFlashcardsCard = ({
           onDone={() => setMode('auto')}
         />
       ) : mode === 'study' || !attempt ? (
-        <Deck key={`study-${round}`} cards={cards} busy={busy} onDone={handleStudied} />
+        <Deck
+          key={`study-${round}`}
+          cards={cards}
+          busy={busy}
+          onDone={handleStudied}
+        />
       ) : (
         <div className="space-y-3">
           <div className="flex items-baseline gap-2">
@@ -209,7 +226,9 @@ export const ChatFlashcardsCard = ({
             </span>
             <span className="text-sm text-muted-foreground">
               cards known
-              {toReview.length > 0 ? `, ${toReview.length} to review` : ' — all done!'}
+              {toReview.length > 0
+                ? `, ${toReview.length} to review`
+                : ' — all done!'}
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -218,7 +237,11 @@ export const ChatFlashcardsCard = ({
                 Review the {toReview.length} again
               </Button>
             )}
-            <Button size="sm" variant="outline" onClick={() => restart('study')}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => restart('study')}
+            >
               <RotateCcwIcon className="size-4" />
               Study all again
             </Button>

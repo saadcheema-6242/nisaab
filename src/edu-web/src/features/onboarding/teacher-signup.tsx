@@ -179,7 +179,11 @@ export const TeacherSignup = ({ onBack }: { onBack: () => void }) => {
         <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button type="submit" disabled={!ready || result.waiting} className="flex-1">
+        <Button
+          type="submit"
+          disabled={!ready || result.waiting}
+          className="flex-1"
+        >
           {result.waiting ? 'Sending…' : 'Send for approval'}
         </Button>
       </div>

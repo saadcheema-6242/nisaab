@@ -75,7 +75,12 @@ export const AttachmentView = ({ file }: { file: CommunityAttachment }) => {
     return (
       <div className="bg-muted/40 flex items-center gap-3 rounded-lg border p-3">
         <Volume2Icon className="text-muted-foreground size-4 shrink-0" />
-        <audio controls preload="metadata" src={file.url} className="h-9 w-full">
+        <audio
+          controls
+          preload="metadata"
+          src={file.url}
+          className="h-9 w-full"
+        >
           <track kind="captions" />
         </audio>
         {file.duration_seconds ? (

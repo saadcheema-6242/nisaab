@@ -53,7 +53,9 @@ export const ImageCredit = ({
   if (!author && !licence && !title) return null
 
   return (
-    <div className={`text-muted-foreground text-[10px] leading-snug ${className}`}>
+    <div
+      className={`text-muted-foreground text-[10px] leading-snug ${className}`}
+    >
       {[title, author].filter(Boolean).join(' · ')}
       {licence && (
         <>

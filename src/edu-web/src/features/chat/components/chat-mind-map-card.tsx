@@ -27,7 +27,9 @@ export const ChatMindMapCard = ({
         <div className="min-w-0 flex-1">
           <div className="font-semibold">{mindMap?.title ?? 'Mind map'}</div>
           {mindMap?.description && (
-            <div className="text-xs text-muted-foreground">{mindMap.description}</div>
+            <div className="text-xs text-muted-foreground">
+              {mindMap.description}
+            </div>
           )}
         </div>
         <MindMapDownload projectId={projectId} mindMapId={mindMapId} />
@@ -48,7 +50,9 @@ export const ChatMindMapCard = ({
           className="h-[26rem]"
         />
       ) : Result.isFailure(result) ? (
-        <p className="p-4 text-sm text-destructive">Could not load the mind map</p>
+        <p className="p-4 text-sm text-destructive">
+          Could not load the mind map
+        </p>
       ) : (
         <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground">
           <Loader2Icon className="size-4 animate-spin" />

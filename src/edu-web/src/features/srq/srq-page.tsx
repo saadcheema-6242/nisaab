@@ -41,7 +41,9 @@ const PointIcon = ({ awarded, marks }: { awarded: number; marks: number }) => {
 }
 
 const AttemptResult = ({ attempt }: { attempt: SrqAttemptDto }) => {
-  const ratio = attempt.max_marks ? attempt.awarded_marks / attempt.max_marks : 0
+  const ratio = attempt.max_marks
+    ? attempt.awarded_marks / attempt.max_marks
+    : 0
   return (
     <div className="space-y-4 rounded-xl border p-5">
       <div className="flex items-end justify-between gap-4">
@@ -136,7 +138,9 @@ const QuestionView = ({
     if (!answer.trim()) return
     setMarking(true)
     try {
-      setJustMarked(await markSrq({ projectId, questionId: question.id, answer }))
+      setJustMarked(
+        await markSrq({ projectId, questionId: question.id, answer }),
+      )
       setRetrying(false)
       setAnswer('')
     } catch {

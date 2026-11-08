@@ -122,7 +122,10 @@ export const ReportDialog = ({
         Report
       </button>
 
-      <Dialog open={open} onOpenChange={(next) => (next ? setOpen(true) : close())}>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => (next ? setOpen(true) : close())}
+      >
         <DialogContent className="sm:max-w-md">
           {done ? (
             <>

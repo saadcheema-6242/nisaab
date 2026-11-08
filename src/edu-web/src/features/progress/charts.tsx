@@ -54,12 +54,11 @@ export const BarRows = ({
             <span
               className={cn(
                 'shrink-0 tabular-nums',
-                bar.value === null
-                  ? 'text-muted-foreground'
-                  : 'font-medium',
+                bar.value === null ? 'text-muted-foreground' : 'font-medium',
               )}
             >
-              {bar.note ?? (bar.value === null ? 'not practised' : percent(bar.value))}
+              {bar.note ??
+                (bar.value === null ? 'not practised' : percent(bar.value))}
             </span>
           </div>
           <div
@@ -68,7 +67,10 @@ export const BarRows = ({
             aria-label={`${bar.label}: ${bar.note ?? (bar.value === null ? 'not practised' : percent(bar.value))}`}
           >
             <div
-              className={cn('h-full rounded-full transition-all', masteryTone(bar.value))}
+              className={cn(
+                'h-full rounded-full transition-all',
+                masteryTone(bar.value),
+              )}
               style={{ width: `${Math.round((bar.value ?? 0) * 100)}%` }}
             />
           </div>
@@ -135,7 +137,11 @@ export const Dial = ({
   const circumference = 2 * Math.PI * radius
   const filled = (Math.max(0, Math.min(100, value)) / 100) * circumference
   const tone =
-    value < 40 ? 'stroke-rose-500' : value < 70 ? 'stroke-amber-500' : 'stroke-emerald-500'
+    value < 40
+      ? 'stroke-rose-500'
+      : value < 70
+        ? 'stroke-amber-500'
+        : 'stroke-emerald-500'
 
   return (
     <div className="flex items-center gap-4">

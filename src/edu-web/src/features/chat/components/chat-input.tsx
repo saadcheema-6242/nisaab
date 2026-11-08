@@ -50,12 +50,7 @@ export const ChatInput: React.FC<Props> = ({
   onWebSearchChange,
 }) => {
   return (
-    <PromptInput
-      globalDrop
-      multiple
-      accept={UPLOAD_TYPES}
-      onSubmit={onSubmit}
-    >
+    <PromptInput globalDrop multiple accept={UPLOAD_TYPES} onSubmit={onSubmit}>
       <PromptInputHeader>
         <PromptInputAttachments>
           {(attachment) => <PromptInputAttachment data={attachment} />}

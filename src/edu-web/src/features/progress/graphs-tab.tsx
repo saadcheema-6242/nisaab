@@ -14,11 +14,7 @@
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { CalendarCheckIcon, FlameIcon, TrendingUpIcon } from 'lucide-react'
 import { percent } from './charts'
-import {
-  ActivityCalendar,
-  CognitiveBars,
-  TrendLine,
-} from './graph-charts'
+import { ActivityCalendar, CognitiveBars, TrendLine } from './graph-charts'
 import type { SubjectGraphs } from '@/data-acess/progress'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -63,9 +59,7 @@ const SubjectGraphCard = ({ subject }: { subject: SubjectGraphs }) => (
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-medium">
-          Against what the paper asks for
-        </h3>
+        <h3 className="text-sm font-medium">Against what the paper asks for</h3>
         <CognitiveBars levels={subject.cognitive} />
         {subject.weakest_level && (
           <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs dark:border-amber-900 dark:bg-amber-950/40">
@@ -118,7 +112,9 @@ export const GraphsTab = () => {
               icon={FlameIcon}
               value={consistency.current_streak}
               label={
-                consistency.current_streak === 1 ? 'day in a row' : 'days in a row'
+                consistency.current_streak === 1
+                  ? 'day in a row'
+                  : 'days in a row'
               }
             />
             <Figure

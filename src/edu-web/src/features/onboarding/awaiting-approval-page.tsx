@@ -75,9 +75,9 @@ export const AwaitingApprovalPage = () => {
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <p>
-              Thank you. Your teacher account has been sent to an
-              administrator. You will be let in as soon as they approve it,
-              and this page will move on by itself.
+              Thank you. Your teacher account has been sent to an administrator.
+              You will be let in as soon as they approve it, and this page will
+              move on by itself.
             </p>
 
             {profile && (

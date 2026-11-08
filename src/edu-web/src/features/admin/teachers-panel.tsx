@@ -89,7 +89,11 @@ const Waiting = ({ teacher }: { teacher: TeacherAccount }) => {
               >
                 Make them a student
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => setRefusing(false)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setRefusing(false)}
+              >
                 Cancel
               </Button>
             </>
@@ -185,7 +189,9 @@ export const TeachersPanel = () => {
                     size="sm"
                     variant="ghost"
                     disabled={decided.waiting}
-                    onClick={() => decide({ userId: teacher.id, approve: false })}
+                    onClick={() =>
+                      decide({ userId: teacher.id, approve: false })
+                    }
                   >
                     Remove
                   </Button>

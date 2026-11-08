@@ -61,8 +61,14 @@ const halfPaper = (status: string, result?: object) =>
               items: [
                 mcq('m1'),
                 mcq('m2'),
-                mcq('m3', { stimulus: 'A ball is thrown at 20 m/s.', group: 's1' }),
-                mcq('m4', { stimulus: 'A ball is thrown at 20 m/s.', group: 's1' }),
+                mcq('m3', {
+                  stimulus: 'A ball is thrown at 20 m/s.',
+                  group: 's1',
+                }),
+                mcq('m4', {
+                  stimulus: 'A ball is thrown at 20 m/s.',
+                  group: 's1',
+                }),
               ],
             },
             {
@@ -102,7 +108,9 @@ describe('PaperPage', () => {
   it('shows stimulus sets and an (a) OR (b) choice', () => {
     show(halfPaper('ready'))
     fireEvent.click(screen.getByText('Start paper'))
-    expect(screen.getByText('Read the following and answer questions 3 to 4.')).toBeTruthy()
+    expect(
+      screen.getByText('Read the following and answer questions 3 to 4.'),
+    ).toBeTruthy()
     expect(screen.getByText('A ball is thrown at 20 m/s.')).toBeTruthy()
     expect(screen.getByText('Answer either (a) or (b)')).toBeTruthy()
     expect(screen.getByText('0/5 answered')).toBeTruthy()
@@ -126,9 +134,29 @@ describe('PaperPage', () => {
           { id: 'B', title: 'Section B', score: 2.5, max_score: 4 },
         ],
         items: [
-          { id: 'm1', type: 'mcq', marks: 0.5, awarded: 0.5, chosen: 'a', correct_option: 'a' },
-          { id: 'q1', type: 'srq', marks: 4, awarded: 0, model_answer: 'Model (a)' },
-          { id: 'q2', type: 'srq', marks: 4, awarded: 2.5, answer: 'F = ma', model_answer: 'Model (b)' },
+          {
+            id: 'm1',
+            type: 'mcq',
+            marks: 0.5,
+            awarded: 0.5,
+            chosen: 'a',
+            correct_option: 'a',
+          },
+          {
+            id: 'q1',
+            type: 'srq',
+            marks: 4,
+            awarded: 0,
+            model_answer: 'Model (a)',
+          },
+          {
+            id: 'q2',
+            type: 'srq',
+            marks: 4,
+            awarded: 2.5,
+            answer: 'F = ma',
+            model_answer: 'Model (b)',
+          },
         ],
       }),
     )
@@ -136,6 +164,8 @@ describe('PaperPage', () => {
     // Section B's total and the answered question (b)
     expect(screen.getAllByText('2.5/4')).toHaveLength(2)
     expect(screen.getByText('5 (b).')).toBeTruthy()
-    expect(screen.getByText('See the other choice (a) and its model answer')).toBeTruthy()
+    expect(
+      screen.getByText('See the other choice (a) and its model answer'),
+    ).toBeTruthy()
   })
 })

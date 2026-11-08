@@ -26,8 +26,16 @@ import { cn } from '@/lib/utils'
 
 const WHOLE = 'all'
 const lengths = [
-  { value: 'mini', label: 'Mini', detail: '8 MCQs + 2 short questions · 20 min' },
-  { value: 'standard', label: 'Standard', detail: '12 MCQs + 4 short + 1 long question · 45 min' },
+  {
+    value: 'mini',
+    label: 'Mini',
+    detail: '8 MCQs + 2 short questions · 20 min',
+  },
+  {
+    value: 'standard',
+    label: 'Standard',
+    detail: '12 MCQs + 4 short + 1 long question · 45 min',
+  },
   {
     value: 'half',
     label: 'Half board paper (new pattern)',
@@ -91,9 +99,9 @@ export const NewPaperDialog = ({
         <DialogHeader>
           <DialogTitle>New practice paper</DialogTitle>
           <DialogDescription>
-            FBISE-style questions from the examined SLOs, marked like an examiner.
-            Board papers follow FBISE's new pattern (50% MCQs) and take a minute or
-            two to set.
+            FBISE-style questions from the examined SLOs, marked like an
+            examiner. Board papers follow FBISE's new pattern (50% MCQs) and
+            take a minute or two to set.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -105,11 +113,14 @@ export const NewPaperDialog = ({
                 onClick={() => setLength(option.value)}
                 className={cn(
                   'rounded-lg border p-3 text-left transition-colors hover:bg-accent/50',
-                  length === option.value && 'border-primary bg-primary/5 ring-1 ring-primary',
+                  length === option.value &&
+                    'border-primary bg-primary/5 ring-1 ring-primary',
                 )}
               >
                 <div className="font-medium">{option.label}</div>
-                <div className="text-sm text-muted-foreground">{option.detail}</div>
+                <div className="text-sm text-muted-foreground">
+                  {option.detail}
+                </div>
               </button>
             ))}
           </div>

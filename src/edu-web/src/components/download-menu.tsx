@@ -44,9 +44,12 @@ export const DownloadMenu = ({
       toast.success(option.success ?? 'Downloaded', { id: toastId })
     } catch (error) {
       console.error(error)
-      toast.error(option.failure ?? 'Could not create the file, please try again', {
-        id: toastId,
-      })
+      toast.error(
+        option.failure ?? 'Could not create the file, please try again',
+        {
+          id: toastId,
+        },
+      )
     } finally {
       setBusy(false)
     }

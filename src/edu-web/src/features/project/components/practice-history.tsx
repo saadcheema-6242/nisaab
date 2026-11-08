@@ -157,8 +157,9 @@ export const PracticeHistory = ({ projectId }: { projectId: string }) => {
       <div>
         <h3 className="text-lg font-semibold">Practice history</h3>
         <p className="text-sm text-muted-foreground">
-          Everything the tutor has made for you, newest first. Attempts keep their
-          score, and trying again saves a new attempt rather than replacing it.
+          Everything the tutor has made for you, newest first. Attempts keep
+          their score, and trying again saves a new attempt rather than
+          replacing it.
         </p>
       </div>
       {Result.builder(historyResult)

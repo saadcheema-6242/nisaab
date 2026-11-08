@@ -89,13 +89,17 @@ export const ContactPage = () => {
                   />
                 </div>
 
-                <Button onClick={send} disabled={!message.trim()} className="w-full">
+                <Button
+                  onClick={send}
+                  disabled={!message.trim()}
+                  className="w-full"
+                >
                   <MailIcon className="size-4" />
                   Open in your mail app
                 </Button>
                 <p className="text-muted-foreground text-xs">
-                  This opens your own mail app with the message ready — nothing is sent
-                  from this page.
+                  This opens your own mail app with the message ready — nothing
+                  is sent from this page.
                 </p>
               </div>
             </div>
@@ -108,7 +112,10 @@ export const ContactPage = () => {
                 { icon: BuildingIcon, label: 'College', value: college },
                 { icon: UserRoundIcon, label: 'Supervisor', value: supervisor },
               ].map((item) => (
-                <div key={item.label} className="bg-card rounded-2xl border p-5">
+                <div
+                  key={item.label}
+                  className="bg-card rounded-2xl border p-5"
+                >
                   <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
                     <item.icon className="size-4" />
                     {item.label}
@@ -120,9 +127,9 @@ export const ContactPage = () => {
               <div className="bg-muted/50 rounded-2xl border p-5">
                 <div className="font-semibold">For teachers and judges</div>
                 <p className="text-muted-foreground mt-1.5 text-sm text-pretty">
-                  Happy to walk through how the syllabus is modelled, how questions are
-                  generated and marked, or to set up accounts for a class. Say so in the
-                  message and we will arrange it.
+                  Happy to walk through how the syllabus is modelled, how
+                  questions are generated and marked, or to set up accounts for
+                  a class. Say so in the message and we will arrange it.
                 </p>
               </div>
             </div>

@@ -1,6 +1,11 @@
 import { Result, useAtomRefresh, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
-import { AlertCircleIcon, ChevronRightIcon, FileTextIcon, Loader2Icon } from 'lucide-react'
+import {
+  AlertCircleIcon,
+  ChevronRightIcon,
+  FileTextIcon,
+  Loader2Icon,
+} from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { paperAtom } from '@/data-acess/paper'
@@ -9,13 +14,20 @@ import { ThinkingDots } from '@/components/ui/thinking-dots'
 import { usePollWhile } from '@/hooks/use-poll-while'
 
 /** A practice paper started from the chat: opens the exam page, then shows the result. */
-export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paperId: string }) => {
+export const ChatPaperCard = ({
+  projectId,
+  paperId,
+}: {
+  projectId: string
+  paperId: string
+}) => {
   const atom = paperAtom(`${projectId}:${paperId}`)
   const result = useAtomValue(atom)
   const refresh = useAtomRefresh(atom)
 
   // Board papers are set by the worker; keep checking until they are ready
-  const preparing = Result.isSuccess(result) && result.value.status === 'preparing'
+  const preparing =
+    Result.isSuccess(result) && result.value.status === 'preparing'
   usePollWhile(preparing, refresh, { intervalMs: 5000, maxMs: 6 * 60_000 })
 
   if (!Result.isSuccess(result)) {
@@ -38,7 +50,9 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
         {paper.status !== 'preparing' && paper.status !== 'failed' && (
           <Badge variant="secondary">{countQuestions(paper)} questions</Badge>
         )}
-        <Badge variant="secondary">{formatMarks(paper.total_marks)} marks</Badge>
+        <Badge variant="secondary">
+          {formatMarks(paper.total_marks)} marks
+        </Badge>
         <Badge variant="secondary">{paper.time_limit_minutes} minutes</Badge>
       </div>
       {paper.status === 'preparing' ? (
@@ -56,7 +70,8 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
       ) : paper.status === 'submitted' && paper.result ? (
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-2xl font-bold">
-            {formatMarks(paper.result.score)}/{formatMarks(paper.result.max_score)}
+            {formatMarks(paper.result.score)}/
+            {formatMarks(paper.result.max_score)}
           </span>
           <Badge>{paper.result.grade}</Badge>
           <Button size="sm" variant="outline" asChild>
@@ -71,7 +86,10 @@ export const ChatPaperCard = ({ projectId, paperId }: { projectId: string; paper
         </div>
       ) : (
         <Button asChild>
-          <Link to="/dashboard/p/$projectId/paper/$paperId" params={{ projectId, paperId }}>
+          <Link
+            to="/dashboard/p/$projectId/paper/$paperId"
+            params={{ projectId, paperId }}
+          >
             Start paper
             <ChevronRightIcon className="size-4" />
           </Link>

@@ -134,7 +134,9 @@ const ItemCard = ({ item }: { item: ContentItemDto }) => {
         {payload.cognitive_level && (
           <Badge variant="secondary">Level {payload.cognitive_level}</Badge>
         )}
-        <span className={cn('rounded px-2 py-0.5 text-xs', statusStyles[status])}>
+        <span
+          className={cn('rounded px-2 py-0.5 text-xs', statusStyles[status])}
+        >
           {status === 'draft' ? 'Not reviewed' : status}
         </span>
       </div>
@@ -170,7 +172,11 @@ const ItemCard = ({ item }: { item: ContentItemDto }) => {
             >
               Reject
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setRejecting(false)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setRejecting(false)}
+            >
               Cancel
             </Button>
           </div>
@@ -236,7 +242,11 @@ const ReviewList = ({
           </p>
         )
       }
-      const groups: Array<{ code: string; description: string; items: Array<ContentItemDto> }> = []
+      const groups: Array<{
+        code: string
+        description: string
+        items: Array<ContentItemDto>
+      }> = []
       for (const item of items) {
         const last = groups.at(-1)
         if (last && last.code === item.slo_code) last.items.push(item)
@@ -273,8 +283,12 @@ const ReviewList = ({
 const Summary = ({ gradeSubjectId }: { gradeSubjectId: string }) => {
   const result = useAtomValue(reviewSummaryAtom(gradeSubjectId))
   if (!Result.isSuccess(result)) return null
-  const totals = { draft: 0, approved: 0, rejected: 0 } as Record<string, number>
-  for (const row of result.value) totals[row.review_status] = (totals[row.review_status] ?? 0) + row.count
+  const totals = { draft: 0, approved: 0, rejected: 0 } as Record<
+    string,
+    number
+  >
+  for (const row of result.value)
+    totals[row.review_status] = (totals[row.review_status] ?? 0) + row.count
   return (
     <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
       <span>{totals.draft} to review</span>

@@ -165,11 +165,14 @@ export const Constellation = ({ className }: { className?: string }) => {
         const p = points[i]
         const q = projected[i]
         const depth = q.k / scale
-        const flicker = still ? 1 : 0.78 + Math.sin(time * 0.0014 + p.twinkle) * 0.22
+        const flicker = still
+          ? 1
+          : 0.78 + Math.sin(time * 0.0014 + p.twinkle) * 0.22
         const radius = Math.max(0.35, p.size * q.k * 0.52)
         ctx.fillStyle = p.colour
 
-        ctx.globalAlpha = Math.max(0, Math.min(0.85, (depth - 0.45) * 0.95)) * flicker
+        ctx.globalAlpha =
+          Math.max(0, Math.min(0.85, (depth - 0.45) * 0.95)) * flicker
         ctx.beginPath()
         ctx.arc(q.x, q.y, radius, 0, Math.PI * 2)
         ctx.fill()

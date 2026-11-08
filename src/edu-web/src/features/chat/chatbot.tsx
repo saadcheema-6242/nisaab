@@ -269,7 +269,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                                 key={`${message.id}-file-${i}`}
                                 className="flex items-center gap-2 p-2 bg-muted rounded"
                               >
-                                <span className="text-sm">{part.file_name}</span>
+                                <span className="text-sm">
+                                  {part.file_name}
+                                </span>
                                 <a
                                   href={part.file_url}
                                   target="_blank"
@@ -331,245 +333,241 @@ export const Chatbot: React.FC<ChatbotProps> = ({
                 const isLastMessage = message.id === lastMessage?.id
                 return visibleParts.map((part, i: number) => {
                   const isLastPart = i === visibleParts.length - 1
-                    switch (part.type) {
-                      case 'text':
-                        return (
-                          <Message
-                            key={`${message.id}-${i}`}
-                            from={
-                              message.role as 'user' | 'assistant' | 'system'
-                            }
-                          >
-                            <MessageContent>
-                              <div id={`chat-text-${message.id}-${i}`}>
-                                <Response
-                                  className={
-                                    isStreaming &&
-                                    isLastMessage &&
-                                    isLastPart &&
-                                    message.role === 'assistant'
-                                      ? 'is-typing'
-                                      : undefined
+                  switch (part.type) {
+                    case 'text':
+                      return (
+                        <Message
+                          key={`${message.id}-${i}`}
+                          from={message.role as 'user' | 'assistant' | 'system'}
+                        >
+                          <MessageContent>
+                            <div id={`chat-text-${message.id}-${i}`}>
+                              <Response
+                                className={
+                                  isStreaming &&
+                                  isLastMessage &&
+                                  isLastPart &&
+                                  message.role === 'assistant'
+                                    ? 'is-typing'
+                                    : undefined
+                                }
+                              >
+                                {part.text_content}
+                              </Response>
+                            </div>
+                          </MessageContent>
+                          {message.role === 'assistant' &&
+                            isLastPart &&
+                            !(isStreaming && isLastMessage) && (
+                              <div className="flex gap-2 mt-2">
+                                <button
+                                  onClick={() =>
+                                    handleCopy(
+                                      `chat-text-${message.id}-${i}`,
+                                      part.text_content,
+                                    )
                                   }
+                                  className="p-1 hover:bg-muted rounded"
+                                  title="Copy"
                                 >
-                                  {part.text_content}
-                                </Response>
+                                  <CopyIcon className="size-3" />
+                                </button>
                               </div>
-                            </MessageContent>
-                            {message.role === 'assistant' &&
-                              isLastPart &&
-                              !(isStreaming && isLastMessage) && (
-                                <div className="flex gap-2 mt-2">
-                                  <button
-                                    onClick={() =>
-                                      handleCopy(
-                                        `chat-text-${message.id}-${i}`,
-                                        part.text_content,
-                                      )
-                                    }
-                                    className="p-1 hover:bg-muted rounded"
-                                    title="Copy"
-                                  >
-                                    <CopyIcon className="size-3" />
-                                  </button>
-                                </div>
-                              )}
-                          </Message>
-                        )
-                      case 'file':
-                        // File parts are handled above in the user message section
-                        return null
-                      // case 'reasoning':
-                      //   return (
-                      //     <Reasoning
-                      //       key={`${message.id}-part-${i}`}
-                      //       className="w-full"
-                      //       isStreaming={
-                      //         isStreaming &&
-                      //         i === (message.parts?.length || 0) - 1 &&
-                      //         message.id === messages[messages.length - 1]?.id
-                      //       }
-                      //     >
-                      //       <ReasoningTrigger />
-                      //       <ReasoningContent>
-                      //         {String(
-                      //           (
-                      //             part as {
-                      //               text_content?: string
-                      //               text?: string
-                      //             }
-                      //           ).text_content ||
-                      //             (
-                      //               part as {
-                      //                 text_content?: string
-                      //                 text?: string
-                      //               }
-                      //             ).text ||
-                      //             '',
-                      //         )}
-                      //       </ReasoningContent>
-                      //     </Reasoning>
-                      //   )
-                      case 'tool_call': {
-                        // Practice started by the tutor is shown as a card to answer here
-                        const quizId =
-                          part.tool_name === 'practice_quiz'
-                            ? toolOutputId(part, 'quiz_id')
-                            : null
-                        const groupId =
-                          part.tool_name === 'practice_flashcards'
-                            ? toolOutputId(part, 'group_id')
-                            : null
-                        const mindMapId =
-                          part.tool_name === 'practice_mind_map'
-                            ? toolOutputId(part, 'mind_map_id')
-                            : null
-                        const paperId =
-                          part.tool_name === 'practice_paper'
-                            ? toolOutputId(part, 'paper_id')
-                            : null
-                        const setup =
-                          part.tool_name === 'ask_practice_questions'
-                            ? parseSetup(part)
-                            : null
-                        // A figure the tutor drew by writing and running the
-                        // code for it, so it needs no credit - unlike a found
-                        // diagram, nobody else drew it. generate_image is
-                        // here too: the image maker is gone and nothing new
-                        // arrives from it, but chats that used it keep their
-                        // pictures. The link is signed and lasts a week, so an
-                        // old chat may lose it anyway.
-                        const imageUrl =
-                          part.tool_name === 'draw_figure' ||
-                          part.tool_name === 'generate_image'
-                            ? toolOutputId(part, 'image_url')
-                            : null
-                        const studyPlanId =
-                          part.tool_name === 'make_study_plan'
-                            ? toolOutputId(part, 'study_plan_id')
-                            : null
-                        // A real diagram found in an openly licensed
-                        // collection. It must be shown with its credit.
-                        const diagramUrl =
-                          part.tool_name === 'find_diagram'
-                            ? toolOutputId(part, 'image_url')
-                            : null
-                        return (
-                          <div
-                            key={`${message.id}-part-${i}`}
-                            className="space-y-2"
-                          >
-                            <ToolStatus
-                              toolCall={part}
-                              projectId={projectId}
-                              lang={lang}
-                              showOpen={
-                                !quizId &&
-                                !groupId &&
-                                !mindMapId &&
-                                !paperId &&
-                                !setup &&
-                                !imageUrl &&
-                                !diagramUrl &&
-                                !studyPlanId
+                            )}
+                        </Message>
+                      )
+                    case 'file':
+                      // File parts are handled above in the user message section
+                      return null
+                    // case 'reasoning':
+                    //   return (
+                    //     <Reasoning
+                    //       key={`${message.id}-part-${i}`}
+                    //       className="w-full"
+                    //       isStreaming={
+                    //         isStreaming &&
+                    //         i === (message.parts?.length || 0) - 1 &&
+                    //         message.id === messages[messages.length - 1]?.id
+                    //       }
+                    //     >
+                    //       <ReasoningTrigger />
+                    //       <ReasoningContent>
+                    //         {String(
+                    //           (
+                    //             part as {
+                    //               text_content?: string
+                    //               text?: string
+                    //             }
+                    //           ).text_content ||
+                    //             (
+                    //               part as {
+                    //                 text_content?: string
+                    //                 text?: string
+                    //               }
+                    //             ).text ||
+                    //             '',
+                    //         )}
+                    //       </ReasoningContent>
+                    //     </Reasoning>
+                    //   )
+                    case 'tool_call': {
+                      // Practice started by the tutor is shown as a card to answer here
+                      const quizId =
+                        part.tool_name === 'practice_quiz'
+                          ? toolOutputId(part, 'quiz_id')
+                          : null
+                      const groupId =
+                        part.tool_name === 'practice_flashcards'
+                          ? toolOutputId(part, 'group_id')
+                          : null
+                      const mindMapId =
+                        part.tool_name === 'practice_mind_map'
+                          ? toolOutputId(part, 'mind_map_id')
+                          : null
+                      const paperId =
+                        part.tool_name === 'practice_paper'
+                          ? toolOutputId(part, 'paper_id')
+                          : null
+                      const setup =
+                        part.tool_name === 'ask_practice_questions'
+                          ? parseSetup(part)
+                          : null
+                      // A figure the tutor drew by writing and running the
+                      // code for it, so it needs no credit - unlike a found
+                      // diagram, nobody else drew it. generate_image is
+                      // here too: the image maker is gone and nothing new
+                      // arrives from it, but chats that used it keep their
+                      // pictures. The link is signed and lasts a week, so an
+                      // old chat may lose it anyway.
+                      const imageUrl =
+                        part.tool_name === 'draw_figure' ||
+                        part.tool_name === 'generate_image'
+                          ? toolOutputId(part, 'image_url')
+                          : null
+                      const studyPlanId =
+                        part.tool_name === 'make_study_plan'
+                          ? toolOutputId(part, 'study_plan_id')
+                          : null
+                      // A real diagram found in an openly licensed
+                      // collection. It must be shown with its credit.
+                      const diagramUrl =
+                        part.tool_name === 'find_diagram'
+                          ? toolOutputId(part, 'image_url')
+                          : null
+                      return (
+                        <div
+                          key={`${message.id}-part-${i}`}
+                          className="space-y-2"
+                        >
+                          <ToolStatus
+                            toolCall={part}
+                            projectId={projectId}
+                            lang={lang}
+                            showOpen={
+                              !quizId &&
+                              !groupId &&
+                              !mindMapId &&
+                              !paperId &&
+                              !setup &&
+                              !imageUrl &&
+                              !diagramUrl &&
+                              !studyPlanId
+                            }
+                          />
+                          {setup && (
+                            <ChatAskCard
+                              setup={setup}
+                              answered={messageIndex < messages.length - 1}
+                              onAsk={(text) =>
+                                handleSubmit({ text, files: [] })
                               }
                             />
-                            {setup && (
-                              <ChatAskCard
-                                setup={setup}
-                                answered={messageIndex < messages.length - 1}
-                                onAsk={(text) =>
-                                  handleSubmit({ text, files: [] })
-                                }
-                              />
-                            )}
-                            {studyPlanId && (
-                              <ChatStudyPlanCard
-                                projectId={projectId}
-                                studyPlanId={studyPlanId}
-                              />
-                            )}
-                            {quizId && (
-                              <ChatQuizCard
-                                projectId={projectId}
-                                quizId={quizId}
-                                onAsk={(text) =>
-                                  handleSubmit({ text, files: [] })
-                                }
-                              />
-                            )}
-                            {groupId && (
-                              <ChatFlashcardsCard
-                                projectId={projectId}
-                                groupId={groupId}
-                              />
-                            )}
-                            {paperId && (
-                              <ChatPaperCard
-                                projectId={projectId}
-                                paperId={paperId}
-                              />
-                            )}
-                            {imageUrl && (
+                          )}
+                          {studyPlanId && (
+                            <ChatStudyPlanCard
+                              projectId={projectId}
+                              studyPlanId={studyPlanId}
+                            />
+                          )}
+                          {quizId && (
+                            <ChatQuizCard
+                              projectId={projectId}
+                              quizId={quizId}
+                              onAsk={(text) =>
+                                handleSubmit({ text, files: [] })
+                              }
+                            />
+                          )}
+                          {groupId && (
+                            <ChatFlashcardsCard
+                              projectId={projectId}
+                              groupId={groupId}
+                            />
+                          )}
+                          {paperId && (
+                            <ChatPaperCard
+                              projectId={projectId}
+                              paperId={paperId}
+                            />
+                          )}
+                          {imageUrl && (
+                            <img
+                              src={imageUrl}
+                              alt={toolOutputId(part, 'alt') ?? 'Picture'}
+                              className="w-full max-w-lg rounded-lg border bg-white"
+                              loading="lazy"
+                            />
+                          )}
+                          {diagramUrl && (
+                            <figure className="w-full max-w-lg">
                               <img
-                                src={imageUrl}
-                                alt={
-                                  toolOutputId(part, 'alt') ?? 'Picture'
-                                }
-                                className="w-full max-w-lg rounded-lg border bg-white"
+                                src={diagramUrl}
+                                alt={toolOutputId(part, 'alt') ?? 'Diagram'}
+                                className="w-full rounded-lg border bg-white"
                                 loading="lazy"
                               />
-                            )}
-                            {diagramUrl && (
-                              <figure className="w-full max-w-lg">
-                                <img
-                                  src={diagramUrl}
-                                  alt={toolOutputId(part, 'alt') ?? 'Diagram'}
-                                  className="w-full rounded-lg border bg-white"
-                                  loading="lazy"
+                              <figcaption className="mt-1">
+                                <ImageCredit
+                                  credit={toolOutputValue(part, 'credit')}
                                 />
-                                <figcaption className="mt-1">
-                                  <ImageCredit
-                                    credit={toolOutputValue(part, 'credit')}
-                                  />
-                                </figcaption>
-                              </figure>
-                            )}
-                            {mindMapId && (
-                              <ChatMindMapCard
-                                projectId={projectId}
-                                mindMapId={mindMapId}
-                                onAsk={(text) =>
-                                  handleSubmit({ text, files: [] })
-                                }
-                              />
-                            )}
-                          </div>
-                        )
-                      }
-                      // case 'source-url':
-                      //   return (
-                      //     <div
-                      //       key={`${message.id}-part-${i}`}
-                      //       className="bg-card text-card-foreground p-3 rounded-lg border-l-4 border-primary ring-1 ring-foreground/10"
-                      //     >
-                      //       <span className="text-xs text-muted-foreground font-medium">
-                      //         Source URL:
-                      //       </span>
-                      //       <a
-                      //         href={(part as { url?: string }).url}
-                      //         target="_blank"
-                      //         rel="noopener noreferrer"
-                      //         className="block text-primary hover:text-primary/80 underline text-sm mt-1 underline-offset-4"
-                      //       >
-                      //         {(part as { url?: string }).url}
-                      //       </a>
-                      //     </div>
-                      //   )
-                      // source-document parts are handled above in the Sources component
-                      default:
-                        return null
+                              </figcaption>
+                            </figure>
+                          )}
+                          {mindMapId && (
+                            <ChatMindMapCard
+                              projectId={projectId}
+                              mindMapId={mindMapId}
+                              onAsk={(text) =>
+                                handleSubmit({ text, files: [] })
+                              }
+                            />
+                          )}
+                        </div>
+                      )
                     }
+                    // case 'source-url':
+                    //   return (
+                    //     <div
+                    //       key={`${message.id}-part-${i}`}
+                    //       className="bg-card text-card-foreground p-3 rounded-lg border-l-4 border-primary ring-1 ring-foreground/10"
+                    //     >
+                    //       <span className="text-xs text-muted-foreground font-medium">
+                    //         Source URL:
+                    //       </span>
+                    //       <a
+                    //         href={(part as { url?: string }).url}
+                    //         target="_blank"
+                    //         rel="noopener noreferrer"
+                    //         className="block text-primary hover:text-primary/80 underline text-sm mt-1 underline-offset-4"
+                    //       >
+                    //         {(part as { url?: string }).url}
+                    //       </a>
+                    //     </div>
+                    //   )
+                    // source-document parts are handled above in the Sources component
+                    default:
+                      return null
+                  }
                 })
               })()}
             </div>

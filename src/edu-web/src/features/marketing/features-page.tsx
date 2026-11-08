@@ -26,7 +26,9 @@ const PaperPattern = () => {
             onFocus={() => setActive(section.section)}
             onHoverEnd={() => setActive(null)}
             onBlur={() => setActive(null)}
-            onClick={() => setActive(active === section.section ? null : section.section)}
+            onClick={() =>
+              setActive(active === section.section ? null : section.section)
+            }
             className={cn(
               'relative flex items-center justify-center font-semibold transition-colors',
               i === 0 && 'bg-primary text-primary-foreground',
@@ -34,7 +36,9 @@ const PaperPattern = () => {
               i === 2 && 'bg-primary/45 text-primary-foreground',
             )}
             style={{ flexGrow: section.marks }}
-            animate={{ opacity: active && active !== section.section ? 0.5 : 1 }}
+            animate={{
+              opacity: active && active !== section.section ? 0.5 : 1,
+            }}
           >
             {section.section}
           </motion.button>
@@ -57,14 +61,16 @@ const PaperPattern = () => {
               </span>
             </div>
             <div className="mt-1 text-sm font-medium">{section.title}</div>
-            <div className="text-muted-foreground mt-0.5 text-sm">{section.detail}</div>
+            <div className="text-muted-foreground mt-0.5 text-sm">
+              {section.detail}
+            </div>
           </div>
         ))}
       </div>
 
       <p className="text-muted-foreground mt-5 text-sm">
-        {totalMarks} marks in total, as FBISE sets the paper from 2026. Mathematics
-        carries 100.
+        {totalMarks} marks in total, as FBISE sets the paper from 2026.
+        Mathematics carries 100.
       </p>
     </div>
   )
@@ -91,8 +97,12 @@ export const FeaturesPage = () => (
                 {String(i + 1).padStart(2, '0')}
               </div>
               <div className="max-w-2xl">
-                <h3 className="text-xl font-semibold text-balance">{feature.title}</h3>
-                <p className="text-muted-foreground mt-2 text-pretty">{feature.blurb}</p>
+                <h3 className="text-xl font-semibold text-balance">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground mt-2 text-pretty">
+                  {feature.blurb}
+                </p>
               </div>
             </div>
           </Reveal>
@@ -136,7 +146,9 @@ export const FeaturesPage = () => (
                 <div className="mt-4 text-3xl font-bold tracking-tight">
                   <Counter to={subject.slos} />
                 </div>
-                <div className="text-muted-foreground text-sm">learning outcomes</div>
+                <div className="text-muted-foreground text-sm">
+                  learning outcomes
+                </div>
                 <div className="text-muted-foreground mt-2 text-xs">
                   {subject.examined} examinable
                 </div>
@@ -146,8 +158,11 @@ export const FeaturesPage = () => (
         </div>
         <Reveal className="mt-8" delay={0.2}>
           <p className="text-muted-foreground text-sm">
-            <span className="text-foreground font-semibold">{totalExamined}</span> of
-            them carry marks in the exam. Those are the ones NISAAB drills hardest.
+            <span className="text-foreground font-semibold">
+              {totalExamined}
+            </span>{' '}
+            of them carry marks in the exam. Those are the ones NISAAB drills
+            hardest.
           </p>
         </Reveal>
       </div>

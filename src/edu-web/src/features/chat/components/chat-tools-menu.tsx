@@ -41,9 +41,7 @@ export const ChatToolsMenu = ({
 }: Props) => {
   const toggle = (name: string) =>
     onToolsChange(
-      tools.includes(name)
-        ? tools.filter((t) => t !== name)
-        : [...tools, name],
+      tools.includes(name) ? tools.filter((t) => t !== name) : [...tools, name],
     )
 
   const chosen = CHAT_TOOLS.filter((t) => tools.includes(t.name))

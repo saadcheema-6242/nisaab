@@ -1,5 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import { AlertCircleIcon, CheckCircle2Icon, ChevronRightIcon } from 'lucide-react'
+import {
+  AlertCircleIcon,
+  CheckCircle2Icon,
+  ChevronRightIcon,
+} from 'lucide-react'
 import { errorLabel, openLabel, stageLabel, toolLabels } from '../chat-labels'
 import type { ChatLang } from '../chat-labels'
 import type { ToolCallPartDto } from '@/integrations/api/client'
@@ -124,11 +128,7 @@ export const ToolStatus = ({
         <span
           dir="auto"
           className={
-            failed
-              ? 'text-destructive'
-              : done
-                ? undefined
-                : 'thinking-text'
+            failed ? 'text-destructive' : done ? undefined : 'thinking-text'
           }
         >
           {failed ? errorLabel(lang) : done ? labels.done : labels.running}

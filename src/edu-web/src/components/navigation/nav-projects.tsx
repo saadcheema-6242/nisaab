@@ -33,7 +33,7 @@ const ChatItem = ({ chat }: { chat: ChatDto }) => {
             chatId: chat.id,
           }}
         >
-          <span>{chat.title ?? "Unnamed Chat"}</span>
+          <span>{chat.title ?? 'Unnamed Chat'}</span>
         </Link>
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>

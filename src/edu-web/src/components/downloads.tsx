@@ -8,10 +8,7 @@ import { paperAtom } from '@/data-acess/paper'
 import { projectAtom } from '@/data-acess/project'
 import { latestStudyPlanRemoteAtom } from '@/data-acess/study-plan'
 import { currentUserAtom } from '@/data-acess/auth'
-import {
-  quizAtom,
-  quizQuestionsAtom,
-} from '@/data-acess/quiz'
+import { quizAtom, quizQuestionsAtom } from '@/data-acess/quiz'
 
 // Each component loads its own data and offers the formats that suit it. The export
 // code is imported only when a format is chosen, so it never slows the page down.
@@ -25,7 +22,9 @@ const useProjectName = (projectId: string) => {
 type MenuProps = { iconOnly?: boolean; autoOpen?: boolean }
 
 const subtitleOf = (projectName?: string, sloCode?: string | null) =>
-  [projectName, sloCode ? `SLO ${sloCode}` : null].filter(Boolean).join(' · ') || undefined
+  [projectName, sloCode ? `SLO ${sloCode}` : null]
+    .filter(Boolean)
+    .join(' · ') || undefined
 
 export const QuizDownload = ({
   projectId,
@@ -36,7 +35,11 @@ export const QuizDownload = ({
   const quiz = useAtomValue(quizAtom(key))
   const questions = useAtomValue(quizQuestionsAtom(key))
   const projectName = useProjectName(projectId)
-  if (!Result.isSuccess(quiz) || !Result.isSuccess(questions) || questions.value.length === 0) {
+  if (
+    !Result.isSuccess(quiz) ||
+    !Result.isSuccess(questions) ||
+    questions.value.length === 0
+  ) {
     return null
   }
   const args = {
@@ -50,12 +53,16 @@ export const QuizDownload = ({
       options={[
         {
           label: 'PDF with answer key',
-          run: async () => (await import('@/lib/export/quiz')).exportQuizPdf(args),
+          run: async () =>
+            (await import('@/lib/export/quiz')).exportQuizPdf(args),
         },
         {
           label: 'PDF questions only',
           run: async () =>
-            (await import('@/lib/export/quiz')).exportQuizPdf({ ...args, withAnswers: false }),
+            (await import('@/lib/export/quiz')).exportQuizPdf({
+              ...args,
+              withAnswers: false,
+            }),
         },
       ]}
     />
@@ -70,7 +77,11 @@ export const FlashcardsDownload = ({
   const key = `${projectId}:${groupId}`
   const group = useAtomValue(flashcardGroupAtom(key))
   const cards = useAtomValue(flashcardsAtom(key))
-  if (!Result.isSuccess(group) || !Result.isSuccess(cards) || cards.value.length === 0) {
+  if (
+    !Result.isSuccess(group) ||
+    !Result.isSuccess(cards) ||
+    cards.value.length === 0
+  ) {
     return null
   }
   const title = group.value.name
@@ -82,7 +93,10 @@ export const FlashcardsDownload = ({
         {
           label: 'PDF (printable cards)',
           run: async () =>
-            (await import('@/lib/export/flashcards')).exportFlashcardsPdf(title, cards.value),
+            (await import('@/lib/export/flashcards')).exportFlashcardsPdf(
+              title,
+              cards.value,
+            ),
         },
         {
           label: 'Images for sharing (ZIP)',
@@ -128,12 +142,20 @@ export const MindMapDownload = ({
         {
           label: 'Image (PNG)',
           run: async () =>
-            (await import('@/lib/export/mind-map')).exportMindMapPng(mindMap.title, data.nodes, data.edges),
+            (await import('@/lib/export/mind-map')).exportMindMapPng(
+              mindMap.title,
+              data.nodes,
+              data.edges,
+            ),
         },
         {
           label: 'PDF',
           run: async () =>
-            (await import('@/lib/export/mind-map')).exportMindMapPdf(mindMap.title, data.nodes, data.edges),
+            (await import('@/lib/export/mind-map')).exportMindMapPdf(
+              mindMap.title,
+              data.nodes,
+              data.edges,
+            ),
         },
       ]}
     />
@@ -149,7 +171,8 @@ export const PaperDownload = ({
   const projectName = useProjectName(projectId)
   // Anything but a paper still being written: a submitted paper is exactly when
   // the answers and solutions become worth exporting.
-  if (!Result.isSuccess(result) || result.value.status === 'preparing') return null
+  if (!Result.isSuccess(result) || result.value.status === 'preparing')
+    return null
   const paper = result.value
   const args = { paper, subtitle: projectName }
   const load = async () => (await import('@/lib/export/paper')).exportPaperPdf
@@ -202,7 +225,11 @@ export const NoteDownload = ({
         {
           label: 'PDF',
           run: async () =>
-            (await import('@/lib/export/note')).exportNotePdf(note.title, note.content, projectName),
+            (await import('@/lib/export/note')).exportNotePdf(
+              note.title,
+              note.content,
+              projectName,
+            ),
         },
       ]}
     />

@@ -63,14 +63,20 @@ export const MarketingLayout = ({ children }: { children: ReactNode }) => {
             onClick={() => setOpen(!open)}
             className="hover:bg-accent -mr-2 rounded-md p-2 md:hidden"
           >
-            {open ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
+            {open ? (
+              <XIcon className="size-5" />
+            ) : (
+              <MenuIcon className="size-5" />
+            )}
           </button>
         </div>
 
         <div
           className={cn(
             'grid overflow-hidden border-t transition-all duration-200 md:hidden',
-            open ? 'grid-rows-[1fr] border-border' : 'grid-rows-[0fr] border-transparent',
+            open
+              ? 'grid-rows-[1fr] border-border'
+              : 'grid-rows-[0fr] border-transparent',
           )}
         >
           <div className="min-h-0">

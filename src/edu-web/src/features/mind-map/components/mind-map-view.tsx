@@ -58,7 +58,9 @@ export function convertToTree(
       label: node.data.label,
       content: (node.data.content as string | null | undefined) ?? undefined,
       sloCode: (node.data.slo_code as string | null | undefined) ?? undefined,
-      form: (node.data.form as MindMapNodeData['form'] | null | undefined) ?? undefined,
+      form:
+        (node.data.form as MindMapNodeData['form'] | null | undefined) ??
+        undefined,
       children: [],
     })
     childrenMap.set(node.id, [])
@@ -137,7 +139,9 @@ const MindMapNode = ({
           onKeyDown={(e) => e.key === 'Enter' && onSelect(data)}
           className={cn(
             'group flex max-w-[280px] cursor-pointer items-center gap-2 rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-200',
-            isRoot ? 'px-5 py-3 border-primary/40' : 'px-3 py-2 hover:border-primary/50 hover:shadow-md',
+            isRoot
+              ? 'px-5 py-3 border-primary/40'
+              : 'px-3 py-2 hover:border-primary/50 hover:shadow-md',
             data.form && formStyles[data.form],
             selected && 'ring-2 ring-primary',
           )}
@@ -154,7 +158,10 @@ const MindMapNode = ({
               aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
               <ChevronRight
-                className={cn('h-3.5 w-3.5 transition-transform', isExpanded && 'rotate-90')}
+                className={cn(
+                  'h-3.5 w-3.5 transition-transform',
+                  isExpanded && 'rotate-90',
+                )}
               />
             </Button>
           )}
@@ -171,7 +178,9 @@ const MindMapNode = ({
               {data.label}
             </MathText>
             {data.sloCode && !data.label.startsWith(data.sloCode) && (
-              <span className="font-mono text-[10px] text-muted-foreground">{data.sloCode}</span>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                {data.sloCode}
+              </span>
             )}
           </div>
         </div>
@@ -234,7 +243,9 @@ const NodeDetails = ({
         )}
       </div>
     )}
-    {node.content && <MathText className="text-muted-foreground">{node.content}</MathText>}
+    {node.content && (
+      <MathText className="text-muted-foreground">{node.content}</MathText>
+    )}
     {onAsk && (
       <div className="flex flex-wrap gap-2 pt-1">
         <Button
@@ -253,7 +264,9 @@ const NodeDetails = ({
           <Button
             size="sm"
             variant="outline"
-            onClick={() => onAsk(`Give me a 5 MCQ quiz on SLO ${node.sloCode}.`)}
+            onClick={() =>
+              onAsk(`Give me a 5 MCQ quiz on SLO ${node.sloCode}.`)
+            }
           >
             <ListChecksIcon className="size-4" />
             Practise
@@ -275,7 +288,11 @@ type MindMapViewProps = {
 
 const ZOOM_STEPS = [0.6, 0.75, 0.9, 1, 1.15, 1.3]
 
-export const MindMapView = ({ mapData, onAsk, className }: MindMapViewProps) => {
+export const MindMapView = ({
+  mapData,
+  onAsk,
+  className,
+}: MindMapViewProps) => {
   const rootNode = useMemo(
     () => convertToTree(mapData.nodes, mapData.edges),
     [mapData.nodes, mapData.edges],
@@ -296,7 +313,12 @@ export const MindMapView = ({ mapData, onAsk, className }: MindMapViewProps) => 
   const scale = ZOOM_STEPS[zoom]
 
   return (
-    <div className={cn('relative flex h-full w-full flex-col bg-background', className)}>
+    <div
+      className={cn(
+        'relative flex h-full w-full flex-col bg-background',
+        className,
+      )}
+    >
       <div className="absolute right-2 top-2 z-20 flex gap-1 rounded-lg border bg-background/90 p-1 shadow-sm">
         <Button
           size="icon"
@@ -345,7 +367,11 @@ export const MindMapView = ({ mapData, onAsk, className }: MindMapViewProps) => 
         </div>
       </div>
       {selected && (
-        <NodeDetails node={selected} onClose={() => setSelected(null)} onAsk={onAsk} />
+        <NodeDetails
+          node={selected}
+          onClose={() => setSelected(null)}
+          onAsk={onAsk}
+        />
       )}
     </div>
   )

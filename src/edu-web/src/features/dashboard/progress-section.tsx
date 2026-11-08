@@ -8,10 +8,7 @@ import type {
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { progressAtom } from '@/data-acess/progress'
-import {
-  masteryLevel,
-  masteryStyles,
-} from '@/features/syllabus/slo-labels'
+import { masteryLevel, masteryStyles } from '@/features/syllabus/slo-labels'
 import { SubjectIcon } from '@/lib/subjects'
 import { cn } from '@/lib/utils'
 

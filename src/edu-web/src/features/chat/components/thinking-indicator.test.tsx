@@ -14,9 +14,9 @@ describe('ThinkingDots', () => {
 
   it('staggers them, so they travel rather than blink together', () => {
     const { container } = render(<ThinkingDots />)
-    const delays = [...container.querySelectorAll<HTMLElement>('.thinking-dot')].map(
-      (dot) => dot.style.animationDelay,
-    )
+    const delays = [
+      ...container.querySelectorAll<HTMLElement>('.thinking-dot'),
+    ].map((dot) => dot.style.animationDelay)
     expect(delays).toEqual(['0ms', '150ms', '300ms'])
   })
 
@@ -37,7 +37,9 @@ describe('ThinkingIndicator', () => {
   })
 
   it('reads right-to-left for Urdu without a separate component', () => {
-    const { container } = render(<ThinkingIndicator lang="ur" label="سوچ رہا ہے" />)
+    const { container } = render(
+      <ThinkingIndicator lang="ur" label="سوچ رہا ہے" />,
+    )
     expect(container.querySelector('[dir="auto"]')).not.toBeNull()
   })
 })

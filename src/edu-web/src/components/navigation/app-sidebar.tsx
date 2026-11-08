@@ -29,8 +29,7 @@ import {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const adminResult = useAtomValue(adminStateAtom)
-  const isAdmin =
-    Result.isSuccess(adminResult) && adminResult.value.is_admin
+  const isAdmin = Result.isSuccess(adminResult) && adminResult.value.is_admin
   const reviewerResult = useAtomValue(reviewerStateAtom)
   const isReviewer =
     Result.isSuccess(reviewerResult) && reviewerResult.value.is_reviewer

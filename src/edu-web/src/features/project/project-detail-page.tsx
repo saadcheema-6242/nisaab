@@ -202,7 +202,6 @@ export const ProjectDetailPage = ({
     setCurrentProject(projectId)
   }, [projectId, setCurrentProject])
 
-
   return (
     <div className="flex h-full flex-col max-h-screen">
       <ProjectHeader projectId={projectId} />

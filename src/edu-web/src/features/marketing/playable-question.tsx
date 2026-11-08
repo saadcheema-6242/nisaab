@@ -31,7 +31,8 @@ const questions: Array<Question> = [
     subject: 'Chemistry',
     domain: 'Periodicity',
     colour: '#34D399',
-    question: 'Which of these elements has the highest first ionisation energy?',
+    question:
+      'Which of these elements has the highest first ionisation energy?',
     options: ['Na', 'Mg', 'Al', 'Si'],
     answer: 3,
     why: 'Ionisation energy rises across a period as nuclear charge grows, so silicon is highest here. (Mg beats Al because Al loses a 3p electron, which is easier than breaking Mg’s filled 3s.)',
@@ -62,14 +63,21 @@ export const PlayableQuestion = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('bg-card rounded-2xl border p-6 shadow-sm sm:p-8', className)}>
+    <div
+      className={cn(
+        'bg-card rounded-2xl border p-6 shadow-sm sm:p-8',
+        className,
+      )}
+    >
       <div className="flex items-center gap-2.5">
         <span
           className="size-2 rounded-full"
           style={{ backgroundColor: current.colour }}
         />
         <span className="text-sm font-semibold">{current.subject}</span>
-        <span className="text-muted-foreground text-sm">· {current.domain}</span>
+        <span className="text-muted-foreground text-sm">
+          · {current.domain}
+        </span>
       </div>
 
       <p className="mt-4 text-lg font-medium text-pretty">{current.question}</p>
@@ -88,14 +96,19 @@ export const PlayableQuestion = ({ className }: { className?: string }) => {
                 'flex items-center gap-3 rounded-xl border p-3.5 text-left transition-colors',
                 !answered && 'hover:border-primary/60 hover:bg-accent/60',
                 answered && correct && 'border-primary bg-primary/10',
-                answered && chosen && !correct && 'border-destructive bg-destructive/10',
+                answered &&
+                  chosen &&
+                  !correct &&
+                  'border-destructive bg-destructive/10',
                 answered && !correct && !chosen && 'opacity-55',
               )}
             >
               <span
                 className={cn(
                   'flex size-7 shrink-0 items-center justify-center rounded-md border text-xs font-semibold',
-                  answered && correct && 'border-primary bg-primary text-primary-foreground',
+                  answered &&
+                    correct &&
+                    'border-primary bg-primary text-primary-foreground',
                   answered &&
                     chosen &&
                     !correct &&
@@ -132,7 +145,12 @@ export const PlayableQuestion = ({ className }: { className?: string }) => {
                 </span>
                 {current.why}
               </p>
-              <Button variant="outline" size="sm" onClick={next} className="shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={next}
+                className="shrink-0"
+              >
                 <RotateCcwIcon className="size-3.5" />
                 Another
               </Button>

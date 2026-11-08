@@ -32,8 +32,16 @@ import {
 const PAKISTAN_OFFSET_MINUTES = 5 * 60
 
 const SUBJECTS = [
-  { code: 'PHY', name: 'Physics', groups: 'Pre-Medical, Pre-Engineering and ICS' },
-  { code: 'CHEM', name: 'Chemistry', groups: 'Pre-Medical and Pre-Engineering' },
+  {
+    code: 'PHY',
+    name: 'Physics',
+    groups: 'Pre-Medical, Pre-Engineering and ICS',
+  },
+  {
+    code: 'CHEM',
+    name: 'Chemistry',
+    groups: 'Pre-Medical and Pre-Engineering',
+  },
   { code: 'BIO', name: 'Biology', groups: 'Pre-Medical only' },
   { code: 'MATH', name: 'Mathematics', groups: 'Pre-Engineering and ICS' },
   { code: 'CS', name: 'Computer Science', groups: 'ICS only' },
@@ -202,8 +210,8 @@ const ScheduleForm = ({ teachers }: { teachers: Array<TeacherOption> }) => {
             required
           />
           <p className="text-muted-foreground text-xs">
-            Google Meet, Zoom, Teams or Webex. Students only see it from
-            fifteen minutes before the class starts.
+            Google Meet, Zoom, Teams or Webex. Students only see it from fifteen
+            minutes before the class starts.
           </p>
         </div>
 
@@ -273,19 +281,26 @@ const Scheduled = ({ sessions }: { sessions: Array<AdminSession> }) => {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-medium">{one.title}</span>
-              {one.cancelled_at && <Badge variant="destructive">Cancelled</Badge>}
-              {one.state === 'open' && !one.cancelled_at && (
-                <Badge className="bg-emerald-600 hover:bg-emerald-600">Live</Badge>
+              {one.cancelled_at && (
+                <Badge variant="destructive">Cancelled</Badge>
               )}
-              {one.state === 'ended' && <Badge variant="secondary">Finished</Badge>}
+              {one.state === 'open' && !one.cancelled_at && (
+                <Badge className="bg-emerald-600 hover:bg-emerald-600">
+                  Live
+                </Badge>
+              )}
+              {one.state === 'ended' && (
+                <Badge variant="secondary">Finished</Badge>
+              )}
             </div>
             <p className="text-muted-foreground text-sm">
               {one.subject_name} · Class {one.grade} · {one.when}
               {one.teacher ? ` · ${one.teacher.name}` : ' · no teacher named'}
             </p>
           </div>
-          {!one.cancelled_at && one.state !== 'ended' && (
-            asking === one.id ? (
+          {!one.cancelled_at &&
+            one.state !== 'ended' &&
+            (asking === one.id ? (
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-xs">
                   Call it off?
@@ -301,7 +316,11 @@ const Scheduled = ({ sessions }: { sessions: Array<AdminSession> }) => {
                 >
                   Yes, cancel
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setAsking(null)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setAsking(null)}
+                >
                   Keep it
                 </Button>
               </div>
@@ -314,8 +333,7 @@ const Scheduled = ({ sessions }: { sessions: Array<AdminSession> }) => {
               >
                 <Trash2Icon className="size-4" />
               </Button>
-            )
-          )}
+            ))}
         </li>
       ))}
     </ul>
@@ -351,9 +369,9 @@ export const SessionsPanel = () => {
             <p className="mb-4 flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs dark:border-amber-900 dark:bg-amber-950/40">
               <UserPlusIcon className="mt-0.5 size-4 shrink-0" />
               <span>
-                No accounts are marked as teachers yet. You can still
-                timetable a class by typing a teacher's name, and link the
-                account later from the Accounts tab.
+                No accounts are marked as teachers yet. You can still timetable
+                a class by typing a teacher's name, and link the account later
+                from the Accounts tab.
               </span>
             </p>
           )}

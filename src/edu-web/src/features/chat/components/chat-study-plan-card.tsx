@@ -10,7 +10,6 @@ import {
   spellMinutes,
 } from '@/features/study-plan/components/study-plan-steps'
 
-
 /**
  * A study plan the tutor made, shown in the chat.
  *
