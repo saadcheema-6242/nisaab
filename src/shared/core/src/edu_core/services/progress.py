@@ -7,18 +7,39 @@ shown with how much of the syllabus it covers, so it reads as an estimate.
 
 from contextlib import contextmanager
 
-from edu_db.models import CurriculumDomain, GradeSubject, Project, Slo
+from edu_db.models import (
+    CurriculumDomain,
+    GradeSubject,
+    PracticeRecord,
+    Project,
+    Slo,
+)
 from edu_db.session import get_session_factory
 from sqlalchemy.orm import joinedload
 
 from edu_core.grading import grade_for
-from edu_core.mastery import slo_mastery
+from edu_core.mastery import SELF_RATED_WEIGHT, slo_mastery
+from edu_core.progress_trend import (
+    active_days,
+    answers_this_week,
+    cognitive_split,
+    streaks,
+    trend,
+    weakest_level,
+)
 from edu_core.schemas.progress import (
+    ActivityDayDto,
+    CognitiveLevelDto,
+    ConsistencyDto,
     DomainProgressDto,
     PredictedGradeDto,
     ProgressDto,
+    ProgressGraphsDto,
     ProgressSloDto,
+    SubjectGraphsDto,
     SubjectProgressDto,
+    TrendPointDto,
+    WeakestLevelDto,
 )
 
 WEAK_BELOW = 0.8
@@ -141,6 +162,120 @@ class ProgressService:
             descriptor=descriptor,
             coverage=round(coverage, 3),
             confidence="high" if coverage >= 0.6 else "medium" if coverage >= 0.2 else "low",
+        )
+
+
+    # ---- the graphs tab --------------------------------------------------
+
+    def get_graphs(self, user_id: str) -> ProgressGraphsDto:
+        """Mastery over time, by cognitive level, and how often they practise.
+
+        A second call rather than more fields on get_progress. The overview
+        answers "where am I", needs no history, and is what loads first; this
+        reads every practice answer the student has ever recorded. Putting
+        them together would make the page everyone opens pay for the tab most
+        people will not.
+        """
+        with self._get_db_session() as db:
+            workspaces = (
+                db.query(Project)
+                .options(
+                    joinedload(Project.grade_subject).joinedload(GradeSubject.subject)
+                )
+                .filter(
+                    Project.owner_id == user_id,
+                    Project.kind == "subject_workspace",
+                )
+                .order_by(Project.created_at)
+                .all()
+            )
+
+            # Every answer once, for the whole page. Asking per subject would
+            # be one query per workspace plus one for the calendar.
+            rows = (
+                db.query(
+                    PracticeRecord.created_at,
+                    PracticeRecord.project_id,
+                    PracticeRecord.was_correct,
+                    PracticeRecord.score,
+                    PracticeRecord.item_type,
+                    PracticeRecord.slo_code,
+                )
+                .filter(PracticeRecord.user_id == user_id)
+                .order_by(PracticeRecord.created_at)
+                .all()
+            )
+
+            by_project: dict[str, list[tuple]] = {}
+            everything: list[tuple] = []
+            moments: list = []
+            for created, project_id, correct, score, item_type, _ in rows:
+                if created is None:
+                    continue
+                value = score if score is not None else (1.0 if correct else 0.0)
+                factor = SELF_RATED_WEIGHT if item_type == "flashcard" else 1.0
+                answer = (created, float(value), factor)
+                by_project.setdefault(project_id, []).append(answer)
+                everything.append(answer)
+                moments.append(created)
+
+            subjects = [
+                self._subject_graphs(db, user_id, project, by_project)
+                for project in workspaces
+                if project.grade_subject is not None
+            ]
+
+            run = streaks(moments)
+            return ProgressGraphsDto(
+                subjects=subjects,
+                overall_trend=[TrendPointDto(**point) for point in trend(everything)],
+                consistency=ConsistencyDto(
+                    current_streak=run["current"],
+                    longest_streak=run["longest"],
+                    days_practised=run["days_practised"],
+                    answers_this_week=answers_this_week(moments),
+                    last_day=run["last_day"],
+                    calendar=[ActivityDayDto(**day) for day in active_days(moments)],
+                ),
+            )
+
+    def _subject_graphs(
+        self, db, user_id: str, project: Project, by_project: dict
+    ) -> SubjectGraphsDto:
+        grade_subject = project.grade_subject
+        answers = by_project.get(project.id, [])
+        points = trend(answers)
+
+        # The same SLOs the overview counts: examined only, because the
+        # cognitive weighting describes the paper, and a formative SLO is
+        # never on it.
+        examined = (
+            db.query(Slo)
+            .filter(
+                Slo.grade_subject_id == grade_subject.id,
+                Slo.assessment_form == "summative",
+            )
+            .all()
+        )
+        mastery_by_code = slo_mastery(db, user_id, (slo.code for slo in examined))
+        split = cognitive_split(
+            [
+                (slo.cognitive_levels or [], mastery_by_code.get(slo.code, (0, None))[1], 1)
+                for slo in examined
+            ]
+        )
+        worst = weakest_level(split)
+
+        return SubjectGraphsDto(
+            project_id=project.id,
+            subject_code=grade_subject.subject.code,
+            name=project.name,
+            # Taken from the last point of the trend rather than recomputed,
+            # so the number beside the graph is the number the graph ends on.
+            mastery=points[-1]["mastery"] if points else None,
+            trend=[TrendPointDto(**point) for point in points],
+            cognitive=[CognitiveLevelDto(**row) for row in split],
+            weakest_level=WeakestLevelDto(**worst) if worst else None,
         )
 
     @contextmanager

@@ -8,9 +8,10 @@ student, so they move the estimate half as much. Kept simple and explainable.
 """
 
 from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
-from edu_db.models import PracticeRecord
-from sqlalchemy.orm import Session
+if TYPE_CHECKING:  # pragma: no cover - for type checkers only
+    from sqlalchemy.orm import Session
 
 MIN_WEIGHT = 0.3
 SELF_RATED_WEIGHT = 0.5  # flashcards: the student marks "knew it" themselves
@@ -35,9 +36,18 @@ def estimate(results: Iterable[float | tuple[float, float]]) -> tuple[int, float
 
 
 def slo_mastery(
-    db: Session, user_id: str, slo_codes: Iterable[str]
+    db: "Session", user_id: str, slo_codes: Iterable[str]
 ) -> dict[str, tuple[int, float | None]]:
-    """Return {slo_code: (attempts, mastery)} for the SLOs the user has practised."""
+    """Return {slo_code: (attempts, mastery)} for the SLOs the user has practised.
+
+    The model is imported here rather than at the top of the file so that
+    ``estimate`` above stays importable without a database. It is pure
+    arithmetic and several things need it - the progress trend replays it to
+    draw its graph - and importing edu_db to get at it would mean pgvector,
+    which is not installed everywhere this has to run.
+    """
+    from edu_db.models import PracticeRecord
+
     codes = list(slo_codes)
     if not codes:
         return {}
