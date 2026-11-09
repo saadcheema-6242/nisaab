@@ -13,6 +13,7 @@ import { SessionCard } from './session-card'
 import { Card, CardContent } from '@/components/ui/card'
 import { mySessionsAtom, teachingAtom } from '@/data-acess/sessions'
 import { accountStateAtom } from '@/data-acess/teachers'
+import { surfaceFor } from '@/lib/surface'
 import { PageHeader } from '@/components/ui/page-header'
 
 const Empty = ({ children }: { children: React.ReactNode }) => (
@@ -123,12 +124,13 @@ const StudentSection = () => {
  */
 export const SessionsPage = () => {
   const account = useAtomValue(accountStateAtom)
-  const teaches =
-    Result.isSuccess(account) &&
-    account.value.role === 'teacher' &&
-    account.value.teacher_approved
-  const isAdmin = Result.isSuccess(account) && account.value.is_admin
-  const teacherOnly = teaches && !isAdmin
+  const surface = Result.isSuccess(account)
+    ? surfaceFor(account.value)
+    : 'student'
+  // An administrator is both, so they get the teaching section as well as
+  // the timetable; a teacher gets only their own classes.
+  const teacherOnly = surface === 'teacher'
+  const teaches = teacherOnly || surface === 'admin'
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 p-4 md:p-6">

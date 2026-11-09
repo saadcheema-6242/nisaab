@@ -22,6 +22,7 @@ import { Suspense, lazy } from 'react'
 import { DashboardPage } from './dashboard-page'
 import { LoadingLine } from '@/components/ui/loading-line'
 import { accountStateAtom } from '@/data-acess/teachers'
+import { surfaceFor } from '@/lib/surface'
 
 // Lazily, so a student never downloads the teacher page and a teacher
 // never downloads the subject grid.
@@ -41,8 +42,7 @@ export const DashboardHome = () => {
     return <LoadingLine>Loading your dashboard</LoadingLine>
   }
 
-  const { role, is_admin, teacher_approved } = account.value
-  if (role === 'teacher' && teacher_approved && !is_admin) {
+  if (surfaceFor(account.value) === 'teacher') {
     return (
       <Suspense fallback={<LoadingLine>Loading your classes</LoadingLine>}>
         <TeacherDashboard />

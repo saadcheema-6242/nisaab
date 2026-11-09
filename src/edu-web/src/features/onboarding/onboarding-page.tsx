@@ -108,21 +108,37 @@ export const OnboardingPage = () => {
     setFinished(true)
   }
 
-  // completeOnboarding refreshes its atoms but does not wait for them, so
-  // navigating the moment it returns raced the refetch and the dashboard
-  // guard sent the student straight back here.
+  // Where to go when the server's answer changes.
   //
-  // The wait is on accountStateAtom specifically, because that is the atom
-  // the guard reads. Waiting on the profile instead - which is what this
-  // did until now - watches the wrong answer settle and leaves anyway, so
-  // the bounce came back as soon as the guard moved to a different atom.
-  // One question, one source: if that ever stops being true, this breaks
-  // again in exactly the same way.
+  // This page is NOT under /dashboard, so the route guard that normally
+  // honours send_to never runs here. A teacher who applied therefore sat
+  // on this page for ever: their application was stored, the account state
+  // refreshed to send_to "/awaiting-approval", and nobody was listening.
+  // The teacher form's own comment said "the router moves us to the
+  // waiting page", which was simply not true from this route.
+  //
+  // So send_to is honoured here directly, and for both answers:
+  //
+  //   "/awaiting-approval" - go immediately, whether or not they just
+  //   submitted. A pending teacher who reopens /onboarding has nothing to
+  //   do here either.
+  //
+  //   null - they are free, but only leave if they just finished. A
+  //   student who came back to change their answers is left alone.
+  //
+  // The student case waits on this atom rather than the profile because
+  // this is the atom the dashboard guard reads; waiting on the profile is
+  // what caused the onboarding loop.
   useEffect(() => {
-    if (!finished) return
     if (!Result.isSuccess(accountResult)) return
-    if (accountResult.value.send_to !== null) return
-    navigate({ to: '/dashboard', replace: true })
+    const sendTo = accountResult.value.send_to
+    if (sendTo === '/awaiting-approval') {
+      navigate({ to: '/awaiting-approval', replace: true })
+      return
+    }
+    if (sendTo === null && finished) {
+      navigate({ to: '/dashboard', replace: true })
+    }
   }, [finished, accountResult, navigate])
 
   if (who === null) {

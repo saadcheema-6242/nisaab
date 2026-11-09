@@ -22,7 +22,7 @@ import {
   CalendarDaysIcon,
   ExternalLinkIcon,
   GraduationCapIcon,
-  MessageSquareIcon,
+  Settings2Icon,
 } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { TeacherSession } from '@/data-acess/sessions'
@@ -219,13 +219,17 @@ export const TeacherDashboard = () => {
               to="/dashboard/sessions"
               icon={CalendarDaysIcon}
               title="Weekly sessions"
-              blurb="Every class on the timetable, yours and the rest."
+              blurb="Every class on the timetable, with the join links."
             />
+            {/* Not the class rooms: those read a StudentProfile a teacher
+                does not have, so the guard turns a teacher away from them.
+                Offering a link to a page that bounces you is worse than
+                offering nothing. */}
             <Shortcut
-              to="/dashboard/community"
-              icon={MessageSquareIcon}
-              title="Class rooms"
-              blurb="What students in your subjects are asking each other."
+              to="/dashboard/settings"
+              icon={Settings2Icon}
+              title="Settings"
+              blurb="Your account, and the way out."
             />
           </div>
         </section>

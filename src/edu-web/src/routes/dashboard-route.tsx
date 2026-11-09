@@ -1,6 +1,7 @@
 import { Result, useAtomValue } from '@effect-atom/atom-react'
-import { Navigate, Outlet } from '@tanstack/react-router'
+import { Navigate, Outlet, useLocation } from '@tanstack/react-router'
 import { accountStateAtom } from '@/data-acess/teachers'
+import { surfaceFor, teacherMayOpen } from '@/lib/surface'
 
 /**
  * Where an account is allowed to be.
@@ -17,9 +18,21 @@ import { accountStateAtom } from '@/data-acess/teachers'
  */
 export const DashboardRoute = () => {
   const state = useAtomValue(accountStateAtom)
+  const { pathname } = useLocation()
 
-  if (Result.isSuccess(state) && state.value.send_to) {
-    return <Navigate to={state.value.send_to} />
+  if (Result.isSuccess(state)) {
+    if (state.value.send_to) {
+      return <Navigate to={state.value.send_to} />
+    }
+    // A teacher typing /dashboard/community, or following an old link,
+    // reaches a page that reads a StudentProfile they do not have. The
+    // sidebar already does not offer it; this is what makes that true
+    // rather than merely tidy. Sent to their own dashboard rather than
+    // shown a refusal: there is nothing for them to do about it, and the
+    // page they wanted does not exist for their kind of account.
+    if (surfaceFor(state.value) === 'teacher' && !teacherMayOpen(pathname)) {
+      return <Navigate to="/dashboard" replace />
+    }
   }
 
   return <Outlet />

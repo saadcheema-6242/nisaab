@@ -2,20 +2,23 @@ import {
   BarChart3Icon,
   CalendarDaysIcon,
   ClipboardCheckIcon,
+  GraduationCapIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
   Settings2,
   ShieldIcon,
 } from 'lucide-react'
-import { NisaabMark } from '@/components/nisaab-mark'
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
 import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
 import { NavUser } from './nav-user'
+import { NisaabMark } from '@/components/nisaab-mark'
 import { brand } from '@/lib/brand'
 import { adminStateAtom } from '@/data-acess/admin'
 import { reviewerStateAtom } from '@/data-acess/review'
+import { accountStateAtom } from '@/data-acess/teachers'
+import { surfaceFor } from '@/lib/surface'
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +36,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const reviewerResult = useAtomValue(reviewerStateAtom)
   const isReviewer =
     Result.isSuccess(reviewerResult) && reviewerResult.value.is_reviewer
+
+  // A teacher has no cohort, so the student pages have nothing to read.
+  // The same rule guards the routes themselves; see lib/surface.
+  const accountResult = useAtomValue(accountStateAtom)
+  const surface = Result.isSuccess(accountResult)
+    ? surfaceFor(accountResult.value)
+    : 'student'
+  const teaching = surface === 'teacher'
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -55,29 +66,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavProjects />
+        {!teaching && <NavProjects />}
         <NavMain
           items={[
+            // A teacher's dashboard is their classes, so the home link is
+            // named for that rather than for a syllabus they do not study.
             {
-              title: 'My FSc',
+              title: teaching ? 'My classes' : 'My FSc',
               url: '/dashboard',
-              icon: LayoutDashboardIcon,
-            },
-            {
-              title: 'Progress',
-              url: '/dashboard/progress',
-              icon: BarChart3Icon,
+              icon: teaching ? GraduationCapIcon : LayoutDashboardIcon,
             },
             {
               title: 'Sessions',
               url: '/dashboard/sessions',
               icon: CalendarDaysIcon,
             },
-            {
-              title: 'Community',
-              url: '/dashboard/community',
-              icon: MessageSquareIcon,
-            },
+            // Progress and the class rooms both read a StudentProfile a
+            // teacher does not have.
+            ...(teaching
+              ? []
+              : [
+                  {
+                    title: 'Progress',
+                    url: '/dashboard/progress',
+                    icon: BarChart3Icon,
+                  },
+                  {
+                    title: 'Community',
+                    url: '/dashboard/community',
+                    icon: MessageSquareIcon,
+                  },
+                ]),
             ...(isAdmin
               ? [
                   {
