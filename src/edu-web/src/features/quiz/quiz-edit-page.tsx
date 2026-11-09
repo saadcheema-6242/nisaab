@@ -439,7 +439,7 @@ export const QuizEditPage = ({ quizId, projectId }: QuizEditPageProps) => {
       </header>
 
       <div className="flex flex-1 flex-col min-h-0 overflow-auto">
-        <div className="min-h-screen bg-background p-8">
+        <div className="bg-background min-h-screen p-4 sm:p-8">
           <div className="max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <div>

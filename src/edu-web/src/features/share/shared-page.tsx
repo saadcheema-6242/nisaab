@@ -232,7 +232,7 @@ export const SharedPage = ({ token }: { token: string }) => {
     // Fixed light colours rather than theme tokens: this is a document,
     // and a document is the colour of paper.
     <div className="min-h-screen bg-neutral-100 py-8 print:bg-white print:py-0">
-      <article className="mx-auto max-w-[46rem] bg-white px-8 py-10 shadow-sm print:max-w-none print:px-0 print:py-0 print:shadow-none">
+      <article className="mx-auto max-w-[46rem] bg-white px-5 py-7 shadow-sm sm:px-8 sm:py-10 print:max-w-none print:px-0 print:py-0 print:shadow-none">
         <header className="mb-8 border-b-2 border-[#1F6B4A] pb-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-2.5">
@@ -258,7 +258,7 @@ export const SharedPage = ({ token }: { token: string }) => {
             </Button>
           </div>
 
-          <h1 className="mt-5 font-serif text-3xl leading-tight font-semibold text-neutral-900">
+          <h1 className="mt-5 font-serif text-2xl leading-tight font-semibold text-neutral-900 sm:text-3xl">
             {view.title ?? 'Untitled'}
           </h1>
           <p className="mt-2 text-sm text-neutral-500">

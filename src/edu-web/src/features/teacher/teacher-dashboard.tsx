@@ -128,7 +128,9 @@ export const TeacherDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-4xl font-semibold">Good to see you, {name}</h1>
+          <h1 className="text-3xl font-semibold sm:text-4xl">
+            Good to see you, {name}
+          </h1>
           <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-2 text-sm">
             <Badge variant="soft">
               <GraduationCapIcon className="size-3" /> Approved teacher

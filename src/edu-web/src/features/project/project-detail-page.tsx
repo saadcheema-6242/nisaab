@@ -108,8 +108,8 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
   if (projectId.length === 0) return null
 
   return (
-    <div className="flex flex-1 p-4 gap-4 overflow-hidden min-h-0">
-      <div className="flex flex-col w-1/2 border rounded-lg p-4 min-h-0">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 md:flex-row md:overflow-hidden">
+      <div className="flex min-h-[18rem] flex-col rounded-lg border p-4 md:min-h-0 md:w-1/2">
         <div className="flex items-center justify-between shrink-0 mb-2">
           <h3 className="text-lg font-semibold">Chats</h3>
           <Button onClick={handleCreateChat} size="sm">
@@ -135,9 +135,9 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
 
       {/* Study material is attached in the chat, where the tutor can see it,
           so there is no separate place to manage files. */}
-      <div className="flex flex-col w-1/2 gap-4 min-h-0">
+      <div className="flex min-h-0 flex-col gap-4 md:w-1/2">
         {/* AI Content */}
-        <div className="flex flex-col border rounded-lg p-4 min-h-0 flex-1">
+        <div className="flex min-h-[18rem] flex-1 flex-col rounded-lg border p-4 md:min-h-0">
           <div className="flex items-center justify-between shrink-0 mb-2">
             <h3 className="text-lg font-semibold">AI Content</h3>
             <div className="flex items-center gap-2">
@@ -206,15 +206,19 @@ export const ProjectDetailPage = ({
     <div className="flex h-full flex-col max-h-screen">
       <ProjectHeader projectId={projectId} />
 
+      {/* The tab row scrolls sideways rather than wrapping: wrapped to
+          two lines on a phone it pushes the content down and reads as a
+          broken layout. The scrollbar itself is hidden, since on a
+          desktop there is nothing to scroll. */}
       {gradeSubjectId && (
-        <div className="flex shrink-0 gap-1 border-b px-4">
+        <div className="flex shrink-0 gap-1 overflow-x-auto border-b px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tabs.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setTab(option.value)}
               className={cn(
-                '-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors',
+                '-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
                 activeTab === option.value
                   ? 'border-primary text-foreground'
                   : 'border-transparent text-muted-foreground hover:text-foreground',

@@ -123,7 +123,7 @@ const StatsGrid = ({
   return Result.builder(statsResult)
     .onSuccess((stats) => {
       return (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-6">
           <StatCard
             icon={<CheckCircle className="h-6 w-6 text-green-600" />}
             value={stats.correct}

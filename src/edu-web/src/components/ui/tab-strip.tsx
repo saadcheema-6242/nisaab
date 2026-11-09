@@ -76,7 +76,11 @@ export const TabStrip = <TId extends string>({
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className="border-border/70 flex flex-wrap gap-1 border-b"
+      // Scrolls sideways rather than wrapping. History offers All plus
+      // one tab per subject plus Shared, which on a phone wraps to three
+      // rows and pushes the content off the screen. A row that scrolls
+      // is a row; a row that wraps is a block.
+      className="border-border/70 flex gap-1 overflow-x-auto border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {tabs.map((tab) => (
         <button
@@ -93,7 +97,7 @@ export const TabStrip = <TId extends string>({
           title={tab.hint}
           onClick={() => onSelect(tab.id)}
           className={cn(
-            '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2.5',
+            '-mb-px flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 whitespace-nowrap',
             'text-sm font-medium',
             'transition-[color,border-color,background-color] duration-150 ease-out',
             // The focus ring is inset and square-topped so it cannot be

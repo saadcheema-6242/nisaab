@@ -134,7 +134,7 @@ export const DashboardPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-4xl font-semibold">My FSc</h1>
+          <h1 className="text-3xl font-semibold sm:text-4xl">My FSc</h1>
           {profile && (
             // The three facts about this student's course, as chips rather
             // than a run-on sentence with a link buried in it. The old line

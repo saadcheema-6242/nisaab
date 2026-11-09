@@ -1,6 +1,6 @@
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Share2Icon  } from 'lucide-react'
+import { ArrowLeft, Share2Icon } from 'lucide-react'
 import { useState } from 'react'
 import {
   Breadcrumb,

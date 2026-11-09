@@ -50,14 +50,14 @@ const renderContent = ({
   icon: LucideIcon
 }) => {
   return (
-    <div className="grid grid-cols-6 items-center">
-      <div className="flex flex-col w-full col-span-5">
+    <div className="flex items-center gap-2">
+      <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-2">
           <Icon className="size-4" />
           <span>{name}</span>
         </div>
       </div>
-      <div className="flex flex-col col-span-1 text-right">
+      <div className="hidden shrink-0 flex-col text-right sm:flex">
         <span className="text-xs text-muted-foreground">
           {format(new Date(created_at), 'MM/dd HH:mm')}
         </span>

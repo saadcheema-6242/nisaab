@@ -52,7 +52,7 @@ export const ChatListItem = ({ chat }: Props) => {
           }}
           className="flex-1"
         >
-          <div className="grid grid-cols-6 items-center">
+          <div className="flex items-center gap-2">
             <div className="flex flex-col w-full col-span-5 overflow-hidden">
               <span className="truncate">{chat.title ?? 'Untitled chat'}</span>
               {chat.last_message_content && (

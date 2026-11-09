@@ -42,7 +42,7 @@ export const PageHeader = ({
     )}
     <div className="min-w-0 flex-1 space-y-1.5">
       {/* h1, so it takes the serif and the tracking from the global sheet. */}
-      <h1 className="text-3xl font-semibold">{title}</h1>
+      <h1 className="text-2xl font-semibold sm:text-3xl">{title}</h1>
       {children && (
         <div className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
           {children}

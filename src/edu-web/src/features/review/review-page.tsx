@@ -311,7 +311,7 @@ const DomainSelect = ({
   const domains = Result.isSuccess(treeResult) ? treeResult.value.domains : []
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[220px]">
+      <SelectTrigger className="w-full sm:w-[220px]">
         <SelectValue placeholder="Domain" />
       </SelectTrigger>
       <SelectContent>
@@ -387,7 +387,7 @@ export const ReviewPage = () => {
                   value={selected ?? undefined}
                   onValueChange={setGradeSubjectId}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full sm:w-[200px]">
                     <SelectValue placeholder="Subject" />
                   </SelectTrigger>
                   <SelectContent>
@@ -406,7 +406,7 @@ export const ReviewPage = () => {
                   />
                 )}
                 <Select value={kind} onValueChange={setKind}>
-                  <SelectTrigger className="w-[150px]">
+                  <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -418,7 +418,7 @@ export const ReviewPage = () => {
                   </SelectContent>
                 </Select>
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="w-[150px]">
+                  <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

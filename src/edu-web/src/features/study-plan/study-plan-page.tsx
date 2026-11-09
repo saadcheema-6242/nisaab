@@ -92,7 +92,7 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
                     setSelectedPlanId(val === 'latest' ? null : val)
                   }
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[180px]">
                     <History className="mr-2 h-4 w-4" />
                     <SelectValue placeholder="History" />
                   </SelectTrigger>

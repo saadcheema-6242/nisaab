@@ -49,7 +49,7 @@ export const FlashcardCompletionScreen = ({
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center p-4">
-      <Card className="w-full max-w-2xl p-8">
+      <Card className="w-full max-w-2xl p-5 sm:p-8">
         <div className="space-y-8">
           {/* Header */}
           <div className="text-center space-y-3">
@@ -63,7 +63,7 @@ export const FlashcardCompletionScreen = ({
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 py-4">
+          <div className="grid grid-cols-3 gap-2 py-4 sm:gap-4">
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-green-600" />

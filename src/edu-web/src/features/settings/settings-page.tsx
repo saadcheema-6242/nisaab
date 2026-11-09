@@ -64,7 +64,7 @@ const FscProfileSection = () => {
               })
             }
           >
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-full sm:w-[220px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -214,7 +214,7 @@ export function SettingsPage() {
                 value={theme}
                 onValueChange={(value) => setTheme(value as typeof theme)}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Select theme" />
                 </SelectTrigger>
                 <SelectContent>
