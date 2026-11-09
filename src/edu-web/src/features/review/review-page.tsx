@@ -226,18 +226,18 @@ const ReviewList = ({
 
   return Result.builder(itemsResult)
     .onInitialOrWaiting(() => (
-      <div className="flex items-center gap-2 p-8 text-muted-foreground">
+      <div className="flex items-center gap-2 p-4 sm:p-8 text-muted-foreground">
         <Loader2Icon className="size-4 animate-spin" />
         Loading items…
       </div>
     ))
     .onFailure(() => (
-      <p className="p-8 text-destructive">Failed to load items</p>
+      <p className="text-destructive p-4 sm:p-8">Failed to load items</p>
     ))
     .onSuccess((items) => {
       if (items.length === 0) {
         return (
-          <p className="p-8 text-center text-muted-foreground">
+          <p className="text-muted-foreground p-4 text-center sm:p-8">
             Nothing here. Try another filter.
           </p>
         )
@@ -369,7 +369,7 @@ export const ReviewPage = () => {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-4xl space-y-4 p-4">
           {!isReviewer ? (
-            <p className="p-8 text-center text-muted-foreground">
+            <p className="text-muted-foreground p-4 text-center sm:p-8">
               {Result.isSuccess(reviewerResult)
                 ? 'Only subject teachers who review content can open this page.'
                 : 'Loading…'}

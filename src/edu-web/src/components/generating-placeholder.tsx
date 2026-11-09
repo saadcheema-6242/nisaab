@@ -7,7 +7,7 @@ export const GeneratingPlaceholder = ({
   what: string
   timedOut: boolean
 }) => (
-  <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-muted-foreground">
+  <div className="flex flex-1 flex-col items-center justify-center gap-2 p-4 sm:p-8 text-center text-muted-foreground">
     {timedOut ? (
       <span>No {what} yet. Refresh the page in a minute.</span>
     ) : (

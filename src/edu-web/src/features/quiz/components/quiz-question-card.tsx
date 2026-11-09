@@ -91,8 +91,8 @@ export const QuizQuestionCard = ({
   return (
     <div className="flex-1 flex items-center justify-center">
       <div className="w-full max-w-3xl">
-        <div className="bg-card border rounded-xl shadow-lg p-12">
-          <div className="space-y-10">
+        <div className="bg-card rounded-xl border p-5 shadow-lg sm:p-12">
+          <div className="space-y-6 sm:space-y-10">
             <div>
               {/* What the question asks of the student - recall, explain or
                   apply. Shown before the question, because knowing which it is

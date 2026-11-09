@@ -293,19 +293,19 @@ export const SyllabusMap = ({
 
   return Result.builder(treeResult)
     .onInitial(() => (
-      <div className="flex items-center justify-center gap-2 p-12 text-muted-foreground">
+      <div className="flex items-center justify-center gap-2 p-6 sm:p-12 text-muted-foreground">
         <Loader2Icon className="size-4 animate-spin" />
         <span>Loading syllabus…</span>
       </div>
     ))
     .onFailure(() => (
-      <div className="p-12 text-center text-destructive">
+      <div className="text-destructive p-6 text-center sm:p-12">
         Failed to load the syllabus
       </div>
     ))
     .onSuccess((tree) =>
       tree.grade_subject.status === 'coming_soon' ? (
-        <div className="mx-auto max-w-xl p-12 text-center">
+        <div className="mx-auto max-w-xl p-6 sm:p-12 text-center">
           <h2 className="text-lg font-semibold">
             {tree.grade_subject.subject_name} syllabus map is coming soon
           </h2>

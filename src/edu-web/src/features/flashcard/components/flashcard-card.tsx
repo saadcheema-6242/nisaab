@@ -21,7 +21,7 @@ export const FlashcardCard = ({
 
   return (
     <div className="flex-1 flex items-center justify-center">
-      <Card className="w-full max-w-3xl p-12 min-h-[420px]">
+      <Card className="w-full max-w-3xl p-6 sm:p-12 min-h-[420px]">
         <div className="space-y-10">
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-2">

@@ -140,12 +140,7 @@ export const SignInPage = () => {
 
         {/* The label changes rather than the button emptying out, so the
             width does not jump and the spinner has something to sit beside. */}
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Spinner /> Signing in

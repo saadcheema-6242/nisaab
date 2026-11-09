@@ -104,7 +104,7 @@ const Deck = ({
         onFlip={() => setFlipped(!flipped)}
       />
       {flipped ? (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <Button variant="outline" disabled={busy} onClick={() => rate(false)}>
             <UndoIcon className="size-4" />
             Still learning

@@ -93,7 +93,7 @@ export const FeaturesPage = () => (
         {features.map((feature, i) => (
           <Reveal key={feature.slug}>
             <div className="grid gap-4 py-10 sm:grid-cols-[auto_1fr] sm:gap-10">
-              <div className="text-primary/30 font-mono text-5xl font-bold tabular-nums">
+              <div className="text-primary/30 font-mono text-4xl sm:text-5xl font-bold tabular-nums">
                 {String(i + 1).padStart(2, '0')}
               </div>
               <div className="max-w-2xl">

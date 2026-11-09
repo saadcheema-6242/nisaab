@@ -120,7 +120,7 @@ export function UploadDocumentDialog() {
           <div
             {...getRootProps()}
             className={cn(
-              'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
+              'border-2 border-dashed rounded-lg p-4 sm:p-8 text-center cursor-pointer transition-colors',
               isDragActive
                 ? 'border-primary bg-primary/5'
                 : 'border-muted-foreground/25 hover:border-muted-foreground/50',

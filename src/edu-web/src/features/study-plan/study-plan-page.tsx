@@ -323,7 +323,7 @@ export const StudyPlanPage = ({ projectId }: StudyPlanPageProps) => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 border-2 border-dashed rounded-lg bg-muted/30">
+              <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-4 sm:p-8 border-2 border-dashed rounded-lg bg-muted/30">
                 <div className="bg-background p-4 rounded-full shadow-sm mb-4">
                   <BrainCircuit className="h-12 w-12 text-primary" />
                 </div>

@@ -272,13 +272,13 @@ export const SrqPage = ({
       <div className="min-h-0 flex-1 overflow-y-auto">
         {Result.builder(detailResult)
           .onInitial(() => (
-            <div className="flex items-center justify-center gap-2 p-12 text-muted-foreground">
+            <div className="flex items-center justify-center gap-2 p-6 sm:p-12 text-muted-foreground">
               <Loader2Icon className="size-4 animate-spin" />
               <span>Loading question…</span>
             </div>
           ))
           .onFailure(() => (
-            <div className="p-12 text-center text-destructive">
+            <div className="text-destructive p-6 text-center sm:p-12">
               Failed to load the question
             </div>
           ))

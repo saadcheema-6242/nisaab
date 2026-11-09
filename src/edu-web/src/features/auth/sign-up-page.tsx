@@ -241,12 +241,7 @@ export const SignUpPage = () => {
 
         {error && <AuthError>{error}</AuthError>}
 
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Spinner /> Creating account

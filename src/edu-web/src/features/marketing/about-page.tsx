@@ -103,7 +103,7 @@ export const AboutPage = () => (
       <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-20 sm:px-6 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <Reveal key={stat.label} delay={i * 0.08}>
-            <div className="text-primary text-4xl font-bold tracking-tight">
+            <div className="text-primary text-3xl font-bold tracking-tight sm:text-4xl">
               <Counter
                 to={stat.value}
                 suffix={'suffix' in stat ? stat.suffix : ''}
