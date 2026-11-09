@@ -139,9 +139,11 @@ const OnboardingPage = lazy(() =>
     default: m.OnboardingPage,
   })),
 )
-const DashboardPage = lazy(() =>
-  import('@/features/dashboard/dashboard-page').then((m) => ({
-    default: m.DashboardPage,
+// Decides between the student page and the teacher page once the server
+// has said which this account is. See features/dashboard/dashboard-home.
+const DashboardHome = lazy(() =>
+  import('@/features/dashboard/dashboard-home').then((m) => ({
+    default: m.DashboardHome,
   })),
 )
 
@@ -296,7 +298,7 @@ export const dashboardIndexRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   component: () => (
     <Suspense fallback={<LoadingPage />}>
-      <DashboardPage />
+      <DashboardHome />
     </Suspense>
   ),
 })

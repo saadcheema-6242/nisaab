@@ -108,16 +108,22 @@ export const OnboardingPage = () => {
     setFinished(true)
   }
 
-  // completeOnboarding refreshes the profile but does not wait for it, and the
-  // profile atom keeps serving the old value meanwhile. Navigating straight away
-  // therefore raced the refetch: the dashboard guard still read onboarded: false
-  // and sent the student back here. Leave only once that guard would let us in.
+  // completeOnboarding refreshes its atoms but does not wait for them, so
+  // navigating the moment it returns raced the refetch and the dashboard
+  // guard sent the student straight back here.
+  //
+  // The wait is on accountStateAtom specifically, because that is the atom
+  // the guard reads. Waiting on the profile instead - which is what this
+  // did until now - watches the wrong answer settle and leaves anyway, so
+  // the bounce came back as soon as the guard moved to a different atom.
+  // One question, one source: if that ever stops being true, this breaks
+  // again in exactly the same way.
   useEffect(() => {
     if (!finished) return
-    if (Result.isSuccess(profileResult) && !profileResult.value.onboarded)
-      return
+    if (!Result.isSuccess(accountResult)) return
+    if (accountResult.value.send_to !== null) return
     navigate({ to: '/dashboard', replace: true })
-  }, [finished, profileResult, navigate])
+  }, [finished, accountResult, navigate])
 
   if (who === null) {
     return (

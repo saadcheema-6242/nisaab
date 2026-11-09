@@ -3,6 +3,7 @@ import { HttpBody } from '@effect/platform'
 import { Effect } from 'effect'
 import { projectsRemoteAtom } from './project'
 import { runtime } from './runtime'
+import { accountStateAtom } from './teachers'
 import type {
   OnboardingRequest,
   ProfileUpdate,
@@ -27,6 +28,12 @@ export const completeOnboardingAtom = runtime.fn(
       const res = yield* apiClient.completeOnboardingApiV1OnboardingPost(input)
       registry.refresh(profileAtom)
       registry.refresh(projectsRemoteAtom)
+      // The one the router asks. Without this the student finished setup,
+      // was sent to the dashboard, and the guard - still holding the answer
+      // from before they had a profile - sent them straight back here, for
+      // ever. Refreshing the profile alone was not enough once the guard
+      // stopped reading the profile.
+      registry.refresh(accountStateAtom)
       return res
     },
     withToast({
