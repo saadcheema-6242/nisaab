@@ -1,3 +1,8 @@
+> **Superseded.** This describes an earlier version of NISAAB and is no
+> longer maintained. The current documentation is
+> [docs/handbook](../handbook/README.md), written 9 November 2026.
+> This file is kept only so older links still resolve.
+
 # 8. Frontend
 
 The frontend is a single-page application in React 19 and TypeScript, built with Vite and served as static files from Cloud Run.

@@ -1,344 +1,150 @@
-# EduAgent
+# NISAAB · نصاب
 
-<div align="center">
+**An AI tutor for FBISE FSc students, built on the board's own syllabus.**
 
-**AI-powered educational platform for creating interactive learning experiences**
-
-[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7+-blue.svg)](https://www.typescriptlang.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.117+-green.svg)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.124+-green.svg)](https://fastapi.tiangolo.com/)
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Cloud%20Run%20%2B%20Vertex-4285F4.svg)](https://cloud.google.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Language: English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
-[![Jazyk: Čeština](https://img.shields.io/badge/Jazyk-Čeština-lightgrey.svg)](README.cs.md)
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
-
-</div>
+**Live: <https://nisaab.muhammadsaadcheema.com>**
 
 ---
 
-EduAgent is a cutting-edge, AI-powered educational platform designed to transform how you learn. By combining advanced RAG (Retrieval-Augmented Generation) with proactive AI agents powered by **LangGraph**, EduAgent turns static documents into a dynamic, personalized tutor. Upload your course materials and experience a new way of studying with automatically generated quizzes, flashcards, mind maps, and a **Personalized Study Plan** that adapts to your unique learning pace using principles of **Active Recall** and **Adaptive Learning**.
+NISAAB is an AI tutor for Pakistani students sitting the FBISE
+Intermediate examination — FSc Pre-Medical, Pre-Engineering and ICS.
 
-## Table of Contents
+It is not a chatbot with a syllabus pasted into the prompt. **The FBISE
+curriculum is in the database as rows**: every Student Learning Outcome
+the board publishes, under its domain, under its subject, under its
+year — 869 of them for Part 1. Teaching, questions, marking and progress
+all hang off those rows.
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Pilot Evaluation](#-pilot-evaluation)
-- [Prerequisites](#-prerequisites)
-- [Quick Start](#-quick-start)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Project Structure](#-project-structure)
-- [Development](#-development)
-- [API Documentation](#-api-documentation)
-- [Roadmap](#-roadmap)
-- [Documentation](#-documentation)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Support](#-support)
+That one decision is the product:
 
-## ✨ Features
+- an answer traces back to a published outcome, not a model's
+  recollection
+- a change to the board's pattern is a data update, not a retraining run
+- a teacher can approve or reject a single generated item
+- progress is measured against the same outcomes the real paper is
 
-- **📂 Project-Based Learning** - Organize courses into focused projects containing all your documents, chats, and AI-generated study aids.
-- **🧠 Personalized Study Plans** - AI identifies your weak spots based on performance (focusing on topics where success is < 70%) and generates a custom tailored curriculum to help you master the material.
-- **🤖 Proactive AI Tutor (LangGraph)** - Chat with an intelligent agent that uses a **ReAct pattern** to proactively generate quizzes, flashcards, and notes during your conversation.
-- **📄 Smart Document Processing** - Drag-and-drop PDF, DOCX, TXT, and RTF files. Powered by **Azure Content Understanding** for robust text extraction and semantic segmentation.
-- **🔍 Semantic Search & RAG** - Ask questions grounded in your specific materials. Uses **pgvector** for high-precision retrieval with source citations.
-- **📝 Automated Quizzes** - Generate multiple-choice quizzes from any document. The system grades you, explains answers, and tracks your progress.
-- **🎴 Flashcards** - Turn dense text into flashcards instantly. Perfect for memorizing definitions and key concepts using active recall.
-- **🗺️ Interactive Mind Maps** - Visualize connections between topics with AI-generated mind maps that help you understand the bigger picture.
-- **🔐 Enterprise-Grade Security** - Built with Supabase Auth, Azure Key Vault for infrastructure secret management, and Azure usage limits to keep your data safe and costs controlled.
+NISAAB explains in **English, Roman Urdu or اردو**, at the student's
+choice.
 
-## 🏗️ Tech Stack
+## What it does
 
-### Backend
+**For a student** — a tutor that retrieves from the syllabus and from
+their own uploads; quizzes, flashcards, mind maps, notes and study plans
+generated mid-conversation; SLO practice with mastery tracking; written
+answers marked point by point against a scheme; full practice papers to
+the FBISE blueprint (30% Knowledge, 50% Understanding, 20% Application);
+a progress page showing mastery, cognitive levels, a weekly trend and an
+activity calendar; and a class room shared with their own year and
+group.
 
-- **[FastAPI](https://fastapi.tiangolo.com/)** - Modern, fast Python web framework
-- **[LangGraph](https://www.langchain.com/langgraph)** - Orchestration of autonomous AI agents with tool-calling capabilities
-- **[PostgreSQL](https://www.postgresql.org/)** - Relational database with Alembic migrations and **pgvector** extension
-- **[Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)** - LLM capabilities (GPT-4o, text-embedding-3-large)
-- **[Azure Content Understanding](https://azure.microsoft.com/en-us/products/ai-services/document-intelligence)** - Document processing and text extraction
-- **[Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs)** - File storage
-- **[Azure Key Vault](https://azure.microsoft.com/en-us/products/key-vault)** - Infrastructure secret management
-- **[Supabase](https://supabase.com/)** - Authentication and authorization
+**For a teacher** — a dashboard of the classes they are taking, with the
+meeting link available the whole time.
 
-### Frontend
+**For an administrator** — accounts, the teacher approval queue, the
+weekly timetable, and the moderation queue.
 
-- **[React 19](https://react.dev/)** - UI library
-- **[TypeScript](https://www.typescriptlang.org/)** - Type safety
-- **[Vite](https://vitejs.dev/)** - Build tool and dev server
-- **[TanStack Router](https://tanstack.com/router)** - Type-safe routing
-- **[Effect Atom](https://github.com/tim-smart/effect-atom)** - State management and data fetching
-- **[TailwindCSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Radix UI](https://www.radix-ui.com/)** - Accessible component primitives
+Weekly sessions are arranged **by subject**, so one Physics XI class
+serves Pre-Medical, Pre-Engineering and ICS students together.
 
-## 📊 Pilot Evaluation
+## Stack
 
-EduAgent has been validated through a pilot study with 15 test queries across various document types:
+| | |
+|---|---|
+| API | FastAPI, Python 3.12, uv workspace |
+| Worker | Background generation and document processing |
+| Web | React 19, Vite, TanStack Router, Effect, Tailwind v4 |
+| Database | PostgreSQL + pgvector (Cloud SQL) |
+| Models | Gemini on Vertex AI |
+| Auth | Google Identity Platform |
+| Hosting | Cloud Run + Firebase Hosting, `asia-south1` |
 
-- **93% Retrieval Success**: High precision in finding relevant context.
-- **0% Hallucinations**: Strict grounding in user-provided documents.
-- **< 150ms Latency**: Efficient vector search performance in PostgreSQL.
+Retrieval runs in Postgres with pgvector — no separate vector service.
+At one board, two years and nine subjects, a dedicated vector database
+would be another system to run for no gain.
 
-## 📋 Prerequisites
+## Documentation
 
-Before you begin, ensure you have the following installed:
+**→ [The NISAAB handbook](docs/handbook/README.md)**
 
-- **Python 3.12+** - [Download Python](https://www.python.org/downloads/)
-- **Node.js 18+** - [Download Node.js](https://nodejs.org/)
-- **pnpm** - `npm install -g pnpm`
-- **Docker & Docker Compose** - [Install Docker](https://docs.docker.com/get-docker/)
-- **Terraform** - [Install Terraform](https://developer.hashicorp.com/terraform/install)
-- **Azure and Supabase** - Provisioned via Terraform:
-  - Terraform modules will set up:
-    - **Azure AI Foundry**: Hub, Project, and Model Deployments (GPT-4o, text-embedding-3-small)
-    - **Azure Storage**: Account with Blob containers and Tasks queue
-    - **Azure Key Vault**: Secure secret management with RBAC
-    - **Azure Container Registry**: Private registry for container images
-    - **Azure Container Apps**: Serverless hosting for API and Worker services
-    - **Azure App Service**: Linux-based hosting for the Web frontend
-    - **Azure Monitor**: Log Analytics and Application Insights for observability
-    - **Supabase**: Managed project with Database and Auth configured
-  - See [infrastructure documentation](docs/AZURE_DEPLOYMENT.md) for setup instructions
+Fifteen chapters, written against the system as it actually runs. If you
+read one, read **[13. Design
+decisions](docs/handbook/13-decisions.md)** — the reasoning behind the
+choices, which is the part you cannot recover from the code.
 
-## 🚀 Quick Start
+[14. Limitations](docs/handbook/14-limitations.md) says plainly what is
+unfinished and unverified.
 
-Local development uses the Supabase CLI (database, storage, logins) and a free Gemini API key:
+`docs/documentation/` and `docs/nisaab/` are superseded and kept only so
+old links resolve.
+
+## Running it locally
 
 ```bash
-uv sync --all-packages && (cd src/edu-web && pnpm install)
-npx supabase start                       # in a folder outside the repo
-cp .env.example .env                     # fill in the keys printed by supabase start + your Gemini key
-DATABASE_URL="postgresql+psycopg2://postgres:postgres@127.0.0.1:54322/postgres" uv run alembic upgrade head
+python -m uv sync
 
-cd src/edu-api    && uv run --package edu-api python main.py      # API
-cd src/edu-worker && uv run --package edu-worker python main.py   # worker
-cd src/edu-web    && pnpm dev                                     # web on http://localhost:3000
+# API, on port 8010
+cd src/edu-api && python -m uv run uvicorn main:app --reload --port 8010
+
+# Web, on port 3000
+cd src/edu-web && pnpm install && pnpm dev
 ```
 
-Full guide: [docs/LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md). Production deploys to Google Cloud
-(Cloud Run + Vertex AI) with Supabase for data: [deploy/gcp/README.md](deploy/gcp/README.md).
+Needs PostgreSQL with pgvector and a model key. See
+[11. Operations](docs/handbook/11-operations.md).
 
-## 📦 Installation
-
-### Backend Setup (API + Worker)
-
-The Python services use a **uv workspace** with `pyproject.toml` + `uv.lock`.
+The fastest way to check nothing is broken needs neither — the 22
+offline checkers run in seconds with no database and no key:
 
 ```bash
-cd edu-agent
-
-# Install uv if you don't have it yet (see https://docs.astral.sh/uv/)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install all workspace dependencies (api, worker, shared)
-uv sync
-
-# Run database migrations (DATABASE_URL must be set)
-export DATABASE_URL="postgresql+psycopg2://postgres:postgres@localhost:5432/postgres"
-alembic upgrade head
-
-# Start API locally (without Docker)
-cd src/edu-api
-uv run python main.py
-
-# Optional: in another terminal, start the worker locally
-cd src/edu-worker
-uv run python main.py
+python scripts/admin/check_roles.py
+python scripts/admin/check_weekly_session.py
 ```
 
-### Frontend Setup
+That is possible because the domain rules live in modules that import no
+database. [12. Testing](docs/handbook/12-testing.md) explains why that
+matters more than it sounds.
+
+## Deploying
+
+One script, every step re-runnable:
 
 ```bash
-cd src/edu-web
-
-# Install dependencies
-pnpm install
-
-# Generate TypeScript types from OpenAPI schema (optional)
-pnpm gen:client
+deploy/gcp/deploy.sh          # everything, first time
+deploy/gcp/deploy.sh deploy   # API and worker
+deploy/gcp/deploy.sh web      # the site
+deploy/gcp/deploy.sh e2e      # 244 end-to-end checks, in the cloud
 ```
 
-## ⚙️ Configuration
+## Tests
 
-### Backend Environment Variables
+| Layer | What |
+|---|---|
+| 22 offline checkers | Domain rules, no database needed |
+| 244 end-to-end checks | Real database, real models, in the cloud |
+| 58 Vitest tests | Frontend guards, routing, marking display |
 
-You can configure the backend either via **Azure Key Vault** (recommended for production) or via local environment variables / `.env` files (recommended for local dev).
+## Status
 
-```env
-# Azure Key Vault (production)
-AZURE_KEY_VAULT_URI=
+Complete and live for **FSc Part 1** across all five subjects. Part 2
+has Physics only. Attendance and email reminders are not built. AI
+marking is labelled **AI-estimated** and has not been compared against
+examiner marking — see
+[14. Limitations](docs/handbook/14-limitations.md).
 
-# Usage Limits (optional, defaults shown)
-MAX_DOCUMENT_UPLOADS_PER_DAY=5
-MAX_QUIZ_GENERATIONS_PER_DAY=10
-MAX_FLASHCARD_GENERATIONS_PER_DAY=10
-MAX_CHAT_MESSAGES_PER_DAY=50
-```
+**NISAAB is not an official FBISE product.** Every page says so.
 
-For local development, you can skip Key Vault and set individual environment variables directly:
+## Credits
 
-```env
-# Azure Key Vault (local)
-AZURE_KEY_VAULT_URI=
+Built on [EduAgent](https://github.com/StudentTraineeCenter/edu-agent)
+by the Student Trainee Center, MIT licensed. NISAAB is a substantial
+rework: the FBISE curriculum model, SLO-based mastery and progress,
+FBISE paper generation and marking, class rooms, weekly sessions,
+teacher accounts and the Google Cloud deployment are new.
 
-# Usage Limits (optional, defaults shown)
-MAX_DOCUMENT_UPLOADS_PER_DAY=5
-MAX_QUIZ_GENERATIONS_PER_DAY=10
-MAX_FLASHCARD_GENERATIONS_PER_DAY=10
-MAX_CHAT_MESSAGES_PER_DAY=50
-```
-
-**Note:** The backend uses `python-dotenv`, so `.env` files at the project root work fine for local dev. See [Local Development Guide](./docs/LOCAL_DEVELOPMENT.md) for the full list and details.
-
-### Frontend Environment Variables
-
-Create a `.env` file in the `src/edu-web/` directory:
-
-```env
-VITE_SERVER_URL=http://localhost:8000
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-```
-
-For detailed configuration instructions, see the [Local Development Guide](./docs/LOCAL_DEVELOPMENT.md).
-
-## 📁 Project Structure
-
-```
-edu-agent/
-├── src/
-│   ├── edu-api/            # FastAPI backend (public API)
-│   ├── edu-worker/         # Background worker (queue/AI processing)
-│   ├── edu-web/            # React frontend (Vite + TanStack)
-│   ├── eduagent-vibecode/  # Vibecoded UI
-│   └── shared/
-│       ├── ai/             # Shared AI / agent logic and utilities
-│       ├── core/           # Shared core logic (helpers, utils, error handling)
-│       ├── db/             # Shared DB models, schemas, migrations
-│       └── queue/          # Shared queue and message types
-├── deploy/
-│   └── azure/              # Azure Terraform + ACR build tooling
-├── docs/                   # Documentation (features, local dev, privacy, etc.)
-├── alembic.ini             # Alembic config pointing at src/shared/db/src/edu_db/alembic
-├── docker-compose.yaml     # Local stack (api, worker, db, azurite)
-├── pyproject.toml          # uv workspace definition
-├── uv.lock                 # Locked dependency graph
-└── ruff.toml               # Backend linting/formatting configuration
-```
-
-## 🔧 Development
-
-### Backend Development
-
-```bash
-# From repo root
-
-# Create a new database migration
-alembic revision --autogenerate -m "description"
-
-# Apply migrations
-alembic upgrade head
-
-# Run API with uv (auto-respects workspace venv)
-cd src/edu-api
-uv run python main.py
-```
-
-### Frontend Development
-
-```bash
-cd src/edu-web
-
-# Start development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Run linter
-pnpm lint
-
-# Format code
-pnpm format
-
-# Run type checking
-pnpm type-check
-
-# Generate TypeScript types from OpenAPI schema
-pnpm gen:client
-```
-
-### Code Quality
-
-Both backend and frontend use linting and formatting tools:
-
-- **Backend**: Ruff (configured in `ruff.toml`, run via `ruff format .` and `ruff check .`)
-- **Frontend**: ESLint + Prettier (configured in `src/edu-web/`)
-
-## 📚 API Documentation
-
-Once the backend server is running, API documentation is available at:
-
-- **Scalar UI (OpenAPI docs)**: `http://localhost:8000/`
-- **Health Check**: `http://localhost:8000/health`
-- **OpenAPI Schema**: `http://localhost:8000/openapi.json`
-
-## 🗺️ Roadmap
-
-- [ ] **Audio/Video Support**: Automatic transcription and analysis of lectures.
-- [ ] **Advanced Spaced Repetition**: Sophisticated algorithms for long-term memory retention.
-- [ ] **AI-Generated Presentations**: Transform project materials into structured slides.
-- [ ] **Collaborative Projects**: Study with peers in shared AI-powered environments.
-
-## 📖 Documentation
-
-Comprehensive documentation is available in the `docs/` directory:
-
-- **[Features](./docs/FEATURES.md)** - Detailed overview of platform features and capabilities
-- **[Local Development](./docs/LOCAL_DEVELOPMENT.md)** - Complete setup and development guide (Docker + uv workspace)
-- **[Azure Deployment](./docs/AZURE_DEPLOYMENT.md)** - Production deployment instructions for Azure (using `deploy/azure`)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code style and conventions
-- Write clear commit messages
-- Add tests for new features when possible
-- Update documentation as needed
-- Ensure all linting checks pass
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 💬 Support
-
-- **Documentation**: Check the [docs](./docs/) directory
-- **Issues**: [GitHub Issues](https://github.com/StudentTraineeCenter/edu-agent/issues)
-
-## 🙏 Acknowledgments
-
-- Built with [uv](https://github.com/astral-sh/uv), [FastAPI](https://fastapi.tiangolo.com/), and [React](https://react.dev/)
-- Powered by [Azure AI Services](https://azure.microsoft.com/en-us/products/ai-services)
-- UI built with [Radix UI](https://www.radix-ui.com/) and [shadcn/ui](https://ui.shadcn.com/)
-
----
-
-<div align="center">
-
-Made with ❤️ for students and educators
-
-[⬆ Back to Top](#eduagent)
-
-</div>
+MIT. See [LICENSE](LICENSE).

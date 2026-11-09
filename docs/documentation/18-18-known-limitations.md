@@ -1,3 +1,8 @@
+> **Superseded.** This describes an earlier version of NISAAB and is no
+> longer maintained. The current documentation is
+> [docs/handbook](../handbook/README.md), written 9 November 2026.
+> This file is kept only so older links still resolve.
+
 # 18. Known Limitations
 
 - **The AI can still be wrong inside the syllabus.** Grounding controls scope, not correctness.

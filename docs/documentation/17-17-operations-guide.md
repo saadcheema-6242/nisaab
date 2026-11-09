@@ -1,3 +1,8 @@
+> **Superseded.** This describes an earlier version of NISAAB and is no
+> longer maintained. The current documentation is
+> [docs/handbook](../handbook/README.md), written 9 November 2026.
+> This file is kept only so older links still resolve.
+
 # 17. Operations Guide
 
 ## 17.1 Demo-day checklist

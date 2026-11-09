@@ -1,3 +1,8 @@
+> **Superseded.** This describes an earlier version of NISAAB and is no
+> longer maintained. The current documentation is
+> [docs/handbook](../handbook/README.md), written 9 November 2026.
+> This file is kept only so older links still resolve.
+
 # 10. Data Model
 
 The data layer uses SQLAlchemy 2.0 with typed mapped columns, Alembic for migrations, `psycopg2` as the driver and `pgvector` for vector columns. There are 28 tables.
