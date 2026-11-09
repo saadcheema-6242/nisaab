@@ -26,6 +26,8 @@ from edu_core.services.usage import UsageService
 from edu_core.services.users import UserService
 
 from .class_sessions import ClassSessionService
+from .library import LibraryService
+from .shares import ShareService
 from .teachers import TeacherService
 
 __all__ = [
@@ -44,6 +46,8 @@ __all__ = [
     "ProfileService",
     "AdminService",
     "ClassSessionService",
+    "ShareService",
+    "LibraryService",
     "TeacherService",
     "CommunityService",
     "ModerationQueueService",

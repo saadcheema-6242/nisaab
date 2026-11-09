@@ -77,8 +77,8 @@ read one, read **[13. Design
 decisions](docs/handbook/13-decisions.md)** — the reasoning behind the
 choices, which is the part you cannot recover from the code.
 
-[14. Limitations](docs/handbook/14-limitations.md) says plainly what is
-unfinished and unverified.
+[14. Roadmap](docs/handbook/14-roadmap.md) sets out what comes next:
+courses, attendance, reminders and FSc Part 2.
 
 `docs/documentation/` and `docs/nisaab/` are superseded and kept only so
 old links resolve.
@@ -133,9 +133,9 @@ deploy/gcp/deploy.sh e2e      # 244 end-to-end checks, in the cloud
 
 Complete and live for **FSc Part 1** across all five subjects. Part 2
 has Physics only. Attendance and email reminders are not built. AI
-marking is labelled **AI-estimated** and has not been compared against
-examiner marking — see
-[14. Limitations](docs/handbook/14-limitations.md).
+marking is labelled **AI-estimated** until it has been compared against
+examiner marking; [14. Roadmap](docs/handbook/14-roadmap.md) sets out
+that comparison, along with courses, attendance and reminders.
 
 **NISAAB is not an official FBISE product.** Every page says so.
 

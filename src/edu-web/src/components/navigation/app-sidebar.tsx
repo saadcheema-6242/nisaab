@@ -3,7 +3,9 @@ import {
   CalendarDaysIcon,
   ClipboardCheckIcon,
   GraduationCapIcon,
+  HistoryIcon,
   LayoutDashboardIcon,
+  LibraryIcon,
   MessageSquareIcon,
   Settings2,
   ShieldIcon,
@@ -95,6 +97,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     title: 'Community',
                     url: '/dashboard/community',
                     icon: MessageSquareIcon,
+                  },
+                  // Everything the student made, and everything they
+                  // uploaded. Both read a StudentProfile, so neither is
+                  // offered to a teacher.
+                  {
+                    title: 'History',
+                    url: '/dashboard/history',
+                    icon: HistoryIcon,
+                  },
+                  {
+                    title: 'Library',
+                    url: '/dashboard/library',
+                    icon: LibraryIcon,
                   },
                 ]),
             ...(isAdmin

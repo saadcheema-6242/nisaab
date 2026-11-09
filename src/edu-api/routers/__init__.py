@@ -13,6 +13,9 @@ from .admin import router as admin_router
 from .community import router as community_router
 from .progress import router as progress_router
 from .sessions import router as sessions_router
+from .library import router as library_router
+from .shares import public_router as public_shares_router
+from .shares import router as shares_router
 from .teachers import router as teachers_router
 from .projects import router as projects_router
 from .quizzes import router as quizzes_router
@@ -38,6 +41,9 @@ __all__ = [
     "community_router",
     "progress_router",
     "sessions_router",
+    "shares_router",
+    "library_router",
+    "public_shares_router",
     "teachers_router",
     "projects_router",
     "quizzes_router",

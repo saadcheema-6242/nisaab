@@ -1,6 +1,7 @@
 import { Result, useAtomValue } from '@effect-atom/atom-react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Share2Icon  } from 'lucide-react'
+import { useState } from 'react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,6 +9,7 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
+import { ShareDialog } from '@/features/share/share-dialog'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -57,6 +59,8 @@ type QuizHeaderProps = {
 
 export const QuizHeader = ({ quizId, projectId }: QuizHeaderProps) => {
   const quizResult = useAtomValue(quizAtom(`${projectId}:${quizId}`))
+  const [sharing, setSharing] = useState(false)
+  const name = Result.isSuccess(quizResult) ? quizResult.value.name : undefined
 
   return (
     <header className="bg-background sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b px-2">
@@ -79,8 +83,22 @@ export const QuizHeader = ({ quizId, projectId }: QuizHeaderProps) => {
         <QuizHeaderContent quizId={quizId} projectId={projectId} />
       </div>
       <div className="flex items-center gap-2 px-3">
+        {/* Sharing sits next to downloading because they answer the same
+            question - "get this out of the app" - and a student looking
+            for one will look where the other is. */}
+        <Button variant="ghost" size="sm" onClick={() => setSharing(true)}>
+          <Share2Icon />
+          <span className="sr-only sm:not-sr-only">Share</span>
+        </Button>
         <QuizDownload projectId={projectId} quizId={quizId} />
       </div>
+      <ShareDialog
+        open={sharing}
+        onOpenChange={setSharing}
+        kind="quiz"
+        targetId={quizId}
+        title={name}
+      />
     </header>
   )
 }

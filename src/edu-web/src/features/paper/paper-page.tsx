@@ -14,6 +14,7 @@ import {
   ClockIcon,
   Loader2Icon,
   XCircleIcon,
+  Share2Icon,
 } from 'lucide-react'
 import {
   Fragment,
@@ -39,6 +40,7 @@ import type {
 } from '@/integrations/api/client'
 import { useConfirmationDialog } from '@/components/confirmation-dialog'
 import { PaperDownload } from '@/components/downloads'
+import { ShareDialog } from '@/features/share/share-dialog'
 import { CognitiveBadge } from '@/features/syllabus/cognitive-badge'
 import { MathText } from '@/components/math-text'
 import { Badge } from '@/components/ui/badge'
@@ -884,6 +886,8 @@ export const PaperPage = ({
     setStartedAt(at)
   }
 
+  const [sharing, setSharing] = useState(false)
+
   return (
     <div className="flex h-full flex-col">
       <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-2">
@@ -902,9 +906,20 @@ export const PaperPage = ({
           <span className="font-medium">Practice paper</span>
         </div>
         <div className="flex items-center gap-2 px-3">
+          {/* Beside the download, which answers the same question. */}
+          <Button variant="ghost" size="sm" onClick={() => setSharing(true)}>
+            <Share2Icon />
+            <span className="sr-only sm:not-sr-only">Share</span>
+          </Button>
           <PaperDownload projectId={projectId} paperId={paperId} />
         </div>
       </header>
+      <ShareDialog
+        open={sharing}
+        onOpenChange={setSharing}
+        kind="paper"
+        targetId={paperId}
+      />
       <div className="min-h-0 flex-1 overflow-y-auto">
         {Result.builder(paperResult)
           .onInitial(() => (

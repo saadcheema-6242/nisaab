@@ -141,6 +141,23 @@ const OnboardingPage = lazy(() =>
 )
 // Decides between the student page and the teacher page once the server
 // has said which this account is. See features/dashboard/dashboard-home.
+// Opened by people with no account, so it is deliberately outside the
+// dashboard tree and its guards. See features/share/shared-page.
+const SharedPage = lazy(() =>
+  import('@/features/share/shared-page').then((m) => ({
+    default: m.SharedPage,
+  })),
+)
+const HistoryPage = lazy(() =>
+  import('@/features/history/history-page').then((m) => ({
+    default: m.HistoryPage,
+  })),
+)
+const LibraryPage = lazy(() =>
+  import('@/features/history/library-page').then((m) => ({
+    default: m.LibraryPage,
+  })),
+)
 const DashboardHome = lazy(() =>
   import('@/features/dashboard/dashboard-home').then((m) => ({
     default: m.DashboardHome,
@@ -289,6 +306,46 @@ export const signUpRoute = createRoute({
   component: () => (
     <Suspense fallback={<LoadingPage />}>
       <SignUpPage />
+    </Suspense>
+  ),
+})
+
+/**
+ * A shared quiz or paper. No sign-in, no app shell, no guards.
+ *
+ * A child of the root rather than of the dashboard, because everything
+ * under the dashboard asks who you are and this page's whole point is
+ * that it does not.
+ */
+export const sharedRoute = createRoute({
+  path: '/s/$token',
+  getParentRoute: () => rootRoute,
+  component: function Shared() {
+    const { token } = sharedRoute.useParams()
+    return (
+      <Suspense fallback={<LoadingPage />}>
+        <SharedPage token={token} />
+      </Suspense>
+    )
+  },
+})
+
+export const historyRoute = createRoute({
+  path: '/history',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <HistoryPage />
+    </Suspense>
+  ),
+})
+
+export const libraryRoute = createRoute({
+  path: '/library',
+  getParentRoute: () => dashboardRoute,
+  component: () => (
+    <Suspense fallback={<LoadingPage />}>
+      <LibraryPage />
     </Suspense>
   ),
 })
@@ -506,10 +563,13 @@ export const routeTree = rootRoute.addChildren([
     adminRoute,
     progressRoute,
     sessionsRoute,
+    historyRoute,
+    libraryRoute,
 
     studyPlanRoute,
     settingsRoute,
   ]),
+  sharedRoute,
   indexRoute,
   featuresRoute,
   aboutRoute,

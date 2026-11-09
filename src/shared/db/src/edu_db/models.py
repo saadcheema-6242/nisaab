@@ -1242,3 +1242,57 @@ class TeacherProfile(Base):
     )
 
     user = relationship("User")
+
+
+class Share(Base):
+    """A public, read-only link to a quiz or a paper.
+
+    The first thing in NISAAB that anybody can open without signing in,
+    which is why it is shaped the way it is.
+
+    The target is a kind and an id rather than two nullable foreign keys,
+    because a share points at exactly one thing and a pair of columns
+    where one is always null invites the row where both are set. The
+    cost is that the database cannot cascade the delete, so the service
+    checks the target still exists when the link is opened; a quiz that
+    has been deleted reads as a share that has expired, which is the
+    truth.
+
+    `revoked_at` rather than a delete: withdrawing a link is a decision
+    somebody may later want to confirm they made, and the dates on this
+    schema are already the state everywhere else - a ban, a teacher's
+    approval, a cancelled class.
+
+    `opened_count` is a counter, not a log. Who read a shared quiz is
+    not something this product needs to know, and collecting it would
+    mean holding data about people who never signed up.
+    """
+
+    __tablename__ = "shares"
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    # Unguessable, and the only thing guarding the public route. Unique
+    # and indexed: it is how every read of this table begins.
+    token: Mapped[str] = mapped_column(String, unique=True, index=True)
+
+    kind: Mapped[str] = mapped_column(String, index=True)  # quiz | paper
+    target_id: Mapped[str] = mapped_column(String, index=True)
+
+    # Who shared it. Their name is shown on the page, so a reader knows
+    # whose work they are looking at.
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    title: Mapped[str] = mapped_column(String, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    revoked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    opened_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+    user = relationship("User")

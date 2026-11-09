@@ -8,6 +8,8 @@ from edu_core.services import (
     AttemptService,
     ChatService,
     ClassSessionService,
+    LibraryService,
+    ShareService,
     CommunityService,
     ContentService,
     CurriculumService,
@@ -284,3 +286,13 @@ def get_study_plan_service(
         azure_openai_endpoint=settings.azure_openai_endpoint,
         azure_openai_api_version=settings.azure_openai_api_version,
     )
+
+
+def get_share_service() -> ShareService:
+    """Get ShareService instance (public read-only links)."""
+    return ShareService()
+
+
+def get_library_service() -> LibraryService:
+    """Get LibraryService instance (history and uploads, across projects)."""
+    return LibraryService()

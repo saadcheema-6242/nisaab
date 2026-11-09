@@ -362,3 +362,75 @@ code {
     opacity: 0.6;
   }
 }
+
+/* Printing a shared quiz or paper.
+ *
+ * A shared link is meant to survive Ctrl+P as a real document, so these
+ * rules apply to any page being printed rather than only to that one:
+ * if a student prints their own quiz from inside the app, they should
+ * get the same thing.
+ *
+ * `print-color-adjust` is deliberate. Browsers strip backgrounds when
+ * printing to save ink, which would take the brand rule off the top of
+ * the page and the tint off a correct answer. Keeping them is the
+ * difference between a document and a photocopy of a screen. */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    /* A printed page is paper: never the dark theme, whatever the
+       device was set to when the link was opened. */
+    color: #171717 !important;
+  }
+
+  /* Anything an ink-and-paper copy cannot use. */
+  nav,
+  aside,
+  [data-sidebar],
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Keep the brand rule and the answer tint. */
+  header,
+  .break-inside-avoid {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A question split across two pages is unreadable. */
+  section,
+  li,
+  figure,
+  table {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* A link whose text is already the address does not need it repeated,
+     but one that reads "here" is useless on paper. */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #666;
+  }
+
+  /* Motion means nothing on paper, and a half-played animation prints
+     as a half-faded element. */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

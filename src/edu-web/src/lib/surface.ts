@@ -43,6 +43,8 @@ const TEACHER_PATHS = [
   '/dashboard',
   '/dashboard/sessions',
   '/dashboard/settings',
+  // Not History or Library: both read a student's own projects, which a
+  // teacher does not have, so they would be permanently empty.
 ]
 
 export const teacherMayOpen = (pathname: string): boolean => {
