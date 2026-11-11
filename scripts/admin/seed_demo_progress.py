@@ -24,24 +24,18 @@ from the clock. Re-running replaces rather than doubling.
 
 import argparse
 import hashlib
-import pathlib
+import os
 import random
-import sys
 from datetime import datetime, timedelta, timezone
 
-HERE = pathlib.Path(__file__).resolve().parents[2]
-for pkg in ("db", "core"):
-    sys.path.insert(0, str(HERE / f"src/shared/{pkg}/src"))
-
-from edu_db.models import (  # noqa: E402
-    GradeSubject,
+from edu_db.models import (
     PracticeRecord,
     Project,
     Slo,
     StudentProfile,
     User,
 )
-from edu_db.session import get_session_factory  # noqa: E402
+from edu_db.session import get_session_factory, init_db
 
 # A term. Long enough for the weekly trend to have a story in it.
 DEFAULT_WEEKS = 10
@@ -73,6 +67,9 @@ def main() -> int:
     args = ap.parse_args()
 
     rng = seeded(args.email)
+    # The engine is not created until this is called; without it the
+    # factory raises "Database not initialized". Same as seed_curriculum.
+    init_db(os.environ["DATABASE_URL"])
     db = get_session_factory()()
     try:
         user = (
@@ -128,13 +125,17 @@ def main() -> int:
         for project in projects:
             if not project.grade_subject_id:
                 continue
-            gs = db.get(GradeSubject, project.grade_subject_id)
-            if gs is None:
-                continue
+            # Slo carries grade_subject_id itself, so no join through the
+            # domain is needed. Summative only: those are the outcomes the
+            # paper examines, and the predicted grade is computed from
+            # them, so practising anything else would leave that figure
+            # empty on a page whose whole point is that figure.
             slos = (
                 db.query(Slo)
-                .join(Slo.domain)
-                .filter(Slo.domain.has(grade_subject_id=gs.id))
+                .filter(
+                    Slo.grade_subject_id == project.grade_subject_id,
+                    Slo.assessment_form == "summative",
+                )
                 .all()
             )
             for slo in slos:
