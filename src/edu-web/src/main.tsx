@@ -56,6 +56,23 @@ if (rootElement && !rootElement.innerHTML) {
   )
 }
 
+/**
+ * Catch the install prompt before anything can ask for it.
+ *
+ * Chrome fires `beforeinstallprompt` within a second or two of load and
+ * will not fire it again. The settings page, where the Install button
+ * lives, is opened minutes later, so a listener there would always miss
+ * it. Parked on `window` and read by features/settings/install-app.
+ *
+ * preventDefault stops Chrome's own mini-infobar, which otherwise
+ * appears over the page uninvited; the student presses our button
+ * instead, or follows the written steps.
+ */
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault()
+  window.__nisaabInstallPrompt = event as typeof window.__nisaabInstallPrompt
+})
+
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

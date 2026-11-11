@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Result, useAtomSet, useAtomValue } from '@effect-atom/atom-react'
 import { Loader2Icon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
+import { InstallAppSection } from './install-app'
 import type { ExplanationLanguage } from '@/lib/languages'
 import { useConfirmationDialog } from '@/components/confirmation-dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -225,6 +226,8 @@ export function SettingsPage() {
               </Select>
             </CardContent>
           </Card>
+
+          <InstallAppSection />
 
           <Card>
             <CardHeader>
